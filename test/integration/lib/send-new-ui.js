@@ -1,6 +1,6 @@
 const reactTriggerChange = require('../../lib/react-trigger-change')
 const {
-  timeout,
+ // timeout,
   queryAsync,
   findAsync,
 } = require('../../lib/util')
@@ -11,36 +11,36 @@ global.ethQuery = {
 
 global.ethereumProvider = {}
 
-async function customizeGas (assert, price, limit, ethFee, usdFee) {
-  const sendGasOpenCustomizeModalButton = await queryAsync($, '.sliders-icon-container')
-  sendGasOpenCustomizeModalButton[0].click()
-
-  const customizeGasModal = await queryAsync($, '.send-v2__customize-gas')
-  assert.ok(customizeGasModal[0], 'should render the customize gas modal')
-
-  const customizeGasPriceInput = (await queryAsync($, '.send-v2__gas-modal-card')).first().find('input')
-  customizeGasPriceInput.val(price)
-  reactTriggerChange(customizeGasPriceInput[0])
-  const customizeGasLimitInput = (await queryAsync($, '.send-v2__gas-modal-card')).last().find('input')
-  customizeGasLimitInput.val(limit)
-  reactTriggerChange(customizeGasLimitInput[0])
-
-  const customizeGasSaveButton = await queryAsync($, '.send-v2__customize-gas__save')
-  customizeGasSaveButton[0].click()
-  const sendGasField = await queryAsync($, '.send-v2__gas-fee-display')
-
-  assert.equal(
-    (await findAsync(sendGasField, '.currency-display__input-wrapper > input')).val(),
-    ethFee,
-    'send gas field should show customized gas total'
-  )
-
-  assert.equal(
-    (await findAsync(sendGasField, '.currency-display__converted-value'))[0].textContent,
-    usdFee,
-    'send gas field should show customized gas total converted to USD'
-  )
-}
+// async function customizeGas (assert, price, limit, ethFee, usdFee) {
+//   const sendGasOpenCustomizeModalButton = await queryAsync($, '.sliders-icon-container')
+//   sendGasOpenCustomizeModalButton[0].click()
+//
+//   const customizeGasModal = await queryAsync($, '.send-v2__customize-gas')
+//   assert.ok(customizeGasModal[0], 'should render the customize gas modal')
+//
+//   const customizeGasPriceInput = (await queryAsync($, '.send-v2__gas-modal-card')).first().find('input')
+//   customizeGasPriceInput.val(price)
+//   reactTriggerChange(customizeGasPriceInput[0])
+//   const customizeGasLimitInput = (await queryAsync($, '.send-v2__gas-modal-card')).last().find('input')
+//   customizeGasLimitInput.val(limit)
+//   reactTriggerChange(customizeGasLimitInput[0])
+//
+//   const customizeGasSaveButton = await queryAsync($, '.send-v2__customize-gas__save')
+//   customizeGasSaveButton[0].click()
+//   const sendGasField = await queryAsync($, '.send-v2__gas-fee-display')
+//
+//   assert.equal(
+//     (await findAsync(sendGasField, '.currency-display__input-wrapper > input')).val(),
+//     ethFee,
+//     'send gas field should show customized gas total'
+//   )
+//
+//   assert.equal(
+//     (await findAsync(sendGasField, '.currency-display__converted-value'))[0].textContent,
+//     usdFee,
+//     'send gas field should show customized gas total converted to USD'
+//   )
+// }
 
 // async function runSendFlowTest (assert, done) {
 //   console.log('*** start runSendFlowTest')
