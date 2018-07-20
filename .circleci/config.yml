@@ -97,43 +97,43 @@ workflows:
 jobs:
   prep-deps-npm:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
-          name: Install npm 6 + deps via npm
-          command: |
-           sudo npm install -g npm@6.1.0 && npm install
+          name: Install deps via npm
+          command: npm install
       - save_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - save_cache:
+          key: dependency-cache-{{ .Revision }}
           paths:
             - node_modules
 
   prep-deps-firefox:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
-      - restore_cache:
-          key: dependency-cache-firefox-
       - run:
-          name: Download Firefox If needed
+          name: Download Firefox
           command: ./.circleci/scripts/firefox-download.sh
       - save_cache:
-          key: dependency-cache-firefox-
+          key: dependency-cache-firefox-{{ .Revision }}
           paths:
             - firefox
 
   prep-build:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: build:dist
           command: npm run dist
@@ -148,11 +148,11 @@ jobs:
 
   prep-docs:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: build:dist
           command: npm run doc
@@ -163,11 +163,11 @@ jobs:
 
   prep-scss:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: Get Scss Cache key
           # this allows us to checksum against a whole directory
@@ -182,33 +182,33 @@ jobs:
 
   test-lint:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: Test
           command: npm run lint
 
   test-deps:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: Test
           command: npx nsp check
 
   test-e2e-chrome:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - restore_cache:
           key: build-cache-{{ .Revision }}
       - run:
@@ -220,16 +220,16 @@ jobs:
 
   test-e2e-firefox:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-firefox-
+          key: dependency-cache-firefox-{{ .Revision }}
       - run:
           name: Install firefox
           command: ./.circleci/scripts/firefox-install.sh
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - restore_cache:
           key: build-cache-{{ .Revision }}
       - run:
@@ -241,11 +241,11 @@ jobs:
 
   test-e2e-beta-chrome:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - restore_cache:
           key: build-cache-{{ .Revision }}
       - run:
@@ -257,16 +257,16 @@ jobs:
 
   test-e2e-beta-firefox:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-firefox-
+          key: dependency-cache-firefox-{{ .Revision }}
       - run:
           name: Install firefox
           command: ./.circleci/scripts/firefox-install.sh
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - restore_cache:
           key: build-cache-{{ .Revision }}
       - run:
@@ -278,11 +278,11 @@ jobs:
 
   job-screens:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - restore_cache:
           key: build-cache-{{ .Revision }}
       - run:
@@ -295,11 +295,11 @@ jobs:
 
   job-publish-prerelease:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - restore_cache:
           key: build-cache-{{ .Revision }}
       - restore_cache:
@@ -322,11 +322,11 @@ jobs:
 
   job-publish-release:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - restore_cache:
           key: build-cache-{{ .Revision }}
       - restore_cache:
@@ -342,14 +342,13 @@ jobs:
             git config user.name metamaskbot
             git config user.email admin@metamask.io
             gh-pages -d docs/jsdocs
-
   test-unit:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: test:coverage
           command: npm run test:coverage
@@ -358,16 +357,16 @@ jobs:
     environment:
       browsers: '["Firefox"]'
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-firefox-
+          key: dependency-cache-firefox-{{ .Revision }}
       - run:
           name: Install firefox
           command: ./.circleci/scripts/firefox-install.sh
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: Get Scss Cache key
           # this allows us to checksum against a whole directory
@@ -382,11 +381,11 @@ jobs:
     environment:
       browsers: '["Chrome"]'
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: Get Scss Cache key
           # this allows us to checksum against a whole directory
@@ -401,16 +400,16 @@ jobs:
     environment:
       browsers: '["Firefox"]'
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-firefox-
+          key: dependency-cache-firefox-{{ .Revision }}
       - run:
           name: Install firefox
           command: ./.circleci/scripts/firefox-install.sh
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: Get Scss Cache key
           # this allows us to checksum against a whole directory
@@ -425,11 +424,11 @@ jobs:
     environment:
       browsers: '["Chrome"]'
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: Get Scss Cache key
           # this allows us to checksum against a whole directory
@@ -442,8 +441,8 @@ jobs:
 
   all-tests-pass:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - run:
           name: All Tests Passed
-          command: echo 'weew - everything passed!'
+command: echo 'weew - everything passed!'
