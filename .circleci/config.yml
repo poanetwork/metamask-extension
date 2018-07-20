@@ -365,8 +365,6 @@ jobs:
           command: ./.circleci/scripts/firefox-install.sh
       - restore_cache:
           key: dependency-cache-{{ .Revision }}
-      - restore_cache:
-          key: scss-cache-{{.Revision}}
       - run:
           name: test:integration:flat
           command: npm run test:flat
@@ -380,8 +378,6 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ .Revision }}
-      - restore_cache:
-          key: scss-cache-{{.Revision}}
       - run:
           name: test:integration:flat
           command: npm run test:flat
@@ -400,8 +396,6 @@ jobs:
           command: ./.circleci/scripts/firefox-install.sh
       - restore_cache:
           key: dependency-cache-{{ .Revision }}
-      - restore_cache:
-          key: scss-cache-{{.Revision}}
       - run:
           name: test:integration:mascara
           command: npm run test:mascara
@@ -415,8 +409,6 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ .Revision }}
-      - restore_cache:
-          key: scss-cache-{{.Revision}}
       - run:
           name: test:integration:mascara
           command: npm run test:mascara
