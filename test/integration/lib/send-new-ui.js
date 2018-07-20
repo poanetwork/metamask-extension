@@ -1,3 +1,4 @@
+/* eslint-disable */
 const reactTriggerChange = require('../../lib/react-trigger-change')
 const {
   timeout,

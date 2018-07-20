@@ -35,7 +35,6 @@ const {
 } = require('./lib/enums')
 
 const STORAGE_KEY = 'metamask-config'
-const METAMASK_DEBUG = process.env.METAMASK_DEBUG
 
 log.setDefaultLevel(process.env.METAMASK_DEBUG ? 'debug' : 'warn')
 
