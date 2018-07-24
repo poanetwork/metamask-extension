@@ -65,6 +65,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^1.0.0",
+    "quick.db": "^6.3.2",
     "abi-decoder": "^1.0.9",
     "asmcrypto.js": "0.22.0",
     "async": "^2.5.0",
