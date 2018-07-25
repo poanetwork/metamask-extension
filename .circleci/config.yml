@@ -25,9 +25,6 @@ workflows:
             - prep-build
             - job-screens
       - job-publish-release:
-          filters:
-            branches:
-              only: master
           requires:
             - prep-deps-npm
             - prep-build
