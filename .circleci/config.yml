@@ -39,13 +39,13 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - dependency-cache-
+            - dependency-cache-{{ .Revision }}
       - run:
           name: Install npm 6 + deps via npm
           command: |
            sudo npm install -g npm@6.1.0 && npm install
       - save_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
           paths:
             - node_modules
 
@@ -70,7 +70,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: build:dist
           command: npm run dist
@@ -89,7 +89,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: build:dist
           command: npm run doc
@@ -104,7 +104,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - run:
           name: Get Scss Cache key
           # this allows us to checksum against a whole directory
@@ -123,7 +123,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - restore_cache:
           key: build-cache-{{ .Revision }}
       - run:
@@ -140,7 +140,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - restore_cache:
           key: build-cache-{{ .Revision }}
       - restore_cache:
@@ -167,7 +167,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-
+          key: dependency-cache-{{ .Revision }}
       - restore_cache:
           key: build-cache-{{ .Revision }}
       - restore_cache:
