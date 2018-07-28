@@ -17,14 +17,14 @@ class TxGenerator {
   }
 
   generate (tx = {}, opts = {}) {
-    const { count, fromNonce } = opts
+    let { count, fromNonce } = opts
     let nonce = fromNonce || this.txs.length
-    const txs = []
+    let txs = []
     for (let i = 0; i < count; i++) {
       txs.push(extend(template, {
         txParams: {
           nonce: hexify(nonce++),
-        },
+        }
       }, tx))
     }
     this.txs = this.txs.concat(txs)

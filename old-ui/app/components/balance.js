@@ -16,9 +16,10 @@ function EthBalanceComponent () {
 EthBalanceComponent.prototype.render = function () {
   var props = this.props
   let { value } = props
-  const { style, width, network } = props
+  var style = props.style
   var needsParse = this.props.needsParse !== undefined ? this.props.needsParse : true
-  value = value ? formatBalance(value, 6, needsParse, network) : '...'
+  value = value ? formatBalance(value, 6, needsParse) : '...'
+  var width = props.width
 
   return (
 
@@ -82,7 +83,7 @@ EthBalanceComponent.prototype.renderBalance = function (value) {
         }, label),
       ]),
 
-      showFiat ? h(FiatValue, { value: props.value, network: props.network }) : null,
+      showFiat ? h(FiatValue, { value: props.value }) : null,
     ]))
   )
 }

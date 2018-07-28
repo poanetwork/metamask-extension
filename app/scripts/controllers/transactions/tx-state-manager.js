@@ -288,7 +288,6 @@ class TransactionStateManager extends EventEmitter {
   */
   setTxStatusRejected (txId) {
     this._setTxStatus(txId, 'rejected')
-    this._removeTx(txId)
   }
 
   /**
@@ -422,11 +421,6 @@ class TransactionStateManager extends EventEmitter {
   // Function is intended only for internal use
   _saveTxList (transactions) {
     this.store.updateState({ transactions })
-  }
-
-  _removeTx (txId) {
-    const transactionList = this.getFullTxList()
-    this._saveTxList(transactionList.filter((txMeta) => txMeta.id !== txId))
   }
 }
 

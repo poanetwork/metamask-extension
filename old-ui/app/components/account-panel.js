@@ -28,7 +28,7 @@ AccountPanel.prototype.render = function () {
         key: 'ADDRESS',
         value: addressSummary(identity.address),
       },
-      balanceOrFaucetingIndication(account, isFauceting, state.network),
+      balanceOrFaucetingIndication(account, isFauceting),
     ],
   }
 
@@ -69,7 +69,7 @@ AccountPanel.prototype.render = function () {
   )
 }
 
-function balanceOrFaucetingIndication (account, isFauceting, network) {
+function balanceOrFaucetingIndication (account, isFauceting) {
   // Temporarily deactivating isFauceting indication
   // because it shows fauceting for empty restored accounts.
   if (/* isFauceting*/ false) {
@@ -80,7 +80,7 @@ function balanceOrFaucetingIndication (account, isFauceting, network) {
   } else {
     return {
       key: 'BALANCE',
-      value: formatBalance(account.balance, undefined, undefined, network),
+      value: formatBalance(account.balance),
     }
   }
 }

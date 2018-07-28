@@ -54,8 +54,6 @@ function TxListItem () {
     fiatTotal: null,
     isTokenTx: null,
   }
-
-  this.unmounted = false
 }
 
 TxListItem.prototype.componentDidMount = async function () {
@@ -69,14 +67,7 @@ TxListItem.prototype.componentDidMount = async function () {
     ? await this.getSendTokenTotal()
     : this.getSendEtherTotal()
 
-  if (this.unmounted) {
-    return
-  }
   this.setState({ total, fiatTotal, isTokenTx })
-}
-
-TxListItem.prototype.componentWillUnmount = function () {
-  this.unmounted = true
 }
 
 TxListItem.prototype.getAddressText = function () {
@@ -307,16 +298,20 @@ TxListItem.prototype.render = function () {
         ]),
       ]),
 
-      this.showRetryButton() && h('.tx-list-item-retry-container', {
-        onClick: (event) => {
-          event.stopPropagation()
-          if (isTokenTx) {
-            this.setSelectedToken(txParams.to)
-          }
-          this.resubmit()
-        },
-      }, [
-        h('span', 'Taking too long? Increase the gas price on your transaction'),
+      this.showRetryButton() && h('div.tx-list-item-retry-container', [
+
+        h('span.tx-list-item-retry-copy', 'Taking too long?'),
+
+        h('span.tx-list-item-retry-link', {
+          onClick: (event) => {
+            event.stopPropagation()
+            if (isTokenTx) {
+              this.setSelectedToken(txParams.to)
+            }
+            this.resubmit()
+          },
+        }, 'Increase the gas price on your transaction'),
+
       ]),
 
     ]), // holding on icon from design

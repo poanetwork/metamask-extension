@@ -15,11 +15,10 @@ QUnit.test('renders localized currency', (assert) => {
   })
 })
 
-async function runCurrencyLocalizationTest (assert, done) {
+async function runCurrencyLocalizationTest(assert, done) {
   console.log('*** start runCurrencyLocalizationTest')
   const selectState = await queryAsync($, 'select')
   selectState.val('currency localization')
-  await timeout(1000)
   reactTriggerChange(selectState[0])
   await timeout(1000)
   const txView = await queryAsync($, '.tx-view')

@@ -102,10 +102,7 @@ function parseBalance (balance) {
 
 // Takes wei hex, returns an object with three properties.
 // Its "formatted" property is what we generally use to render values.
-function formatBalance (balance, decimalsToKeep, needsParse = true, network) {
-  const isSokol = parseInt(network) === 77
-  const isPOA = parseInt(network) === 99
-  const coinName = isPOA ? 'POA' : isSokol ? 'SPOA' : 'ETH'
+function formatBalance (balance, decimalsToKeep, needsParse = true) {
   var parsed = needsParse ? parseBalance(balance) : balance.split('.')
   var beforeDecimal = parsed[0]
   var afterDecimal = parsed[1]
@@ -115,14 +112,14 @@ function formatBalance (balance, decimalsToKeep, needsParse = true, network) {
       if (afterDecimal !== '0') {
         var sigFigs = afterDecimal.match(/^0*(.{2})/) // default: grabs 2 most significant digits
         if (sigFigs) { afterDecimal = sigFigs[0] }
-        formatted = '0.' + afterDecimal + ` ${coinName}`
+        formatted = '0.' + afterDecimal + ' ETH'
       }
     } else {
-      formatted = beforeDecimal + '.' + afterDecimal.slice(0, 3) + ` ${coinName}`
+      formatted = beforeDecimal + '.' + afterDecimal.slice(0, 3) + ' ETH'
     }
   } else {
     afterDecimal += Array(decimalsToKeep).join('0')
-    formatted = beforeDecimal + '.' + afterDecimal.slice(0, decimalsToKeep) + ` ${coinName}`
+    formatted = beforeDecimal + '.' + afterDecimal.slice(0, decimalsToKeep) + ' ETH'
   }
   return formatted
 }

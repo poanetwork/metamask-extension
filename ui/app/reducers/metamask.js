@@ -222,14 +222,6 @@ function reduceMetamask (state, action) {
         },
       })
 
-    case actions.UPDATE_SEND_HEX_DATA:
-      return extend(metamaskState, {
-        send: {
-          ...metamaskState.send,
-          data: action.value,
-        },
-      })
-
     case actions.UPDATE_SEND_FROM:
       return extend(metamaskState, {
         send: {

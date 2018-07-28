@@ -4,7 +4,7 @@ const inherits = require('util').inherits
 const connect = require('react-redux').connect
 const isNode = require('detect-node')
 const findDOMNode = require('react-dom').findDOMNode
-const jazzicon = require('rockicon')
+const jazzicon = require('jazzicon')
 const iconFactoryGen = require('../../lib/icon-factory')
 const iconFactory = iconFactoryGen(jazzicon)
 const { toDataUrl } = require('../../lib/blockies')
@@ -36,7 +36,6 @@ IdenticonComponent.prototype.render = function () {
         key: 'identicon-' + address,
         style: {
           display: 'flex',
-          flexShrink: 0,
           alignItems: 'center',
           justifyContent: 'center',
           height: diameter,

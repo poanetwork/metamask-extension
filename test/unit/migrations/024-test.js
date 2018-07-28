@@ -4,12 +4,13 @@ const firstTimeState = {
   meta: {},
   data: require('../../../app/scripts/first-time-state'),
 }
+const properTime = (new Date()).getTime()
 const storage = {
-  'meta': {},
-  'data': {
-    'TransactionController': {
-      'transactions': [
-      ],
+  "meta": {},
+  "data": {
+    "TransactionController": {
+      "transactions": [
+      ]
     },
   },
 }

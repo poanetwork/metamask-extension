@@ -16,16 +16,15 @@ class CurrencyController {
    * currentCurrency, conversionRate and conversionDate properties
    * @property {string} currentCurrency A 2-4 character shorthand that describes a specific currency, currently
    * selected by the user
-   * @property {number} conversionRate The conversion rate from ETH to the selected currency.
+   * @property {number} conversionRate The conversion rate from ETH to the selected currency. 
    * @property {string} conversionDate The date at which the conversion rate was set. Expressed in in milliseconds
-   * since midnight of January 1, 1970
+   * since midnight of January 1, 1970 
    * @property {number} conversionInterval The id of the interval created by the scheduleConversionInterval method.
    * Used to clear an existing interval on subsequent calls of that method.
    *
    */
   constructor (opts = {}) {
     const initState = extend({
-      currentCoin: 'poa',
       currentCurrency: 'usd',
       conversionRate: 0,
       conversionDate: 'N/A',
@@ -36,26 +35,6 @@ class CurrencyController {
   //
   // PUBLIC METHODS
   //
-
-  /**
-   * A getter for the currentCoin property
-   *
-   * @returns {string} A 2-4 character shorthand that describes a specific coin, related to the network
-   *
-   */
-  getCurrentCoin () {
-    return this.store.getState().currentCoin
-  }
-
-  /**
-   * A setter for the currentCoin property
-   *
-   * @param {string} currentCoin The new coin to set as the currentCoin in the store
-   *
-   */
-  setCurrentCoin (currentCoin) {
-    this.store.updateState({ currentCoin })
-  }
 
   /**
    * A getter for the currentCurrency property
@@ -80,7 +59,7 @@ class CurrencyController {
   /**
    * A getter for the conversionRate property
    *
-   * @returns {string} The conversion rate from current coin to the selected currency.
+   * @returns {string} The conversion rate from ETH to the selected currency. 
    *
    */
   getConversionRate () {
@@ -101,7 +80,7 @@ class CurrencyController {
    * A getter for the conversionDate property
    *
    * @returns {string} The date at which the conversion rate was set. Expressed in milliseconds since midnight of
-   * January 1, 1970
+   * January 1, 1970 
    *
    */
   getConversionDate () {
@@ -125,27 +104,15 @@ class CurrencyController {
    *
    */
   async updateConversionRate () {
-    let currentCurrency, currentCoin
+    let currentCurrency
     try {
       currentCurrency = this.getCurrentCurrency()
-      currentCoin = this.getCurrentCoin()
-      let conversionRate, conversionDate
-      if (currentCoin === 'poa') {
-        const coinId = await this.getCoinMarketCapId(currentCoin)
-        const response = await fetch(`https://api.coinmarketcap.com/v2/ticker/${coinId}/?convert=${currentCurrency.toLowerCase()}`)
-        const parsedResponse = await response.json()
-        conversionRate = Number(parsedResponse.data.quotes[currentCurrency.toUpperCase()].price)
-        conversionDate = Number(parsedResponse.metadata.timestamp)
-      } else {
-        const response = await fetch(`https://api.infura.io/v1/ticker/eth${currentCurrency.toLowerCase()}`)
-        const parsedResponse = await response.json()
-        conversionRate = Number(parsedResponse.bid)
-        conversionDate = Number(parsedResponse.timestamp)
-      }
-      this.setConversionRate(conversionRate)
-      this.setConversionDate(conversionDate)
+      const response = await fetch(`https://api.infura.io/v1/ticker/eth${currentCurrency.toLowerCase()}`)
+      const parsedResponse = await response.json()
+      this.setConversionRate(Number(parsedResponse.bid))
+      this.setConversionDate(Number(parsedResponse.timestamp))
     } catch (err) {
-      log.warn(`Nifty Wallet - Failed to query currency conversion:`, currentCoin, currentCurrency, err)
+      log.warn(`MetaMask - Failed to query currency conversion:`, currentCurrency, err)
       this.setConversionRate(0)
       this.setConversionDate('N/A')
     }
@@ -165,17 +132,6 @@ class CurrencyController {
       this.updateConversionRate()
     }, POLLING_INTERVAL)
   }
-
-  async getCoinMarketCapId (symbol) {
-    const response = await fetch(`https://api.coinmarketcap.com/v2/listings/`)
-    const parsedResponse = await response.json()
-    const results = parsedResponse.data.filter(coin => coin.symbol === symbol.toUpperCase())
-    if (!results.length) {
-      throw new Error(`Nifty Wallet - Failed to fetch ${symbol} from coinmarketcap listings`)
-    }
-    return results[0].id
-  }
-
 }
 
 module.exports = CurrencyController

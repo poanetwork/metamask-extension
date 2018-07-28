@@ -140,7 +140,7 @@ const addCurrencies = (a, b, options = {}) => {
     bBase,
     ...conversionOptions
   } = options
-  const value = (new BigNumber(a.toString(), aBase)).add(b.toString(), bBase)
+  const value = (new BigNumber(a, aBase)).add(b, bBase)
 
   return converter({
     value,

@@ -1,10 +1,12 @@
 const assert = require('assert')
 const NonceTracker = require('../../../../../app/scripts/controllers/transactions/nonce-tracker')
 const MockTxGen = require('../../../../lib/mock-tx-gen')
-const providerResultStub = {}
+let providerResultStub = {}
 
 describe('Nonce Tracker', function () {
-  let nonceTracker, pendingTxs, confirmedTxs
+  let nonceTracker, provider
+  let getPendingTransactions, pendingTxs
+  let getConfirmedTransactions, confirmedTxs
 
   describe('#getNonceLock', function () {
 
@@ -180,8 +182,8 @@ describe('Nonce Tracker', function () {
     describe('When all three return different values', function () {
       beforeEach(function () {
         const txGen = new MockTxGen()
-        confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 10 })
-        pendingTxs = txGen.generate({
+        const confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 10 })
+        const pendingTxs = txGen.generate({
           status: 'submitted',
           nonce: 100,
         }, { count: 1 })
@@ -200,8 +202,8 @@ describe('Nonce Tracker', function () {
     describe('Faq issue 67', function () {
       beforeEach(function () {
         const txGen = new MockTxGen()
-        confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 64 })
-        pendingTxs = txGen.generate({
+        const confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 64 })
+        const pendingTxs = txGen.generate({
           status: 'submitted',
         }, { count: 10 })
                                          // 0x40 is 64 in hex:

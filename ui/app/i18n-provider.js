@@ -8,11 +8,8 @@ const t = require('../i18n-helper').getMessage
 class I18nProvider extends Component {
   getChildContext () {
     const { localeMessages } = this.props
-    const { current, en } = localeMessages
     return {
-      t (key, ...args) {
-        return t(current, key, ...args) || t(en, key, ...args) || `[${key}]`
-      },
+      t: t.bind(null, localeMessages),
     }
   }
 

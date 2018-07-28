@@ -26,15 +26,13 @@ class NotificationManager {
         // bring focus to existing chrome popup
         extension.windows.update(popup.id, { focused: true })
       } else {
-        const cb = (currentPopup) => { this._popupId = currentPopup.id }
         // create new notification popup
-        const creation = extension.windows.create({
+        extension.windows.create({
           url: 'notification.html',
           type: 'popup',
           width,
           height,
-        }, cb)
-        creation && creation.then && creation.then(cb)
+        })
       }
     })
   }
@@ -86,7 +84,7 @@ class NotificationManager {
   }
 
   /**
-   * Given an array of windows, returns the 'popup' that has been opened by MetaMask, or null if no such window exists.
+   * Given an array of windows, returns the first that has a 'popup' type, or null if no such window exists.
    *
    * @private
    * @param {array} windows An array of objects containing data about the open MetaMask extension windows.
@@ -95,7 +93,7 @@ class NotificationManager {
   _getPopupIn (windows) {
     return windows ? windows.find((win) => {
       // Returns notification popup
-      return (win && win.type === 'popup' && win.id === this._popupId)
+      return (win && win.type === 'popup')
     }) : null
   }
 

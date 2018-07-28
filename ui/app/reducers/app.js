@@ -49,8 +49,6 @@ function reduceApp (state, action) {
       },
     },
     sidebarOpen: false,
-    alertOpen: false,
-    alertMessage: null,
     networkDropdownOpen: false,
     currentView: seedWords ? seedConfView : defaultView,
     accountDetail: {
@@ -64,7 +62,6 @@ function reduceApp (state, action) {
     warning: null,
     buyView: {},
     isMouseUser: false,
-    gasIsLoading: false,
   }, state.appState)
 
   switch (action.type) {
@@ -88,19 +85,6 @@ function reduceApp (state, action) {
     case actions.SIDEBAR_CLOSE:
       return extend(appState, {
         sidebarOpen: false,
-      })
-
-    // sidebar methods
-    case actions.ALERT_OPEN:
-      return extend(appState, {
-        alertOpen: true,
-        alertMessage: action.value,
-      })
-
-    case actions.ALERT_CLOSE:
-      return extend(appState, {
-        alertOpen: false,
-        alertMessage: null,
       })
 
     // modal methods:
@@ -192,15 +176,6 @@ function reduceApp (state, action) {
         currentView: {
           name: 'add-token',
           context: appState.currentView.context,
-        },
-        transForward: action.value,
-      })
-
-    case actions.SHOW_REMOVE_TOKEN_PAGE:
-      return extend(appState, {
-        currentView: {
-          name: 'remove-token',
-          context: action.token,
         },
         transForward: action.value,
       })
@@ -698,25 +673,6 @@ function reduceApp (state, action) {
     case actions.SET_MOUSE_USER_STATE:
       return extend(appState, {
         isMouseUser: action.value,
-      })
-
-    case actions.GAS_LOADING_STARTED:
-      return extend(appState, {
-        gasIsLoading: true,
-      })
-
-    case actions.GAS_LOADING_FINISHED:
-      return extend(appState, {
-        gasIsLoading: false,
-      })
-
-    case actions.SHOW_DELETE_RPC:
-      return extend(appState, {
-        currentView: {
-          name: 'delete-rpc',
-          context: appState.currentView.context,
-        },
-        transForward: action.value,
       })
 
     default:

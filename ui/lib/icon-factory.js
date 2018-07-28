@@ -2,7 +2,6 @@ var iconFactory
 const isValidAddress = require('ethereumjs-util').isValidAddress
 const { checksumAddress } = require('../app/util')
 const contractMap = require('eth-contract-metadata')
-const colors = require('../../colors')
 
 module.exports = function (jazzicon) {
   if (!iconFactory) {
@@ -12,7 +11,6 @@ module.exports = function (jazzicon) {
 }
 
 function IconFactory (jazzicon) {
-  jazzicon.setColorsPalette(colors)
   this.jazzicon = jazzicon
   this.cache = {}
 }

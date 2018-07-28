@@ -75,9 +75,6 @@ const withTokenTracker = WrappedComponent => {
     }
 
     updateBalance (tokens = []) {
-      if (!this.tracker.running) {
-        return
-      }
       const [{ string, symbol }] = tokens
       this.setState({ string, symbol, error: null })
     }

@@ -16,7 +16,8 @@ const selectors = {
   transactionsSelector,
   accountsWithSendEtherInfoSelector,
   getCurrentAccountWithSendEtherInfo,
-  getGasIsLoading,
+  getGasPrice,
+  getGasLimit,
   getForceGasMin,
   getAddressBook,
   getSendFrom,
@@ -27,7 +28,6 @@ const selectors = {
   autoAddToBetaUI,
   getSendMaxModeState,
   getCurrentViewContext,
-  getTotalUnapprovedCount,
 }
 
 module.exports = selectors
@@ -117,8 +117,12 @@ function transactionsSelector (state) {
       .sort((a, b) => b.time - a.time)
 }
 
-function getGasIsLoading (state) {
-  return state.appState.gasIsLoading
+function getGasPrice (state) {
+  return state.metamask.send.gasPrice
+}
+
+function getGasLimit (state) {
+  return state.metamask.send.gasLimit
 }
 
 function getForceGasMin (state) {
@@ -181,16 +185,4 @@ function autoAddToBetaUI (state) {
 function getCurrentViewContext (state) {
   const { currentView = {} } = state.appState
   return currentView.context
-}
-
-function getTotalUnapprovedCount ({ metamask }) {
-  const {
-    unapprovedTxs = {},
-    unapprovedMsgCount,
-    unapprovedPersonalMsgCount,
-    unapprovedTypedMessagesCount,
-  } = metamask
-
-  return Object.keys(unapprovedTxs).length + unapprovedMsgCount + unapprovedPersonalMsgCount +
-    unapprovedTypedMessagesCount
 }

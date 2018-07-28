@@ -51,10 +51,7 @@ TokenList.prototype.render = function () {
   const tokenViews = tokens.map((tokenData) => {
     tokenData.network = network
     tokenData.userAddress = userAddress
-    return h(TokenCell, {
-      ...tokenData,
-      removeToken: this.props.removeToken,
-    })
+    return h(TokenCell, tokenData)
   })
 
   return h('.full-flex-height', [

@@ -37,11 +37,11 @@ const dbController = new DbController({
 
 start().catch(log.error)
 
-async function start () {
-  log.debug('Nifty Wallet initializing...')
+async function start() {
+  log.debug('MetaMask initializing...')
   const initState = await loadStateFromPersistence()
   await setupController(initState)
-  log.debug('Nifty Wallet initialization complete.')
+  log.debug('MetaMask initialization complete.')
 }
 
 //

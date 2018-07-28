@@ -1,3 +1,5 @@
+const Helper = require('./util/mascara-test-helper.js')
+
 window.addEventListener('load', () => {
   window.METAMASK_SKIP_RELOAD = true
   // inject app container

@@ -36,7 +36,6 @@ module.exports = {
   miniAddressSummary: miniAddressSummary,
   isAllOneCase: isAllOneCase,
   isValidAddress: isValidAddress,
-  isValidENSAddress,
   numericBalance: numericBalance,
   parseBalance: parseBalance,
   formatBalance: formatBalance,
@@ -59,7 +58,6 @@ module.exports = {
   allNull,
   getTokenAddressFromTokenObject,
   checksumAddress,
-  addressSlicer,
 }
 
 function valuesFor (obj) {
@@ -87,10 +85,6 @@ function isValidAddress (address) {
   var prefixed = ethUtil.addHexPrefix(address)
   if (address === '0x0000000000000000000000000000000000000000') return false
   return (isAllOneCase(prefixed) && ethUtil.isValidAddress(prefixed)) || ethUtil.isValidChecksumAddress(prefixed)
-}
-
-function isValidENSAddress (address) {
-  return address.match(/^.{7,}\.(eth|test)$/)
 }
 
 function isInvalidChecksumAddress (address) {
@@ -303,12 +297,4 @@ function getTokenAddressFromTokenObject (token) {
  */
 function checksumAddress (address) {
   return address ? ethUtil.toChecksumAddress(address) : ''
-}
-
-function addressSlicer (address = '') {
-  if (address.length < 11) {
-    return address
-  }
-
-  return `${address.slice(0, 6)}...${address.slice(-4)}`
 }

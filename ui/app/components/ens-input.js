@@ -10,9 +10,8 @@ const networkMap = require('ethjs-ens/lib/network-map.json')
 const ensRE = /.+\..+$/
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const connect = require('react-redux').connect
-const ToAutoComplete = require('./send/to-autocomplete').default
+const ToAutoComplete = require('./send/to-autocomplete')
 const log = require('loglevel')
-const { isValidENSAddress } = require('../util')
 
 EnsInput.contextTypes = {
   t: PropTypes.func,
@@ -26,34 +25,31 @@ function EnsInput () {
   Component.call(this)
 }
 
-EnsInput.prototype.onChange = function (recipient) {
-  const network = this.props.network
-  const networkHasEnsSupport = getNetworkEnsSupport(network)
-
-  this.props.onChange({ toAddress: recipient })
-
-  if (!networkHasEnsSupport) return
-
-  if (recipient.match(ensRE) === null) {
-    return this.setState({
-      loadingEns: false,
-      ensResolution: null,
-      ensFailure: null,
-      toError: null,
-    })
-  }
-
-  this.setState({
-    loadingEns: true,
-  })
-  this.checkName(recipient)
-}
-
 EnsInput.prototype.render = function () {
   const props = this.props
   const opts = extend(props, {
     list: 'addresses',
-    onChange: this.onChange.bind(this),
+    onChange: (recipient) => {
+      const network = this.props.network
+      const networkHasEnsSupport = getNetworkEnsSupport(network)
+
+      props.onChange(recipient)
+
+      if (!networkHasEnsSupport) return
+
+      if (recipient.match(ensRE) === null) {
+        return this.setState({
+          loadingEns: false,
+          ensResolution: null,
+          ensFailure: null,
+        })
+      }
+
+      this.setState({
+        loadingEns: true,
+      })
+      this.checkName(recipient)
+    },
   })
   return h('div', {
     style: { width: '100%', position: 'relative' },
@@ -89,27 +85,17 @@ EnsInput.prototype.lookupEnsName = function (recipient) {
         nickname: recipient.trim(),
         hoverText: address + '\n' + this.context.t('clickCopy'),
         ensFailure: false,
-        toError: null,
       })
     }
   })
   .catch((reason) => {
-    const setStateObj = {
+    log.error(reason)
+    return this.setState({
       loadingEns: false,
-      ensResolution: recipient,
+      ensResolution: ZERO_ADDRESS,
       ensFailure: true,
-      toError: null,
-    }
-    if (isValidENSAddress(recipient) && reason.message === 'ENS name not defined.') {
-      setStateObj.hoverText = this.context.t('ensNameNotFound')
-      setStateObj.toError = 'ensNameNotFound'
-      setStateObj.ensFailure = false
-    } else {
-      log.error(reason)
-      setStateObj.hoverText = reason.message
-    }
-
-    return this.setState(setStateObj)
+      hoverText: reason.message,
+    })
   })
 }
 
@@ -119,14 +105,9 @@ EnsInput.prototype.componentDidUpdate = function (prevProps, prevState) {
   // If an address is sent without a nickname, meaning not from ENS or from
   // the user's own accounts, a default of a one-space string is used.
   const nickname = state.nickname || ' '
-  if (prevProps.network !== this.props.network) {
-    const provider = global.ethereumProvider
-    this.ens = new ENS({ provider, network: this.props.network })
-    this.onChange(ensResolution)
-  }
   if (prevState && ensResolution && this.props.onChange &&
       ensResolution !== prevState.ensResolution) {
-    this.props.onChange({ toAddress: ensResolution, nickname, toError: state.toError })
+    this.props.onChange(ensResolution, nickname)
   }
 }
 
@@ -143,9 +124,7 @@ EnsInput.prototype.ensIcon = function (recipient) {
 }
 
 EnsInput.prototype.ensIconContents = function (recipient) {
-  const { loadingEns, ensFailure, ensResolution, toError } = this.state || { ensResolution: ZERO_ADDRESS }
-
-  if (toError) return
+  const { loadingEns, ensFailure, ensResolution } = this.state || { ensResolution: ZERO_ADDRESS}
 
   if (loadingEns) {
     return h('img', {

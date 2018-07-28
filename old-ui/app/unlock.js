@@ -6,7 +6,7 @@ const actions = require('../../ui/app/actions')
 const getCaretCoordinates = require('textarea-caret')
 const EventEmitter = require('events').EventEmitter
 
-// const Mascot = require('./components/mascot')
+const Mascot = require('./components/mascot')
 
 module.exports = connect(mapStateToProps)(UnlockScreen)
 
@@ -33,19 +33,17 @@ UnlockScreen.prototype.render = function () {
     }, [
       h('.unlock-screen.flex-column.flex-center.flex-grow', [
 
-        // disable fox's animation
-        /* h(Mascot, {
+        h(Mascot, {
           animationEventEmitter: this.animationEventEmitter,
-        }),*/
+        }),
 
         h('h1', {
           style: {
-            paddingTop: '50px',
             fontSize: '1.4em',
             textTransform: 'uppercase',
             color: '#7F8082',
           },
-        }, 'Nifty Wallet'),
+        }, 'MetaMask'),
 
         h('input.large-input', {
           type: 'password',

@@ -31,7 +31,7 @@ ConfigScreen.prototype.render = function () {
 
   return (
     h('.flex-column.flex-grow', {
-      style: {
+      style:{
         maxHeight: '585px',
         overflowY: 'auto',
       },
@@ -66,7 +66,7 @@ ConfigScreen.prototype.render = function () {
           },
         }, [
 
-          currentProviderDisplay(metamaskState, state),
+          currentProviderDisplay(metamaskState),
 
           h('div', { style: {display: 'flex'} }, [
             h('input#new_rpc', {
@@ -125,7 +125,7 @@ ConfigScreen.prototype.render = function () {
                   if (err) {
                     state.dispatch(actions.displayWarning('Error in retrieving state logs.'))
                   } else {
-                    exportAsFile('Nifty Wallet State Logs.json', result)
+                    exportAsFile('MetaMask State Logs.json', result)
                   }
                 })
               },
@@ -223,7 +223,7 @@ function currentConversionInformation (metamaskState, state) {
   ])
 }
 
-function currentProviderDisplay (metamaskState, state) {
+function currentProviderDisplay (metamaskState) {
   var provider = metamaskState.provider
   var title, value
 
@@ -232,11 +232,6 @@ function currentProviderDisplay (metamaskState, state) {
     case 'mainnet':
       title = 'Current Network'
       value = 'Main Ethereum Network'
-      break
-
-    case 'sokol':
-      title = 'Current Network'
-      value = 'POA Sokol Test Network'
       break
 
     case 'ropsten':
@@ -254,11 +249,6 @@ function currentProviderDisplay (metamaskState, state) {
       value = 'Rinkeby Test Network'
       break
 
-    case 'poa':
-      title = 'Current Network'
-      value = 'POA Network'
-      break
-
     default:
       title = 'Current RPC'
       value = metamaskState.provider.rpcTarget
@@ -267,11 +257,5 @@ function currentProviderDisplay (metamaskState, state) {
   return h('div', [
     h('span', {style: { fontWeight: 'bold', paddingRight: '10px'}}, title),
     h('span', value),
-    provider.type === 'rpc' && h('button', {
-      onClick (event) {
-        event.preventDefault()
-        state.dispatch(actions.showDeleteRPC())
-      },
-    }, 'Delete'),
   ])
 }

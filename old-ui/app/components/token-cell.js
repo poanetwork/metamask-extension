@@ -31,14 +31,6 @@ TokenCell.prototype.render = function () {
 
       h('span', { style: { flex: '1 0 auto' } }),
 
-      h('span.fa.fa-trash', {
-        style: { cursor: 'pointer' },
-        onClick: (event) => {
-          event.stopPropagation()
-          this.props.removeToken({ address, symbol, string, network, userAddress })
-        },
-      }, ''),
-
       /*
       h('button', {
         onClick: this.send.bind(this, address),

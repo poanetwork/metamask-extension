@@ -4,8 +4,7 @@
 
 .btn-default,
 .btn-primary,
-.btn-secondary,
-.btn-confirm {
+.btn-secondary {
   height: 44px;
   background: $white;
   display: flex;
@@ -14,14 +13,13 @@
   box-sizing: border-box;
   border-radius: 4px;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
   transition: border-color .3s ease;
   padding: 0 16px;
   min-width: 140px;
   width: 100%;
   text-transform: uppercase;
   outline: none;
-  font-family: Roboto;
 
   &--disabled,
   &[disabled] {
@@ -73,12 +71,6 @@
   }
 }
 
-.btn-confirm {
-  color: $white;
-  border: 2px solid $curious-blue;
-  background-color: $curious-blue;
-}
-
 .btn--large {
   height: 54px;
 }
@@ -125,6 +117,19 @@
   &:hover {
     border-color: $scorpion;
   }
+}
+
+.btn-confirm {
+  background-color: $caribbean-green; // TODO: reusable color in colors.css
+  text-align: center;
+  padding: .8rem 1rem;
+  color: $white;
+  border: 2px solid $caribbean-green;
+  border-radius: 4px;
+  font-size: .85rem;
+  font-weight: 400;
+  transition: border-color .3s ease;
+  width: 100%;
 }
 
 // No longer used in flat design, remove when modal buttons done

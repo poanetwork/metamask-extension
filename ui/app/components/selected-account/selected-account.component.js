@@ -1,9 +1,16 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import copyToClipboard from 'copy-to-clipboard'
-import { addressSlicer } from '../../util'
 
 const Tooltip = require('../tooltip-v2.js')
+
+const addressStripper = (address = '') => {
+  if (address.length < 4) {
+    return address
+  }
+
+  return `${address.slice(0, 4)}...${address.slice(-4)}`
+}
 
 class SelectedAccount extends Component {
   state = {
@@ -41,7 +48,7 @@ class SelectedAccount extends Component {
               { selectedIdentity.name }
             </div>
             <div className="selected-account__address">
-              { addressSlicer(selectedAddress) }
+              { addressStripper(selectedAddress) }
             </div>
           </div>
         </Tooltip>

@@ -76,68 +76,60 @@ workflows:
           requires:
             - prep-deps-npm
             - prep-build
-#           - all-tests-pass
+            - all-tests-pass
       - job-publish-prerelease:
           requires:
             - prep-deps-npm
             - prep-build
             - job-screens
-#           - all-tests-pass
+            - all-tests-pass
       - job-publish-release:
           filters:
-             branches:
-               only: master
+            branches:
+              only: master
           requires:
             - prep-deps-npm
             - prep-build
             - prep-docs
             - job-screens
-#           - all-tests-pass
-      - job-publish-postrelease:
-                filters:
-                  branches:
-                    only: master
-                requires:
-                  - prep-deps-npm
-                  - prep-build
-                  - prep-docs
-                  - job-screens
-#                 - all-tests-pass
+            - all-tests-pass
 
 jobs:
   prep-deps-npm:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ .Revision }}
       - run:
-          name: Install npm 6 + deps via npm
-          command: |
-           sudo npm install -g npm@6.1.0 && npm install --no-save
+          name: Install deps via npm
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
       - save_cache:
           key: dependency-cache-{{ .Revision }}
           paths:
             - node_modules
+
   prep-deps-firefox:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
-      - restore_cache:
-          key: v1.0-dependency-cache-firefox-
       - run:
           name: Download Firefox
           command: ./.circleci/scripts/firefox-download.sh
       - save_cache:
-          key: v1.0-dependency-cache-firefox-
+          key: dependency-cache-firefox-{{ .Revision }}
           paths:
             - firefox
 
   prep-build:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -156,7 +148,7 @@ jobs:
 
   prep-docs:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -171,7 +163,7 @@ jobs:
 
   prep-scss:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -190,7 +182,7 @@ jobs:
 
   test-lint:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -201,7 +193,7 @@ jobs:
 
   test-deps:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -212,7 +204,7 @@ jobs:
 
   test-e2e-chrome:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -228,11 +220,11 @@ jobs:
 
   test-e2e-firefox:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: v1.0-dependency-cache-firefox-
+          key: dependency-cache-firefox-{{ .Revision }}
       - run:
           name: Install firefox
           command: ./.circleci/scripts/firefox-install.sh
@@ -249,7 +241,7 @@ jobs:
 
   test-e2e-beta-chrome:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -265,11 +257,11 @@ jobs:
 
   test-e2e-beta-firefox:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: v1.0-dependency-cache-firefox-
+          key: dependency-cache-firefox-{{ .Revision }}
       - run:
           name: Install firefox
           command: ./.circleci/scripts/firefox-install.sh
@@ -286,7 +278,7 @@ jobs:
 
   job-screens:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -303,7 +295,7 @@ jobs:
 
   job-publish-prerelease:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -330,43 +322,30 @@ jobs:
 
   job-publish-release:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
-     - checkout
-     - restore_cache:
-        key: dependency-cache-{{ .Revision }}
-     - restore_cache:
-        key: build-cache-{{ .Revision }}
-     - run:
-         name: build:release
-         command: node ./development/publish-release.js
-
-  job-publish-postrelease:
-      docker:
-        - image: circleci/node:8.11.3-browsers
-      steps:
-        - checkout
-        - restore_cache:
-            key: dependency-cache-{{ .Revision }}
-        - restore_cache:
-            key: build-cache-{{ .Revision }}
-        - restore_cache:
-            key: docs-cache-{{ .Revision }}
-        - restore_cache:
-            key: job-screens-{{ .Revision }}
-        - run:
-            name: sentry sourcemaps upload
-            command: npm run sentry:publish
-        - run:
-            name: github gh-pages docs publish
-            command: >
-              git config user.name metamaskbot
-              git config user.email admin@metamask.io
-              gh-pages -d docs/jsdocs
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ .Revision }}
+      - restore_cache:
+          key: build-cache-{{ .Revision }}
+      - restore_cache:
+          key: docs-cache-{{ .Revision }}
+      - restore_cache:
+          key: job-screens-{{ .Revision }}
+      - run:
+          name: sentry sourcemaps upload
+          command: npm run sentry:publish
+      - run:
+          name: github gh-pages docs publish
+          command: >
+            git config user.name metamaskbot
+            git config user.email admin@metamask.io
+            gh-pages -d docs/jsdocs
 
   test-unit:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -379,11 +358,11 @@ jobs:
     environment:
       browsers: '["Firefox"]'
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: v1.0-dependency-cache-firefox-
+          key: dependency-cache-firefox-{{ .Revision }}
       - run:
           name: Install firefox
           command: ./.circleci/scripts/firefox-install.sh
@@ -403,7 +382,7 @@ jobs:
     environment:
       browsers: '["Chrome"]'
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -422,11 +401,11 @@ jobs:
     environment:
       browsers: '["Firefox"]'
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
-          key: v1.0-dependency-cache-firefox-
+          key: dependency-cache-firefox-{{ .Revision }}
       - run:
           name: Install firefox
           command: ./.circleci/scripts/firefox-install.sh
@@ -446,7 +425,7 @@ jobs:
     environment:
       browsers: '["Chrome"]'
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - restore_cache:
@@ -463,7 +442,7 @@ jobs:
 
   all-tests-pass:
     docker:
-      - image: circleci/node:8.11.3-browsers
+      - image: circleci/node:8-browsers
     steps:
       - run:
           name: All Tests Passed

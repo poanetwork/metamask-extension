@@ -4,14 +4,13 @@ import PropTypes from 'prop-types'
 export default class PageContainerHeader extends Component {
 
   static propTypes = {
-    title: PropTypes.string,
+    title: PropTypes.string.isRequired,
     subtitle: PropTypes.string,
     onClose: PropTypes.func,
     showBackButton: PropTypes.bool,
     onBackButtonClick: PropTypes.func,
     backButtonStyles: PropTypes.object,
     backButtonString: PropTypes.string,
-    children: PropTypes.node,
   };
 
   renderHeaderRow () {
@@ -31,33 +30,25 @@ export default class PageContainerHeader extends Component {
   }
 
   render () {
-    const { title, subtitle, onClose, children } = this.props
+    const { title, subtitle, onClose } = this.props
 
     return (
       <div className="page-container__header">
 
         { this.renderHeaderRow() }
 
-        { children }
+        <div className="page-container__title">
+          {title}
+        </div>
 
-        {
-          title && <div className="page-container__title">
-            { title }
-          </div>
-        }
+        <div className="page-container__subtitle">
+          {subtitle}
+        </div>
 
-        {
-          subtitle && <div className="page-container__subtitle">
-            { subtitle }
-          </div>
-        }
-
-        {
-          onClose && <div
-            className="page-container__header-close"
-            onClick={() => onClose()}
-          />
-        }
+        <div
+          className="page-container__header-close"
+          onClick={() => onClose()}
+        />
 
       </div>
     )

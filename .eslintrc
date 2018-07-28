@@ -37,9 +37,7 @@
     "document": false,
     "navigator": false,
     "web3": true,
-    "window": false,
-    "$": false,
-    "QUnit": false
+    "window": false
   },
 
   "rules": {
@@ -161,6 +159,5 @@
     "yield-star-spacing": [2, "both"],
     "yoda": [2, "never"],
     "prefer-const": 1,
-    "mocha/no-exclusive-tests": "error"
   }
 }

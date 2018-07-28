@@ -142,12 +142,6 @@ class Settings extends Component {
         color = '#ebb33f'
         break
 
-      case 'poa':
-        title = this.context.t('currentNetwork')
-        value = this.context.t('poa')
-        color = '#5c34a2'
-        break
-
       default:
         title = this.context.t('currentRpc')
         value = provider.rpcTarget
@@ -229,7 +223,7 @@ class Settings extends Component {
                   if (err) {
                     this.state.dispatch(actions.displayWarning(this.context.t('stateLogError')))
                   } else {
-                    exportAsFile('Nifty Wallet State Logs.json', result)
+                    exportAsFile('MetaMask State Logs.json', result)
                   }
                 })
               },
