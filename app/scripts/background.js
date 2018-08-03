@@ -21,6 +21,7 @@ const NotificationManager = require('./lib/notification-manager.js')
 const MetamaskController = require('./metamask-controller')
 const firstTimeState = require('./first-time-state')
 const setupRaven = require('./lib/setupRaven')
+const setupRollbar = require('./lib/setupRollbar')
 const reportFailedTxToSentry = require('./lib/reportFailedTxToSentry')
 const setupMetamaskMeshMetrics = require('./lib/setupMetamaskMeshMetrics')
 const EdgeEncryptor = require('./edge-encryptor')
@@ -46,6 +47,10 @@ global.METAMASK_NOTIFIER = notificationManager
 // setup sentry error reporting
 const releaseVersion = platform.getVersion()
 const raven = setupRaven({ releaseVersion })
+const rollbar = setupRollbar()
+
+console.log("FDGGDKFGJFDGJFDK")
+rollbar.log("Hello world!");
 
 // browser check if it is Edge - https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
 // Internet Explorer 6-11

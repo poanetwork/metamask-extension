@@ -10,6 +10,7 @@ const ExtensionPlatform = require('./platforms/extension')
 const NotificationManager = require('./lib/notification-manager')
 const notificationManager = new NotificationManager()
 const setupRaven = require('./lib/setupRaven')
+const setupRollbar = require('./lib/setupRollbar')
 const log = require('loglevel')
 
 start().catch(log.error)
@@ -22,6 +23,9 @@ async function start () {
   // setup sentry error reporting
   const release = global.platform.getVersion()
   setupRaven({ release })
+  const rollbar = setupRollbar()
+
+  rollbar.log("Hello world!");
 
   // inject css
   // const css = MetaMaskUiCss()

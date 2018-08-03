@@ -85,6 +85,12 @@ createCopyTasks('html', {
   pattern: '/*.html',
   destinations: commonPlatforms.map(platform => `./dist/${platform}`),
 })
+createCopyTasks('js', {
+  source: './app/',
+  pattern: '/*.js',
+  destinations: commonPlatforms.map(platform => `./dist/${platform}`),
+})
+
 
 // copy extension
 
