@@ -213,9 +213,9 @@ describe('Metamask popup page', async function () {
     let fieldOldPassword
     let buttonYes
 
-    describe('check screen "Change password" ', async () => {
+    describe('check screen "Settings" -> "Change password" ', async () => {
 
-      it('checks if  "Settings" -> "Change password" button is present and enabled', async () => {
+      it('checks if "Change password" button is present and enabled', async () => {
         await driver.findElement(By.css(sandwichMenuSelectors.Menu)).click()
         await delay(500)
         await driver.findElement(By.css(sandwichMenuSelectors.Settings)).click()
@@ -225,14 +225,14 @@ describe('Metamask popup page', async function () {
         assert.equal(await buttons[0].isEnabled(), true, 'Button "Change password" is disabled')
       })
 
-      it('"Change password" screen contains correct title', async () => {
+      it('screen contains correct title', async () => {
         const button = await driver.findElement(By.css(buttonChangePassword))
         await button.click()
         const title = await driver.findElement(By.className('page-subtitle'))
         assert.equal(await title.getText(), titlesOfScreensSelectors.ChangePassword, '"Change password" screen contains incorrect title')
       })
 
-      it('"Change password" screen contains correct label', async () => {
+      it('screen contains correct label', async () => {
         const labels = await driver.findElements(By.className(screenChangePassword.ByClassName.label))
         assert.equal(labels.length, 1, 'screen "Change password" doesn\'t contain label')
         assert.equal(await labels[0].getText(), screenChangePassword.labelText, 'label contains incorrect title')
@@ -258,7 +258,7 @@ describe('Metamask popup page', async function () {
         buttonYes = await driver.findElement(By.css(screenChangePassword.ByCss.buttonYes))
       })
 
-      it('Error if new password shorter than 8 digits  ', async () => {
+      it('error if new password shorter than 8 digits', async () => {
         await fieldNewPassword.sendKeys(newPassword.short)
         await fieldConfirmNewPassword.sendKeys(newPassword.short)
         await buttonYes.click()
@@ -267,7 +267,7 @@ describe('Metamask popup page', async function () {
         assert.equal(await errors[0].getText(), screenChangePassword.error.notLong, 'Error\'s text incorrect')
       })
 
-      it('Error if new password  doesn\'t match confirmation  ', async () => {
+      it('error if new password  doesn\'t match confirmation', async () => {
         await clearField(fieldNewPassword)
         await clearField(fieldConfirmNewPassword)
         await fieldNewPassword.sendKeys(newPassword.correct)
@@ -278,7 +278,7 @@ describe('Metamask popup page', async function () {
         assert.equal(await errors[0].getText(), screenChangePassword.error.dontMatch, 'Error\'s text incorrect')
       })
 
-      it('Error if new password match old password ', async () => {
+      it('error if new password match old password', async () => {
         await clearField(fieldNewPassword)
         await clearField(fieldConfirmNewPassword)
         await fieldNewPassword.sendKeys(password)
@@ -289,7 +289,7 @@ describe('Metamask popup page', async function () {
         assert.equal(await errors[0].getText(), screenChangePassword.error.differ, 'Error\'s text incorrect')
       })
 
-      it.skip('Error if old password incorrect ', async () => {
+      it.skip('error if old password incorrect ', async () => {
         await clearField(fieldOldPassword)
         await fieldOldPassword.sendKeys(newPassword.incorrect)
         await buttonYes.click()
@@ -298,7 +298,7 @@ describe('Metamask popup page', async function () {
         assert.equal(await errors[0].getText(), screenChangePassword.error.incorrectPassword, 'Error\'s text incorrect')
       })
 
-      it('No errors if old, new, confirm new passwords are correct; user can change password ', async () => {
+      it('no errors if old, new, confirm new passwords are correct; user can change password', async () => {
         await clearField(fieldNewPassword)
         await clearField(fieldOldPassword)
         await clearField(fieldConfirmNewPassword)
@@ -315,7 +315,7 @@ describe('Metamask popup page', async function () {
       })
     })
 
-    describe('check if new password is accepted', async () => {
+    describe('Check if new password is accepted', async () => {
 
       it('user can log out', async () => {
         await driver.findElement(By.css(sandwichMenuSelectors.Menu)).click()
