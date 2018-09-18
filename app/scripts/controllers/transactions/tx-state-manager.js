@@ -107,7 +107,7 @@ class TransactionStateManager extends EventEmitter {
     Adds the txMeta to the list of transactions in the store.
     if the list is over txHistoryLimit it will remove a transaction that
     is in its final state
-    it will allso add the key `history` to the txMeta with the snap shot of the original
+    it will also add the key `history` to the txMeta with the snap shot of the original
     object
     @param txMeta {Object}
     @returns {object} the txMeta

@@ -5,6 +5,7 @@ const connect = require('react-redux').connect
 const actions = require('../../ui/app/actions')
 const log = require('loglevel')
 const EventEmitter = require('events').EventEmitter
+import { DEFAULT_ROUTE } from '../../ui/app/routes'
 
 module.exports = connect(mapStateToProps)(UnlockScreen)
 
@@ -90,10 +91,12 @@ UnlockScreen.prototype.componentWillUnmount = function () {
 }
 
 UnlockScreen.prototype.onSubmit = async function (event) {
+  const { history } = this.props
   const input = document.getElementById('password-box')
   const password = input.value
   try {
     await this.props.dispatch(actions.tryUnlockMetamask(password))
+    history.push(DEFAULT_ROUTE)
   } catch (e) {
     log.error(e)
   }

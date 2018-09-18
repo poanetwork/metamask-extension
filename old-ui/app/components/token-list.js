@@ -98,7 +98,7 @@ TokenList.prototype.render = function () {
 
 TokenList.prototype.renderTokenStatusBar = function () {
   const { tokens } = this.state
-  const { network } = this.props
+  const { network, history } = this.props
   const tokensFromCurrentNetwork = tokens.filter(token => (parseInt(token.network) === parseInt(network) || !token.network))
 
   let msg

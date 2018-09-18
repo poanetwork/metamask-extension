@@ -1,6 +1,8 @@
 const inherits = require('util').inherits
 const Component = require('react').Component
 const connect = require('react-redux').connect
+const { Route, Switch, withRouter } = require('react-router-dom')
+const { compose } = require('recompose')
 const h = require('react-hyperscript')
 const actions = require('../../ui/app/actions')
 const log = require('loglevel')
@@ -21,7 +23,7 @@ const NoticeScreen = require('./components/notice')
 const generateLostAccountsNotice = require('../lib/lost-accounts-notice')
 // other views
 const ConfigScreen = require('./config')
-const AddTokenScreen = require('./components/add-token.js')
+const AddTokenScreen = require('./components/add-token')
 const ConfirmAddTokenScreen = require('./components/confirm-add-token')
 const RemoveTokenScreen = require('./remove-token')
 const Import = require('./accounts/import')
@@ -41,7 +43,15 @@ const DeleteImportedAccount = require('./components/delete-imported-account')
 const ConfirmChangePassword = require('./components/confirm-change-password')
 const ethNetProps = require('eth-net-props')
 
-module.exports = connect(mapStateToProps)(App)
+const Authenticated = require('../../ui/app/components/pages/authenticated')
+const Initialized = require('../../ui/app/components/pages/initialized')
+const Home = require('../../ui/app/components/pages/home')
+const CreateAccountPage = require('../../ui/app/components/pages/create-account')
+
+module.exports = compose(
+  withRouter,
+  connect(mapStateToProps)
+)(App)
 
 inherits(App, Component)
 function App () { Component.call(this) }
@@ -89,6 +99,22 @@ function mapStateToProps (state) {
     keyrings,
   }
 }
+
+// Routes
+const {
+  DEFAULT_ROUTE,
+  UNLOCK_ROUTE,
+  SETTINGS_ROUTE,
+  REVEAL_SEED_ROUTE,
+  RESTORE_VAULT_ROUTE,
+  ADD_TOKEN_ROUTE,
+  CONFIRM_ADD_TOKEN_ROUTE,
+  NEW_ACCOUNT_ROUTE,
+  SEND_ROUTE,
+  CONFIRM_TRANSACTION_ROUTE,
+  INITIALIZE_ROUTE,
+  NOTICE_ROUTE,
+} = require('../../ui/app/routes')
 
 App.prototype.render = function () {
   var props = this.props
@@ -395,7 +421,7 @@ App.prototype.renderNetworkDropdown = function () {
       DropdownMenuItem,
       {
         closeMenu: () => this.setState({ isNetworkMenuOpen: !isOpen }),
-        onClick: () => this.props.dispatch(actions.showConfigPage()),
+        onClick: () => this.props.history.push(SETTINGS_ROUTE),//this.props.dispatch(actions.showConfigPage()),
         style: {
           paddingLeft: '20px',
           fontSize: '16px',
@@ -495,178 +521,199 @@ App.prototype.renderBackButton = function (style, justArrow = false) {
 }
 
 App.prototype.renderPrimary = function () {
-  log.debug('rendering primary')
-  var props = this.props
-  const {isMascara, isOnboarding} = props
+  // log.debug('rendering primary')
+  // var props = this.props
+  // const {isMascara, isOnboarding} = props
 
-  if (isMascara && isOnboarding) {
-    return h(MascaraFirstTime)
-  }
+  // if (isMascara && isOnboarding) {
+  //   return h(MascaraFirstTime)
+  // }
 
-  // notices
-  if (!props.noActiveNotices) {
-    log.debug('rendering notice screen for unread notices.')
-    return h('div', {
-      style: { width: '100%' },
-    }, [
+  // // notices
+  // if (!props.noActiveNotices) {
+  //   log.debug('rendering notice screen for unread notices.')
+  //   return h('div', {
+  //     style: { width: '100%' },
+  //   }, [
 
-      h(NoticeScreen, {
-        notice: props.nextUnreadNotice,
-        key: 'NoticeScreen',
-        onConfirm: () => props.dispatch(actions.markNoticeRead(props.nextUnreadNotice)),
+  //     h(NoticeScreen, {
+  //       notice: props.nextUnreadNotice,
+  //       key: 'NoticeScreen',
+  //       onConfirm: () => props.dispatch(actions.markNoticeRead(props.nextUnreadNotice)),
+  //     }),
+
+  //   ])
+  // } else if (props.lostAccounts && props.lostAccounts.length > 0) {
+  //   log.debug('rendering notice screen for lost accounts view.')
+  //   return h(NoticeScreen, {
+  //     notice: generateLostAccountsNotice(props.lostAccounts),
+  //     key: 'LostAccountsNotice',
+  //     onConfirm: () => props.dispatch(actions.markAccountsFound()),
+  //   })
+  // }
+
+  // // show initialize screen
+  // if (!props.isInitialized || props.forgottenPassword) {
+  //   // show current view
+  //   log.debug('rendering an initialize screen')
+  //   switch (props.currentView.name) {
+
+  //     case 'restoreVault':
+  //       log.debug('rendering restore vault screen')
+  //       return h(HDRestoreVaultScreen, {key: 'HDRestoreVaultScreen'})
+
+  //     default:
+  //       log.debug('rendering menu screen')
+  //       return h(InitializeMenuScreen, {key: 'menuScreenInit'})
+  //   }
+  // }
+
+  // // show unlock screen
+  // if (!props.isUnlocked) {
+  //   switch (props.currentView.name) {
+
+  //     case 'restoreVault':
+  //       log.debug('rendering restore vault screen')
+  //       return h(HDRestoreVaultScreen, {key: 'HDRestoreVaultScreen'})
+
+  //     case 'config':
+  //       log.debug('rendering config screen from unlock screen.')
+  //       return h(ConfigScreen, {key: 'config'})
+
+  //     default:
+  //       log.debug('rendering locked screen')
+  //       return h(UnlockScreen, {key: 'locked'})
+  //   }
+  // }
+
+  // // show seed words screen
+  // if (props.seedWords) {
+  //   log.debug('rendering seed words')
+  //   return h(HDCreateVaultComplete, {key: 'HDCreateVaultComplete'})
+  // }
+
+  // // show current view
+  // switch (props.currentView.name) {
+
+  //   case 'accountDetail':
+  //     log.debug('rendering account detail screen')
+  //     return h(AccountDetailScreen, {key: 'account-detail'})
+
+  //   case 'sendTransaction':
+  //     log.debug('rendering send tx screen')
+  //     return h(SendTransactionScreen, {key: 'send-transaction'})
+
+  //   case 'newKeychain':
+  //     log.debug('rendering new keychain screen')
+  //     return h(NewKeyChainScreen, {key: 'new-keychain'})
+
+  //   case 'confTx':
+  //     log.debug('rendering confirm tx screen')
+  //     return h(ConfirmTxScreen, {key: 'confirm-tx'})
+
+  //   case 'add-token':
+  //     log.debug('rendering add-token screen from unlock screen.')
+  //     return h(AddTokenScreen, {key: 'add-token'})
+
+  //   // case 'confirm-add-token':
+  //   //   log.debug('rendering confirm-add-token screen from unlock screen.')
+  //   //   return h(ConfirmAddTokenScreen, {key: 'confirm-add-token'})
+
+  //   case 'remove-token':
+  //     log.debug('rendering remove-token screen from unlock screen.')
+  //     return h(RemoveTokenScreen, {key: 'remove-token', ...props.currentView.context })
+
+  //   case 'config':
+  //     log.debug('rendering config screen')
+  //     return h(ConfigScreen, {key: 'config'})
+
+  //   case 'import-menu':
+  //     log.debug('rendering import screen')
+  //     return h(Import, {key: 'import-menu'})
+
+  //   case 'reveal-seed-conf':
+  //     log.debug('rendering reveal seed confirmation screen')
+  //     return h(RevealSeedConfirmation, {key: 'reveal-seed-conf'})
+
+  //   case 'info':
+  //     log.debug('rendering info screen')
+  //     return h(InfoScreen, {key: 'info'})
+
+  //   case 'buyEth':
+  //     log.debug('rendering buy ether screen')
+  //     return h(BuyView, {key: 'buyEthView'})
+
+  //   case 'onboardingBuyEth':
+  //     log.debug('rendering onboarding buy ether screen')
+  //     return h(MascaraBuyEtherScreen, {key: 'buyEthView'})
+
+  //   case 'qr':
+  //     log.debug('rendering show qr screen')
+  //     return h('div', {
+  //       style: {
+  //         height: '100%',
+  //         top: '0px',
+  //         left: '0px',
+  //         width: '100%',
+  //       },
+  //     }, [
+  //       h('.section-title.flex-row.flex-center', [
+  //         h('i.fa.fa-arrow-left.fa-lg.cursor-pointer', {
+  //           onClick: () => props.dispatch(actions.backToAccountDetail(props.selectedAddress)),
+  //           style: {
+  //             marginLeft: '30px',
+  //             marginTop: '5px',
+  //             position: 'absolute',
+  //             left: '0',
+  //           },
+  //         }),
+  //         h('h2.page-subtitle', {
+  //           style: {
+  //             fontFamily: 'Nunito SemiBold',
+  //             marginTop: '10px',
+  //             marginBottom: '0px',
+  //             textAlign: 'center',
+  //           },
+  //         }, 'QR Code'),
+  //       ]),
+  //       h('div', [
+  //         h(QrView, {key: 'qr'}),
+  //       ]),
+  //     ])
+  //   case 'delete-rpc':
+  //     log.debug('rendering delete rpc confirmation screen')
+  //     return h(DeleteRpc, {key: 'delete-rpc'})
+  //   case 'delete-imported-account':
+  //     log.debug('rendering delete imported account confirmation screen')
+  //     return h(DeleteImportedAccount, {key: 'delete-imported-account'})
+  //   case 'confirm-change-password':
+  //     log.debug('rendering confirm password changing screen')
+  //     return h(ConfirmChangePassword, {key: 'confirm-change-password'})
+  //   default:
+  //     log.debug('rendering default, account detail screen')
+  //     return h(AccountDetailScreen, {key: 'account-detail'})
+  // }
+
+  const exact = true
+  return (
+    h(Switch, [
+      h(Route, { path: INITIALIZE_ROUTE, component: MascaraFirstTime }),
+      h(Initialized, { path: UNLOCK_ROUTE, exact, component: UnlockScreen }),
+      h(Initialized, { path: RESTORE_VAULT_ROUTE, exact, component: HDRestoreVaultScreen }),
+      h(Authenticated, { path: REVEAL_SEED_ROUTE, exact, component: RevealSeedConfirmation }),
+      h(Authenticated, { path: SETTINGS_ROUTE, component: ConfigScreen }),
+      h(Authenticated, { path: NOTICE_ROUTE, exact, component: NoticeScreen }),
+      h(Authenticated, {
+        path: `${CONFIRM_TRANSACTION_ROUTE}/:id?`,
+        component: ConfirmTxScreen,
       }),
-
+      h(Authenticated, { path: SEND_ROUTE, exact, component: SendTransactionScreen }),
+      h(Authenticated, { path: ADD_TOKEN_ROUTE, exact, component: AddTokenScreen }),
+      h(Authenticated, { path: CONFIRM_ADD_TOKEN_ROUTE, exact, component: ConfirmAddTokenScreen }),
+      h(Authenticated, { path: NEW_ACCOUNT_ROUTE, component: CreateAccountPage }),
+      h(Authenticated, { path: DEFAULT_ROUTE, exact, component: AccountDetailScreen }),
     ])
-  } else if (props.lostAccounts && props.lostAccounts.length > 0) {
-    log.debug('rendering notice screen for lost accounts view.')
-    return h(NoticeScreen, {
-      notice: generateLostAccountsNotice(props.lostAccounts),
-      key: 'LostAccountsNotice',
-      onConfirm: () => props.dispatch(actions.markAccountsFound()),
-    })
-  }
-
-  // show initialize screen
-  if (!props.isInitialized || props.forgottenPassword) {
-    // show current view
-    log.debug('rendering an initialize screen')
-    switch (props.currentView.name) {
-
-      case 'restoreVault':
-        log.debug('rendering restore vault screen')
-        return h(HDRestoreVaultScreen, {key: 'HDRestoreVaultScreen'})
-
-      default:
-        log.debug('rendering menu screen')
-        return h(InitializeMenuScreen, {key: 'menuScreenInit'})
-    }
-  }
-
-  // show unlock screen
-  if (!props.isUnlocked) {
-    switch (props.currentView.name) {
-
-      case 'restoreVault':
-        log.debug('rendering restore vault screen')
-        return h(HDRestoreVaultScreen, {key: 'HDRestoreVaultScreen'})
-
-      case 'config':
-        log.debug('rendering config screen from unlock screen.')
-        return h(ConfigScreen, {key: 'config'})
-
-      default:
-        log.debug('rendering locked screen')
-        return h(UnlockScreen, {key: 'locked'})
-    }
-  }
-
-  // show seed words screen
-  if (props.seedWords) {
-    log.debug('rendering seed words')
-    return h(HDCreateVaultComplete, {key: 'HDCreateVaultComplete'})
-  }
-
-  // show current view
-  switch (props.currentView.name) {
-
-    case 'accountDetail':
-      log.debug('rendering account detail screen')
-      return h(AccountDetailScreen, {key: 'account-detail'})
-
-    case 'sendTransaction':
-      log.debug('rendering send tx screen')
-      return h(SendTransactionScreen, {key: 'send-transaction'})
-
-    case 'newKeychain':
-      log.debug('rendering new keychain screen')
-      return h(NewKeyChainScreen, {key: 'new-keychain'})
-
-    case 'confTx':
-      log.debug('rendering confirm tx screen')
-      return h(ConfirmTxScreen, {key: 'confirm-tx'})
-
-    case 'add-token':
-      log.debug('rendering add-token screen from unlock screen.')
-      return h(AddTokenScreen, {key: 'add-token'})
-
-    case 'confirm-add-token':
-      log.debug('rendering confirm-add-token screen from unlock screen.')
-      return h(ConfirmAddTokenScreen, {key: 'confirm-add-token'})
-
-    case 'remove-token':
-      log.debug('rendering remove-token screen from unlock screen.')
-      return h(RemoveTokenScreen, {key: 'remove-token', ...props.currentView.context })
-
-    case 'config':
-      log.debug('rendering config screen')
-      return h(ConfigScreen, {key: 'config'})
-
-    case 'import-menu':
-      log.debug('rendering import screen')
-      return h(Import, {key: 'import-menu'})
-
-    case 'reveal-seed-conf':
-      log.debug('rendering reveal seed confirmation screen')
-      return h(RevealSeedConfirmation, {key: 'reveal-seed-conf'})
-
-    case 'info':
-      log.debug('rendering info screen')
-      return h(InfoScreen, {key: 'info'})
-
-    case 'buyEth':
-      log.debug('rendering buy ether screen')
-      return h(BuyView, {key: 'buyEthView'})
-
-    case 'onboardingBuyEth':
-      log.debug('rendering onboarding buy ether screen')
-      return h(MascaraBuyEtherScreen, {key: 'buyEthView'})
-
-    case 'qr':
-      log.debug('rendering show qr screen')
-      return h('div', {
-        style: {
-          height: '100%',
-          top: '0px',
-          left: '0px',
-          width: '100%',
-        },
-      }, [
-        h('.section-title.flex-row.flex-center', [
-          h('i.fa.fa-arrow-left.fa-lg.cursor-pointer', {
-            onClick: () => props.dispatch(actions.backToAccountDetail(props.selectedAddress)),
-            style: {
-              marginLeft: '30px',
-              marginTop: '5px',
-              position: 'absolute',
-              left: '0',
-            },
-          }),
-          h('h2.page-subtitle', {
-            style: {
-              fontFamily: 'Nunito SemiBold',
-              marginTop: '10px',
-              marginBottom: '0px',
-              textAlign: 'center',
-            },
-          }, 'QR Code'),
-        ]),
-        h('div', [
-          h(QrView, {key: 'qr'}),
-        ]),
-      ])
-    case 'delete-rpc':
-      log.debug('rendering delete rpc confirmation screen')
-      return h(DeleteRpc, {key: 'delete-rpc'})
-    case 'delete-imported-account':
-      log.debug('rendering delete imported account confirmation screen')
-      return h(DeleteImportedAccount, {key: 'delete-imported-account'})
-    case 'confirm-change-password':
-      log.debug('rendering confirm password changing screen')
-      return h(ConfirmChangePassword, {key: 'confirm-change-password'})
-    default:
-      log.debug('rendering default, account detail screen')
-      return h(AccountDetailScreen, {key: 'account-detail'})
-  }
+  )
 }
 
 App.prototype.toggleMetamaskActive = function () {

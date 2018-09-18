@@ -367,7 +367,7 @@ gulp.task('dev',
 gulp.task('dev:extension',
   gulp.series(
     'clean',
-    'dev:scss',
+    // 'dev:scss',
     gulp.parallel(
       'dev:extension:js',
       'dev:copy',

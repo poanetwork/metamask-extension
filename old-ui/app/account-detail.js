@@ -3,6 +3,8 @@ const extend = require('xtend')
 const Component = require('react').Component
 const h = require('react-hyperscript')
 const connect = require('react-redux').connect
+const { withRouter } = require('react-router-dom')
+const { compose } = require('recompose')
 const actions = require('../../ui/app/actions')
 const valuesFor = require('./util').valuesFor
 const Identicon = require('./components/identicon')
@@ -15,8 +17,12 @@ const TabBar = require('./components/tab-bar')
 const TokenList = require('./components/token-list')
 const AccountDropdowns = require('./components/account-dropdowns').AccountDropdowns
 const CopyButton = require('./components/copyButton')
+import { ADD_TOKEN_ROUTE } from '../../ui/app/routes'
 
-module.exports = connect(mapStateToProps)(AccountDetailScreen)
+module.exports = compose(
+  withRouter,
+  connect(mapStateToProps)
+)(AccountDetailScreen)
 
 function mapStateToProps (state) {
   return {
@@ -266,7 +272,7 @@ AccountDetailScreen.prototype.tabSections = function () {
 
 AccountDetailScreen.prototype.tabSwitchView = function () {
   const props = this.props
-  const { address, network } = props
+  const { address, network, history } = props
   const { currentAccountTab, tokens } = this.props
 
   switch (currentAccountTab) {
@@ -275,7 +281,7 @@ AccountDetailScreen.prototype.tabSwitchView = function () {
         userAddress: address,
         network,
         tokens,
-        addToken: () => this.props.dispatch(actions.showAddTokenPage()),
+        addToken: () => history.push(ADD_TOKEN_ROUTE),//this.props.dispatch(actions.showAddTokenPage()),
         removeToken: (token) => this.props.dispatch(actions.showRemoveTokenPage(token)),
       })
     default:
