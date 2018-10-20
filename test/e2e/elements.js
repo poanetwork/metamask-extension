@@ -66,7 +66,7 @@ module.exports = {
       },
       button: {
         next: By.xpath('//*[@id="app-content"]/div/div[2]/div/section[2]/button'),
-        arrow: By.className('fa fa-arrow-left fa-lg cursor-pointer')
+        arrow: By.className('fa fa-arrow-left fa-lg cursor-pointer'),
       },
     },
     yourPR: {
