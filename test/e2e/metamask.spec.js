@@ -573,7 +573,7 @@ describe('Metamask popup page', async function () {
       await click(field)
     })
 
-    it.skip('balance renders', async function () {
+    it('balance renders', async function () {
       const balance = await waitUntilShowUp(screens.main.balance)
       assert.equal(await balance.getText(), '100.000')
     })
