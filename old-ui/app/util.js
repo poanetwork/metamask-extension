@@ -1,5 +1,6 @@
 const ethUtil = require('ethereumjs-util')
 const ethNetProps = require('eth-net-props')
+import { walletModes } from './enum'
 
 var valueTable = {
   wei: '1000000000000000000',
@@ -46,6 +47,7 @@ module.exports = {
   ifLooseAcc,
   ifContractAcc,
   ifHardwareAcc,
+  isBurnerWalletMode,
 }
 
 function valuesFor (obj) {
@@ -360,4 +362,15 @@ function ifHardwareAcc (keyring) {
     return true
   }
   return false
+}
+
+/**
+ * checks, if wallet is in burner wallet mode
+ *
+ * @param {string} mode
+ *
+ * returns {boolean} true, if wallet is in burner wallet mode and false, if it is not
+**/
+function isBurnerWalletMode (mode) {
+  return mode === walletModes.BURNER_WALLET_MODE
 }

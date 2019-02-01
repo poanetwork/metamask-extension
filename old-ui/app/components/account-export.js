@@ -6,6 +6,7 @@ const actions = require('../../../ui/app/actions')
 const ethUtil = require('ethereumjs-util')
 const connect = require('react-redux').connect
 const CopyButton = require('./copyButton')
+import { isBurnerWalletMode } from '../util'
 
 module.exports = connect(mapStateToProps)(ExportAccountView)
 
@@ -17,6 +18,8 @@ function ExportAccountView () {
 function mapStateToProps (state) {
   return {
     warning: state.appState.warning,
+    walletMode: state.metamask.walletMode,
+    keyringPass: state.metamask.keyringPass,
   }
 }
 
@@ -58,7 +61,7 @@ ExportAccountView.prototype.render = function () {
                 marginTop: '30px',
               },
             }, warning),
-            h('input#exportAccount.sizing-input', {
+            isBurnerWalletMode(this.props.walletMode) ? null : h('input#exportAccount.sizing-input', {
               type: 'password',
               placeholder: 'Confirm Password',
               onKeyPress: this.onExportKeyPress.bind(this),
@@ -164,6 +167,10 @@ ExportAccountView.prototype.onExportKeyPress = function (event) {
   if (event.key !== 'Enter') return
   event.preventDefault()
 
-  const input = document.getElementById('exportAccount').value
-  this.props.dispatch(actions.exportAccount(input, this.props.address))
+  if (isBurnerWalletMode(this.props.walletMode)) {
+    this.props.dispatch(actions.exportAccount(this.props.keyringPass, this.props.address))
+  } else {
+    const input = document.getElementById('exportAccount').value
+    this.props.dispatch(actions.exportAccount(input, this.props.address))
+  }
 }

@@ -1,9 +1,9 @@
 const inherits = require('util').inherits
-
 const Component = require('react').Component
 const connect = require('react-redux').connect
 const h = require('react-hyperscript')
 const actions = require('../../../../../ui/app/actions')
+import { isBurnerWalletMode } from '../../../util'
 
 module.exports = connect(mapStateToProps)(RevealSeedConfirmation)
 
@@ -15,6 +15,8 @@ function RevealSeedConfirmation () {
 function mapStateToProps (state) {
   return {
     warning: state.appState.warning,
+    walletMode: state.metamask.walletMode,
+    keyringPass: state.metamask.keyringPass,
   }
 }
 
@@ -52,7 +54,7 @@ RevealSeedConfirmation.prototype.render = function () {
         h('.error', 'Do not recover your seed words in a public place! These words can be used to steal all your accounts.'),
 
         // confirmation
-        h('input.large-input', {
+        isBurnerWalletMode(this.props.walletMode) ? null : h('input.large-input', {
           type: 'password',
           id: 'password-box',
           placeholder: 'Enter your password to confirm',
@@ -98,7 +100,9 @@ RevealSeedConfirmation.prototype.render = function () {
 }
 
 RevealSeedConfirmation.prototype.componentDidMount = function () {
-  document.getElementById('password-box').focus()
+  if (!isBurnerWalletMode(this.props.walletMode)) {
+    document.getElementById('password-box').focus()
+  }
 }
 
 RevealSeedConfirmation.prototype.goHome = function () {
@@ -115,6 +119,11 @@ RevealSeedConfirmation.prototype.checkConfirmation = function (event) {
 }
 
 RevealSeedConfirmation.prototype.revealSeedWords = function () {
-  var password = document.getElementById('password-box').value
+  let password
+  if (isBurnerWalletMode(this.props.walletMode)) {
+    password = this.props.keyringPass
+  } else {
+    password = document.getElementById('password-box').value
+  }
   this.props.dispatch(actions.requestRevealSeed(password))
 }

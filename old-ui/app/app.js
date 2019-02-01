@@ -48,7 +48,7 @@ const DeleteImportedAccount = require('./components/delete-imported-account')
 const ConfirmChangePassword = require('./components/confirm-change-password')
 const ethNetProps = require('eth-net-props')
 const { getMetaMaskAccounts } = require('../../ui/app/selectors')
-import { walletModes } from './enum'
+import { isBurnerWalletMode } from './util'
 
 module.exports = compose(
   withRouter,
@@ -179,7 +179,7 @@ App.prototype.renderPrimary = function () {
 
   // notices
   // skip notices for Burner wallet mode
-  if (props.walletMode !== walletModes.BURNER_WALLET_MODE) {
+  if (!isBurnerWalletMode(props.walletMode)) {
     if (!props.noActiveNotices) {
       log.debug('rendering notice screen for unread notices.')
       return h('div', {

@@ -5,7 +5,7 @@ import actions from '../../ui/app/actions'
 import log from 'loglevel'
 import { EventEmitter } from 'events'
 import NiftyLogoComponent from './components/nifty-logo'
-import { walletModes } from './enum'
+import { isBurnerWalletMode } from './util'
 
 class SelectWalletModeScreen extends Component {
   constructor (props) {
@@ -73,7 +73,7 @@ class SelectWalletModeScreen extends Component {
   }
 
   componentDidMount () {
-    if (this.props.walletMode === walletModes.BURNER_WALLET_MODE) {
+    if (isBurnerWalletMode(this.props.walletMode)) {
       const password = this.props.keyringPass
       try {
         this.props.tryUnlockMetamask(password)

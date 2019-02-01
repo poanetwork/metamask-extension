@@ -14,7 +14,7 @@ const { LOCALHOST } = require('../../../app/scripts/controllers/network/enums')
 const { networks } = require('../../../app/scripts/controllers/network/util')
 
 const LOCALHOST_RPC_URL = 'http://localhost:8545'
-import { walletModes } from '../enum'
+import { isBurnerWalletMode } from '../util'
 
 class AppBar extends Component {
   static defaultProps = {
@@ -495,10 +495,10 @@ class AppBar extends Component {
         onClick: () => { this.props.dispatch(actions.showConfigPage()) },
       }, 'Settings'),
 
-      this.props.walletMode === walletModes.FULL_MODE ? h(DropdownMenuItem, {
+      isBurnerWalletMode(this.props.walletMode) ? null : h(DropdownMenuItem, {
         closeMenu: () => this.changeState(isMainMenuOpen),
         onClick: () => { this.props.dispatch(actions.lockMetamask()) },
-      }, 'Log Out') : null,
+      }, 'Log Out'),
 
       h(DropdownMenuItem, {
         closeMenu: () => this.changeState(isMainMenuOpen),

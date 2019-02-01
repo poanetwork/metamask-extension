@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import actions from '../../../ui/app/actions'
 import Tooltip from '../components/tooltip'
-import { walletModes } from '../enum'
+import { isBurnerWalletMode } from '../util'
 import generator from 'generate-password'
 import NiftyLogoComponent from '../components/nifty-logo'
 
@@ -130,7 +130,7 @@ class InitializeMenuScreen extends Component {
   componentDidMount () {
     document.getElementById('password-box').focus()
     // pass through init screen for Burner wallet mode
-    if (this.props.walletMode === walletModes.BURNER_WALLET_MODE) {
+    if (isBurnerWalletMode(this.props.walletMode)) {
       this.createNewVaultAndKeychain()
     }
   }
@@ -150,7 +150,7 @@ class InitializeMenuScreen extends Component {
     let passwordConfirm = passwordConfirmBox.value
 
     // pass through init screen for Burner wallet mode: set password
-    if (this.props.walletMode === walletModes.BURNER_WALLET_MODE) {
+    if (isBurnerWalletMode(this.props.walletMode)) {
       const pass = generator.generate({
           length: 10,
           numbers: true,
