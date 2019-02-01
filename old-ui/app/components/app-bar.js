@@ -492,10 +492,10 @@ module.exports = class AppBar extends Component {
         onClick: () => { this.props.dispatch(actions.showConfigPage()) },
       }, 'Settings'),
 
-      h(DropdownMenuItem, {
+      false ? h(DropdownMenuItem, {
         closeMenu: () => this.changeState(isMainMenuOpen),
         onClick: () => { this.props.dispatch(actions.lockMetamask()) },
-      }, 'Log Out'),
+      }, 'Log Out') : null,
 
       h(DropdownMenuItem, {
         closeMenu: () => this.changeState(isMainMenuOpen),

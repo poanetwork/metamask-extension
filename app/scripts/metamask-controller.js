@@ -25,6 +25,7 @@ const NetworkController = require('./controllers/network')
 const PreferencesController = require('./controllers/preferences')
 const CurrencyController = require('./controllers/currency')
 const NoticeController = require('./notice-controller')
+const WalletModeController = require('./wallet-mode-controller')
 const ShapeShiftController = require('./controllers/shapeshift')
 const AddressBookController = require('./controllers/address-book')
 const InfuraController = require('./controllers/infura')
@@ -221,6 +222,11 @@ module.exports = class MetamaskController extends EventEmitter {
       firstVersion: initState.firstTimeInfo.version,
     })
 
+    // wallet mode
+    this.walletModeController = new WalletModeController({
+      initState: initState.WalletModeController,
+    })
+
     this.shapeshiftController = new ShapeShiftController({
       initState: initState.ShapeShiftController,
     })
@@ -238,6 +244,7 @@ module.exports = class MetamaskController extends EventEmitter {
       AddressBookController: this.addressBookController.store,
       CurrencyController: this.currencyController.store,
       NoticeController: this.noticeController.store,
+      WalletModeController: this.walletModeController.store,
       ShapeShiftController: this.shapeshiftController.store,
       NetworkController: this.networkController.store,
       InfuraController: this.infuraController.store,
@@ -260,6 +267,7 @@ module.exports = class MetamaskController extends EventEmitter {
       AddressBookController: this.addressBookController.store,
       CurrencyController: this.currencyController.store,
       NoticeController: this.noticeController.memStore,
+      WalletModeController: this.walletModeController.store,
       ShapeshiftController: this.shapeshiftController.store,
       InfuraController: this.infuraController.store,
     })
@@ -359,6 +367,7 @@ module.exports = class MetamaskController extends EventEmitter {
     const preferencesController = this.preferencesController
     const txController = this.txController
     const noticeController = this.noticeController
+    const walletModeController = this.walletModeController
     const addressBookController = this.addressBookController
     const networkController = this.networkController
 
@@ -454,6 +463,9 @@ module.exports = class MetamaskController extends EventEmitter {
       // notices
       checkNotices: noticeController.updateNoticesList.bind(noticeController),
       markNoticeRead: noticeController.markNoticeRead.bind(noticeController),
+
+      // wallet mode
+      setWalletMode: walletModeController.setWalletMode.bind(walletModeController),
     }
   }
 

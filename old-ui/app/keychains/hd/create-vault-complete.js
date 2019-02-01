@@ -4,6 +4,7 @@ const connect = require('react-redux').connect
 const h = require('react-hyperscript')
 const actions = require('../../../../ui/app/actions')
 const exportAsFile = require('../../util').exportAsFile
+import { walletModes } from '../../enum'
 
 module.exports = connect(mapStateToProps)(CreateVaultCompleteScreen)
 
@@ -16,21 +17,25 @@ function mapStateToProps (state) {
   return {
     seed: state.appState.currentView.seedWords,
     cachedSeed: state.metamask.seedWords,
+    walletMode: state.metamask.walletMode,
+  }
+}
+
+// pass through this screen
+CreateVaultCompleteScreen.prototype.componentDidMount = function () {
+  if (this.props.walletMode === walletModes.BURNER_WALLET_MODE) {
+    this.confirmSeedWords()
+      .then(account => this.showAccountDetail(account))
   }
 }
 
 CreateVaultCompleteScreen.prototype.render = function () {
-  var state = this.props
-  var seed = state.seed || state.cachedSeed || ''
+  const state = this.props
+  const seed = state.seed || state.cachedSeed || ''
 
   return (
 
     h('.initialize-screen.flex-column.flex-center.flex-grow', [
-
-      // // subtitle and nav
-      // h('.section-title.flex-row.flex-center', [
-      //   h('h2.page-subtitle', 'Vault Created'),
-      // ]),
 
       h('h3.flex-center.section-title', {
         style: {

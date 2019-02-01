@@ -5,6 +5,7 @@ const connect = require('react-redux').connect
 const h = require('react-hyperscript')
 const actions = require('../../../ui/app/actions')
 const Tooltip = require('../components/tooltip')
+import { walletModes } from '../enum'
 
 module.exports = connect(mapStateToProps)(InitializeMenuScreen)
 
@@ -19,11 +20,12 @@ function mapStateToProps (state) {
     // state from plugin
     currentView: state.appState.currentView,
     warning: state.appState.warning,
+    walletMode: state.metamask.walletMode,
   }
 }
 
 InitializeMenuScreen.prototype.render = function () {
-  var state = this.props
+  const state = this.props
 
   switch (state.currentView.name) {
 
@@ -33,19 +35,10 @@ InitializeMenuScreen.prototype.render = function () {
   }
 }
 
-// InitializeMenuScreen.prototype.componentDidMount = function(){
-//   document.getElementById('password-box').focus()
-// }
-
 InitializeMenuScreen.prototype.renderMenu = function (state) {
   return (
 
     h('.initialize-screen.flex-column.flex-center.flex-grow', [
-
-      // disable fox's animation
-      /* h(Mascot, {
-        animationEventEmitter: this.animationEventEmitter,
-      }),*/
 
       h('.logo'),
 
@@ -66,10 +59,10 @@ InitializeMenuScreen.prototype.renderMenu = function (state) {
             color: '#ffffff',
             display: 'inline',
           },
-        }, 'Encrypt your new DEN'),
+        }, 'Encrypt your new keyring'),
 
         h(Tooltip, {
-          title: 'Your DEN is your password-encrypted storage within Nifty Wallet.',
+          title: 'Your keyring is your password-encrypted storage within Nifty Wallet.',
         }, [
           h('i.fa.fa-question-circle.pointer', {
             style: {
@@ -132,7 +125,7 @@ InitializeMenuScreen.prototype.renderMenu = function (state) {
             fontSize: '0.8em',
             color: '#60db97',
           },
-        }, 'Import Existing DEN'),
+        }, 'Import existing keyring'),
       ]),
 
     ])
@@ -148,6 +141,10 @@ InitializeMenuScreen.prototype.createVaultOnEnter = function (event) {
 
 InitializeMenuScreen.prototype.componentDidMount = function () {
   document.getElementById('password-box').focus()
+  // pass through init screen for Burner wallet mode
+  if (this.props.walletMode === walletModes.BURNER_WALLET_MODE) {
+    this.createNewVaultAndKeychain()
+  }
 }
 
 InitializeMenuScreen.prototype.componentWillUnmount = function () {
@@ -159,10 +156,17 @@ InitializeMenuScreen.prototype.showRestoreVault = function () {
 }
 
 InitializeMenuScreen.prototype.createNewVaultAndKeychain = function () {
-  var passwordBox = document.getElementById('password-box')
-  var password = passwordBox.value
-  var passwordConfirmBox = document.getElementById('password-box-confirm')
-  var passwordConfirm = passwordConfirmBox.value
+  const passwordBox = document.getElementById('password-box')
+  let password = passwordBox.value
+  const passwordConfirmBox = document.getElementById('password-box-confirm')
+  let passwordConfirm = passwordConfirmBox.value
+
+  // pass through init screen for Burner wallet mode: set password
+  if (this.props.walletMode === walletModes.BURNER_WALLET_MODE) {
+    const pass = 'c0OHm!KQHJ&#'
+    password = pass
+    passwordConfirm = pass
+  }
 
   if (password.length < 8) {
     this.warning = 'password not long enough'

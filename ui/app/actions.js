@@ -116,6 +116,9 @@ var actions = {
   revealSeedConfirmation: revealSeedConfirmation,
   requestRevealSeed: requestRevealSeed,
   requestRevealSeedWords,
+  // select wallet mode screen
+  setWalletMode,
+  SET_WALLET_MODE: 'SET_WALLET_MODE',
   // unlock screen
   UNLOCK_IN_PROGRESS: 'UNLOCK_IN_PROGRESS',
   UNLOCK_FAILED: 'UNLOCK_FAILED',
@@ -1591,6 +1594,31 @@ function showNewKeychain () {
     type: actions.SHOW_NEW_KEYCHAIN,
   }
 }
+
+//
+// set wallet mode screen
+//
+
+function setWalletMode (mode) {
+  return (dispatch) => {
+    log.debug(`background.setWalletMode`)
+    return new Promise((resolve, reject) => {
+      console.log(`### setWalletMode in promise ###: ${mode}`)
+      background.setWalletMode(mode, (err) => {
+        console.log(`### setWalletMode inside ###`)
+        resolve()
+      })
+    })
+  }
+}
+
+// function setWalletMode (mode) {
+//   return {
+//     type: actions.SET_WALLET_MODE,
+//     value: mode,
+//   }
+//   updateMetamaskStateFromBackground()
+// }
 
 //
 // unlock screen

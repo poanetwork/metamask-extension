@@ -153,7 +153,7 @@ class AccountDropdowns extends Component {
         this.preventToast()
       }
     } else {
-        this.preventToast()
+      this.preventToast()
     }
   }
 

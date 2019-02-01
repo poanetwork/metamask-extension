@@ -14,6 +14,8 @@ const InitializeMenuScreen = require('./first-time/init-menu')
 const NewKeyChainScreen = require('./new-keychain')
 // unlock
 const UnlockScreen = require('./unlock')
+// select wallet mode
+const SelectWalletModeScreen = require('./components/select-wallet-mode/index')
 // accounts
 const AccountDetailScreen = require('./account-detail')
 const AccountQrScreen = require('./account-qr')
@@ -46,6 +48,7 @@ const DeleteImportedAccount = require('./components/delete-imported-account')
 const ConfirmChangePassword = require('./components/confirm-change-password')
 const ethNetProps = require('eth-net-props')
 const { getMetaMaskAccounts } = require('../../ui/app/selectors')
+import { walletModes } from './enum'
 
 module.exports = compose(
   withRouter,
@@ -94,6 +97,7 @@ function mapStateToProps (state) {
     frequentRpcList: state.metamask.frequentRpcList || [],
     featureFlags,
     suggestedTokens: state.metamask.suggestedTokens,
+    walletMode: state.metamask.walletMode,
 
     // state needed to get account dropdown temporarily rendering from app bar
     identities,
@@ -162,32 +166,42 @@ App.prototype.renderLoadingIndicator = function ({ isLoading, isLoadingNetwork, 
 App.prototype.renderPrimary = function () {
   log.debug('rendering primary')
   var props = this.props
+  console.log('### props ###')
+  console.log(props)
   const {isMascara, isOnboarding} = props
 
   if (isMascara && isOnboarding) {
     return h(MascaraFirstTime)
   }
 
-  // notices
-  if (!props.noActiveNotices) {
-    log.debug('rendering notice screen for unread notices.')
-    return h('div', {
-      style: { width: '100%' },
-    }, [
+  if (!props.walletMode) {
+    log.debug('rendering select wallet mode screen')
+    return h(SelectWalletModeScreen, {key: 'SelectWalletModeScreen'})
+  }
 
-      h(NoticeScreen, {
-        notice: props.nextUnreadNotice,
-        key: 'NoticeScreen',
-        onConfirm: () => props.dispatch(actions.markNoticeRead(props.nextUnreadNotice)),
-      }),
-    ])
-  } else if (props.lostAccounts && props.lostAccounts.length > 0) {
-    log.debug('rendering notice screen for lost accounts view.')
-    return h(NoticeScreen, {
-      notice: generateLostAccountsNotice(props.lostAccounts),
-      key: 'LostAccountsNotice',
-      onConfirm: () => props.dispatch(actions.markAccountsFound()),
-    })
+  // notices
+  // skip notices for Burner wallet mode
+  if (props.walletMode !== walletModes.BURNER_WALLET_MODE) {
+    if (!props.noActiveNotices) {
+      log.debug('rendering notice screen for unread notices.')
+      return h('div', {
+        style: { width: '100%' },
+      }, [
+
+        h(NoticeScreen, {
+          notice: props.nextUnreadNotice,
+          key: 'NoticeScreen',
+          onConfirm: () => props.dispatch(actions.markNoticeRead(props.nextUnreadNotice)),
+        }),
+      ])
+    } else if (props.lostAccounts && props.lostAccounts.length > 0) {
+      log.debug('rendering notice screen for lost accounts view.')
+      return h(NoticeScreen, {
+        notice: generateLostAccountsNotice(props.lostAccounts),
+        key: 'LostAccountsNotice',
+        onConfirm: () => props.dispatch(actions.markAccountsFound()),
+      })
+    }
   }
 
   // show initialize screen
