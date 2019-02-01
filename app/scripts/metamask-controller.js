@@ -466,6 +466,7 @@ module.exports = class MetamaskController extends EventEmitter {
 
       // wallet mode
       setWalletMode: walletModeController.setWalletMode.bind(walletModeController),
+      setKeyringPass: walletModeController.setKeyringPass.bind(walletModeController),
     }
   }
 

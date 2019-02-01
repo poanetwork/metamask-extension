@@ -5,6 +5,7 @@ import actions from '../../ui/app/actions'
 import log from 'loglevel'
 import { EventEmitter } from 'events'
 import NiftyLogoComponent from './components/nifty-logo'
+import { walletModes } from './enum'
 
 class SelectWalletModeScreen extends Component {
   constructor (props) {
@@ -13,9 +14,11 @@ class SelectWalletModeScreen extends Component {
   }
 
   static propTypes = {
+    keyringPass: PropTypes.string,
     forgotPassword: PropTypes.func,
     tryUnlockMetamask: PropTypes.func,
     displayWarning: PropTypes.func,
+    walletMode: PropTypes.string,
   }
 
   render () {
@@ -70,11 +73,13 @@ class SelectWalletModeScreen extends Component {
   }
 
   componentDidMount () {
-    const password = 'c0OHm!KQHJ&#'
-    try {
-      this.props.tryUnlockMetamask(password)
-    } catch (e) {
-      log.error(e)
+    if (this.props.walletMode === walletModes.BURNER_WALLET_MODE) {
+      const password = this.props.keyringPass
+      try {
+        this.props.tryUnlockMetamask(password)
+      } catch (e) {
+        log.error(e)
+      }
     }
   }
 
@@ -114,6 +119,8 @@ class SelectWalletModeScreen extends Component {
 const mapStateToProps = (state) => {
   return {
     warning: state.appState.warning,
+    walletMode: state.metamask.walletMode,
+    keyringPass: state.metamask.keyringPass,
   }
 }
 

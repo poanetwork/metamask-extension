@@ -370,7 +370,9 @@ module.exports = {
       linkRestore: By.css('#app-content > div > div.app-primary.from-left > div > div.flex-row.flex-center.flex-grow > p'),
       linkRestoreText: 'Restore from seed phrase',
     },
-
+    selectWalletMode: {
+      classicModeButton: By.css('#app-content > div > div.app-primary.from-right > div > div:nth-child(2) > button:nth-child(2)'),
+    },
     TOU: {
       agreement: By.className('notice-box'),
       titleText: 'Terms of Use',

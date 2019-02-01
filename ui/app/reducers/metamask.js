@@ -55,15 +55,10 @@ function reduceMetamask (state, action) {
       useETHAsPrimaryCurrency: true,
     },
     walletMode: '',
+    keyringPass: '',
   }, state.metamask)
 
   switch (action.type) {
-
-    // set wallet mode
-    case actions.SET_WALLET_MODE:
-      return extend(metamaskState, {
-        walletMode: action.value,
-      })
 
     case actions.SHOW_ACCOUNTS_PAGE:
       newState = extend(metamaskState, {

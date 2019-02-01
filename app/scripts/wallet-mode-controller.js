@@ -7,6 +7,7 @@ module.exports = class WalletModeController extends EventEmitter {
 			super()
 			const initState = extend({
 				walletMode: '',
+				keyringPass: '',
 			}, opts.initState)
 			this.store = new ObservableStore(initState)
 			// setup memStore
@@ -19,13 +20,23 @@ module.exports = class WalletModeController extends EventEmitter {
 		return this.store.getState().walletMode
 	}
 
+	getKeyringPass () {
+		return this.store.getState().keyringPass
+	}
+
 	setWalletMode (mode, cb) {
 		this.store.updateState({ walletMode: mode })
 		cb()
 	}
 
+	setKeyringPass (pass, cb) {
+		this.store.updateState({ keyringPass: pass })
+		cb()
+	}
+
 	_updateMemstore () {
 		const walletMode = this.getWalletMode()
-		this.memStore.updateState({ walletMode })
+		const keyringPass = this.getKeyringPass()
+		this.memStore.updateState({ walletMode, keyringPass })
 	}
 }

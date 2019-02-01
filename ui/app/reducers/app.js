@@ -378,15 +378,6 @@ function reduceApp (state, action) {
         transForward: true,
       })
 
-  // set wallet mode
-    case actions.SET_WALLET_MODE:
-      return extend(appState, {
-        currentView: {
-          name: 'setWalletMode',
-        },
-        transForward: true,
-      })
-
   // unlock
 
     case actions.UNLOCK_METAMASK:

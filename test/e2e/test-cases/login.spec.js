@@ -2,7 +2,15 @@ const assert = require('assert')
 const { screens } = require('../elements')
 
 const login = async (f, password) => {
+  it('Select wallet mode screen appears', async () => {
+    const classicModeButton = await f.waitUntilShowUp(screens.selectWalletMode.classicModeButton, 900)
+    assert.equal(await classicModeButton.isEnabled(), true, 'Classic mode button isn\'t enabled')
+    assert.equal(await classicModeButton.getText(), 'Classic mode', 'Classic mode button has incorrect name')
+    await f.click(classicModeButton)
+  })
+
   it('title is \'Nifty Wallet\'', async () => {
+    await f.delay(1000)
     const title = await f.driver.getTitle()
     assert.equal(title, 'Nifty Wallet', 'title is incorrect')
   })

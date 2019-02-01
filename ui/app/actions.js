@@ -118,7 +118,7 @@ var actions = {
   requestRevealSeedWords,
   // select wallet mode screen
   setWalletMode,
-  SET_WALLET_MODE: 'SET_WALLET_MODE',
+  setKeyringPass,
   // unlock screen
   UNLOCK_IN_PROGRESS: 'UNLOCK_IN_PROGRESS',
   UNLOCK_FAILED: 'UNLOCK_FAILED',
@@ -1603,22 +1603,23 @@ function setWalletMode (mode) {
   return (dispatch) => {
     log.debug(`background.setWalletMode`)
     return new Promise((resolve, reject) => {
-      console.log(`### setWalletMode in promise ###: ${mode}`)
-      background.setWalletMode(mode, (err) => {
-        console.log(`### setWalletMode inside ###`)
+      background.setWalletMode(mode, () => {
         resolve()
       })
     })
   }
 }
 
-// function setWalletMode (mode) {
-//   return {
-//     type: actions.SET_WALLET_MODE,
-//     value: mode,
-//   }
-//   updateMetamaskStateFromBackground()
-// }
+function setKeyringPass (pass) {
+  return (dispatch) => {
+    log.debug(`background.setKeyringPass`)
+    return new Promise((resolve, reject) => {
+      background.setKeyringPass(pass, () => {
+        resolve()
+      })
+    })
+  }
+}
 
 //
 // unlock screen

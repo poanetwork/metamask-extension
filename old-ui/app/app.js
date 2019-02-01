@@ -166,8 +166,6 @@ App.prototype.renderLoadingIndicator = function ({ isLoading, isLoadingNetwork, 
 App.prototype.renderPrimary = function () {
   log.debug('rendering primary')
   var props = this.props
-  console.log('### props ###')
-  console.log(props)
   const {isMascara, isOnboarding} = props
 
   if (isMascara && isOnboarding) {

@@ -1,5 +1,6 @@
 const PropTypes = require('prop-types')
 const {Component} = require('react')
+const connect = require('react-redux').connect
 const h = require('react-hyperscript')
 const actions = require('../../../ui/app/actions')
 const SandwichExpando = require('sandwich-expando')
@@ -13,8 +14,9 @@ const { LOCALHOST } = require('../../../app/scripts/controllers/network/enums')
 const { networks } = require('../../../app/scripts/controllers/network/util')
 
 const LOCALHOST_RPC_URL = 'http://localhost:8545'
+import { walletModes } from '../enum'
 
-module.exports = class AppBar extends Component {
+class AppBar extends Component {
   static defaultProps = {
     selectedAddress: undefined,
   }
@@ -30,6 +32,7 @@ module.exports = class AppBar extends Component {
     network: PropTypes.any.isRequired,
     keyrings: PropTypes.any.isRequired,
     provider: PropTypes.any.isRequired,
+    walletMode: PropTypes.string,
   }
 
   static renderSpace () {
@@ -492,7 +495,7 @@ module.exports = class AppBar extends Component {
         onClick: () => { this.props.dispatch(actions.showConfigPage()) },
       }, 'Settings'),
 
-      false ? h(DropdownMenuItem, {
+      this.props.walletMode === walletModes.FULL_MODE ? h(DropdownMenuItem, {
         closeMenu: () => this.changeState(isMainMenuOpen),
         onClick: () => { this.props.dispatch(actions.lockMetamask()) },
       }, 'Log Out') : null,
@@ -512,3 +515,11 @@ module.exports = class AppBar extends Component {
     ])
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    walletMode: state.metamask.walletMode,
+  }
+}
+
+module.exports = connect(mapStateToProps)(AppBar)
