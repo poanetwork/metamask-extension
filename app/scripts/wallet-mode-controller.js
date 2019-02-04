@@ -6,7 +6,7 @@ module.exports = class WalletModeController extends EventEmitter {
 	constructor (opts = {}) {
 			super()
 			const initState = extend({
-				walletMode: '',
+				walletMode: opts.walletMode,
 				keyringPass: '',
 			}, opts.initState)
 			this.store = new ObservableStore(initState)

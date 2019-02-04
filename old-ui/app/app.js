@@ -172,7 +172,7 @@ App.prototype.renderPrimary = function () {
     return h(MascaraFirstTime)
   }
 
-  if (!props.walletMode) {
+  if (!props.walletMode && (!props.isInitialized || props.forgottenPassword)) {
     log.debug('rendering select wallet mode screen')
     return h(SelectWalletModeScreen, {key: 'SelectWalletModeScreen'})
   }
