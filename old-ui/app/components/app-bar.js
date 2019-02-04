@@ -128,6 +128,16 @@ class AppBar extends Component {
               alignItems: 'center',
             },
           }, [
+            isBurnerWalletMode(this.props.walletMode) ? h('i', {
+              style: {
+                cursor: 'pointer',
+                paddingRight: '5px',
+                color: '#df2265',
+              },
+              className: 'fa fa-fire',
+              onClick: () => { this.props.dispatch(actions.showConfirmBurnPK()) },
+            }) : null,
+
             h(AccountDropdowns, {
               style: {},
               enableAccountsSelector: true,
@@ -499,11 +509,6 @@ class AppBar extends Component {
         closeMenu: () => this.changeState(isMainMenuOpen),
         onClick: () => { this.props.dispatch(actions.lockMetamask()) },
       }, 'Log Out'),
-
-      isBurnerWalletMode(this.props.walletMode) ? h(DropdownMenuItem, {
-        closeMenu: () => this.changeState(isMainMenuOpen),
-        onClick: () => { this.props.dispatch(actions.showConfirmBurnPK()) },
-      }, 'Burn PK') : null,
 
       h(DropdownMenuItem, {
         closeMenu: () => this.changeState(isMainMenuOpen),

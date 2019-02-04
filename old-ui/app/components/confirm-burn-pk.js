@@ -10,8 +10,8 @@ class BurnPKScreen extends ConfirmScreen {
       <ConfirmScreen
         subtitle="Burn Private Key"
         question={`Are you sure you want to burn the current private key ?`}
-        onCancelClick={() => this.props.dispatch(actions.goHome())}
-        onNoClick={() => this.props.dispatch(actions.goHome())}
+        onCancelClick={() => this.props.goHome()}
+        onNoClick={() => this.props.goHome()}
         onYesClick={() => {
           const pass = generator.generate({
               length: 10,
@@ -20,7 +20,7 @@ class BurnPKScreen extends ConfirmScreen {
           this.props.setKeyringPass(pass)
           this.props.createNewVaultAndKeychain(pass, true)
             .then(() => {
-              this.props.dispatch(actions.goHome())
+              this.props.actions.goHome()
             })
         }}
       />
