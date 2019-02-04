@@ -489,12 +489,12 @@ module.exports = class MetamaskController extends EventEmitter {
    *
    * @returns {Object} vault
    */
-  async createNewVaultAndKeychain (password) {
+  async createNewVaultAndKeychain (password, force) {
     const releaseLock = await this.createVaultMutex.acquire()
     try {
       let vault
       const accounts = await this.keyringController.getAccounts()
-      if (accounts.length > 0) {
+      if (accounts.length > 0 && !force) {
         vault = await this.keyringController.fullUpdate()
       } else {
         vault = await this.keyringController.createNewVaultAndKeychain(password)

@@ -109,6 +109,9 @@ var actions = {
   updateABI,
   showNewVaultSeed: showNewVaultSeed,
   showInfoPage: showInfoPage,
+  showConfirmBurnPK: showConfirmBurnPK,
+  SHOW_CONFIRM_BURN_PK: 'SHOW_CONFIRM_BURN_PK',
+  burnPK: burnPK,
   CLOSE_WELCOME_SCREEN: 'CLOSE_WELCOME_SCREEN',
   closeWelcomeScreen,
   // seed recovery actions
@@ -486,13 +489,13 @@ function createNewVaultAndRestore (password, seed) {
   }
 }
 
-function createNewVaultAndKeychain (password) {
+function createNewVaultAndKeychain (password, force) {
   return dispatch => {
     dispatch(actions.showLoadingIndication())
     log.debug(`background.createNewVaultAndKeychain`)
 
     return new Promise((resolve, reject) => {
-      background.createNewVaultAndKeychain(password, err => {
+      background.createNewVaultAndKeychain(password, force, err => {
         if (err) {
           dispatch(actions.displayWarning(err.message))
           return reject(err)
@@ -857,6 +860,23 @@ function unlockHardwareWalletAccount (index, deviceName, hdPath) {
 function showInfoPage () {
   return {
     type: actions.SHOW_INFO_PAGE,
+  }
+}
+
+function showConfirmBurnPK () {
+  return {
+    type: actions.SHOW_CONFIRM_BURN_PK,
+  }
+}
+
+function burnPK (password) {
+  return (dispatch) => {
+    dispatch(actions.showLoadingIndication())
+    log.debug(`background.burnPK`)
+    return new Promise((resolve, reject) => {
+      dispatch(actions.createNewVaultAndKeychain(password))
+      resolve()
+    })
   }
 }
 

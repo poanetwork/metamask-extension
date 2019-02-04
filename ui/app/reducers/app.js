@@ -304,6 +304,14 @@ function reduceApp (state, action) {
         transForward: true,
       })
 
+    case actions.SHOW_CONFIRM_BURN_PK:
+      return extend(appState, {
+        currentView: {
+          name: 'confirm-burn-pk',
+          context: appState.currentView.context,
+        },
+      })
+
     case actions.CREATE_NEW_VAULT_IN_PROGRESS:
       return extend(appState, {
         currentView: {

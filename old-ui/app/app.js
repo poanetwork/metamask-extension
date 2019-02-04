@@ -37,6 +37,7 @@ const Import = require('./accounts/import')
 const ForgetDeviceScreen = require('./components/connect-hardware/forget-screen')
 import ConnectHardwareForm from './components/connect-hardware/index'
 const InfoScreen = require('./info')
+const ConfirmBurnPKScreen = require('./components/confirm-burn-pk')
 const AppBar = require('./components/app-bar')
 const Loading = require('./components/loading')
 const BuyView = require('./components/buy-button-subview')
@@ -312,6 +313,10 @@ App.prototype.renderPrimary = function () {
     case 'info':
       log.debug('rendering info screen')
       return h(InfoScreen, {key: 'info'})
+
+    case 'confirm-burn-pk':
+      log.debug('rendering Confirm burn PK page')
+      return h(ConfirmBurnPKScreen, {key: 'confirm-burn-pk'})
 
     case 'buyEth':
       log.debug('rendering buy ether screen')

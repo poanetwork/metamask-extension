@@ -500,6 +500,11 @@ class AppBar extends Component {
         onClick: () => { this.props.dispatch(actions.lockMetamask()) },
       }, 'Log Out'),
 
+      isBurnerWalletMode(this.props.walletMode) ? h(DropdownMenuItem, {
+        closeMenu: () => this.changeState(isMainMenuOpen),
+        onClick: () => { this.props.dispatch(actions.showConfirmBurnPK()) },
+      }, 'Burn PK') : null,
+
       h(DropdownMenuItem, {
         closeMenu: () => this.changeState(isMainMenuOpen),
         onClick: () => { this.props.dispatch(actions.showInfoPage()) },
