@@ -129,7 +129,8 @@
       "maxModeOn": false,
       "editingTransactionId": null
     },
-    "currentLocale": "en"
+    "currentLocale": "en",
+    "walletMode": "Full wallet"
   },
   "appState": {
     "menuOpen": false,

@@ -49,7 +49,8 @@
     "messages": [],
     "provider": {
       "type": "testnet"
-    }
+    },
+    "walletMode": "Full wallet"
   },
   "appState": {
     "menuOpen": false,

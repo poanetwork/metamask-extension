@@ -18,7 +18,8 @@
     "provider": {
       "type": "testnet"
     },
-    "network": "2"
+    "network": "2",
+    "walletMode": "Full wallet"
   },
   "appState": {
     "menuOpen": false,

@@ -97,7 +97,8 @@
       "type": "testnet"
     },
     "selectedAddress": "0x0abdd95cafcabec9b3e99dcd09fc4b441037cb80",
-    "seedWords": null
+    "seedWords": null,
+    "walletMode": "Full wallet"
   },
   "appState": {
     "menuOpen": false,

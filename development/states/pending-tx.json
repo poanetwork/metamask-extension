@@ -708,7 +708,8 @@
       "rinkeby": "ok"
     },
     "shapeShiftTxList": [],
-    "lostAccounts": []
+    "lostAccounts": [],
+    "walletMode": "Full wallet"
   },
   "appState": {
     "shouldClose": true,

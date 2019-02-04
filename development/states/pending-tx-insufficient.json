@@ -88,7 +88,8 @@
     },
     "shapeShiftTxList": [],
     "lostAccounts": [],
-    "seedWords": null
+    "seedWords": null,
+    "walletMode": "Full wallet"
   },
   "appState": {
     "menuOpen": false,

@@ -104,7 +104,8 @@
       "Simple Key Pair",
       "HD Key Tree"
     ],
-    "lostAccounts": []
+    "lostAccounts": [],
+    "walletMode": "Full wallet"
   },
   "appState": {
     "menuOpen": false,

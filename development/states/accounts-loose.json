@@ -103,7 +103,8 @@
         ]
       }
     ],
-    "lostAccounts": []
+    "lostAccounts": [],
+    "walletMode": "Full wallet"
   },
   "appState": {
     "menuOpen": false,

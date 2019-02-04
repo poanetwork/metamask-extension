@@ -80,7 +80,8 @@
       "type": "testnet"
     },
     "shapeShiftTxList": [],
-    "lostAccounts": []
+    "lostAccounts": [],
+    "walletMode": "Full wallet"
   },
   "appState": {
     "menuOpen": false,

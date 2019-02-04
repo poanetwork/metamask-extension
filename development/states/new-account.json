@@ -44,7 +44,8 @@
     "keyringTypes": [
       "Simple Key Pair",
       "HD Key Tree"
-    ]
+    ],
+    "walletMode": "Full wallet"
   },
   "appState": {
     "menuOpen": false,

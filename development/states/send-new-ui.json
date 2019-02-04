@@ -112,7 +112,8 @@
     "currentLocale": "en",
     "preferences": {
       "useETHAsPrimaryCurrency": true
-    }
+    },
+    "walletMode": "Full wallet"
   },
   "appState": {
     "menuOpen": false,

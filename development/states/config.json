@@ -64,7 +64,8 @@
       "type": "testnet"
     },
     "selectedAddress": "0x843963b837841dad3b0f5969ff271108776616df",
-    "seedWords": null
+    "seedWords": null,
+    "walletMode": "Full wallet"
   },
   "appState": {
     "menuOpen": false,
