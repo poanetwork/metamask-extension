@@ -30,13 +30,10 @@ class SelectWalletModeScreen extends Component {
           width: 'inherit',
         }}
       >
-        <NiftyLogoComponent />
+        <NiftyLogoComponent additionalClasses={['unlock-screen']} />
 
         <div
           className="flex-center flex-grow"
-          style={{
-            marginTop: '50px',
-          }}
         >
           <button
             onClick={(e) => {

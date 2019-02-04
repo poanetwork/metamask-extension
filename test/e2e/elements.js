@@ -366,7 +366,7 @@ module.exports = {
       fieldPassword: By.id('password-box'),
       error: By.className('error'),
       errorText: 'Error: Incorrect password',
-      buttonLogin: By.className('cursor-pointer'),
+      buttonLogin: By.css('#app-content > div > div.app-primary.from-left > div > div:nth-child(2) > div > button'),
       linkRestore: By.css('#app-content > div > div.app-primary.from-left > div > div.flex-row.flex-center.flex-grow > p'),
       linkRestoreText: 'Restore from seed phrase',
     },

@@ -26,13 +26,13 @@ class SelectWalletModeScreen extends Component {
     const warning = state.warning
     return (
       <div
-        className=".flex-column"
+        className="flex-column"
         style={{
           width: 'inherit',
         }}
       >
-        <NiftyLogoComponent />
-        <div className="unlock-screen flex-column flex-center flex-grow">
+        <NiftyLogoComponent additionalClasses={['unlock-screen']} />
+        <div className="unlock-screen flex-center flex-grow">
           <div>
             <input
               className="large-input"
@@ -84,7 +84,7 @@ class SelectWalletModeScreen extends Component {
   }
 
   componentWillUnmount () {
-    this.props.displayWarning('')
+    this.props.displayWarning()
   }
 
   async onSubmit (event) {
@@ -128,7 +128,7 @@ const mapDispatchToProps = dispatch => {
   return {
     displayWarning: warning => dispatch(actions.displayWarning(warning)),
     tryUnlockMetamask: password => dispatch(actions.tryUnlockMetamask(password)),
-    forgotPassword: () => this.props.dispatch(actions.forgotPassword()),
+    forgotPassword: () => dispatch(actions.forgotPassword()),
   }
 }
 
