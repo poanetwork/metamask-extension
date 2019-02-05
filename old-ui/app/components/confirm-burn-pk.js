@@ -8,8 +8,8 @@ class BurnPKScreen extends ConfirmScreen {
   render () {
     return (
       <ConfirmScreen
-        subtitle="Burn Private Key"
-        question={`Are you sure you want to burn the current private key ?`}
+        subtitle="Burn Private Keys"
+        question={`Are you sure you want to burn seed phrase?`}
         onCancelClick={() => this.props.goHome()}
         onNoClick={() => this.props.goHome()}
         onYesClick={() => {

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import actions from '../../../ui/app/actions'
 import Tooltip from '../components/tooltip'
-import { isBurnerWalletMode } from '../util'
+import { isBurnerWalletMode, getWalletModesArray } from '../util'
 import generator from 'generate-password'
 import NiftyLogoComponent from '../components/nifty-logo'
 
@@ -16,7 +16,7 @@ class InitializeMenuScreen extends Component {
   }
 
   static propTypes = {
-    walletMode: PropTypes.string,
+    walletMode: PropTypes.oneOf(Object.values(getWalletModesArray())),
     setKeyringPass: PropTypes.func,
     displayWarning: PropTypes.func,
     createNewVaultAndKeychain: PropTypes.func,

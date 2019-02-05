@@ -14,7 +14,7 @@ const { LOCALHOST } = require('../../../app/scripts/controllers/network/enums')
 const { networks } = require('../../../app/scripts/controllers/network/util')
 
 const LOCALHOST_RPC_URL = 'http://localhost:8545'
-import { isBurnerWalletMode } from '../util'
+import { isBurnerWalletMode, getWalletModesArray } from '../util'
 
 class AppBar extends Component {
   static defaultProps = {
@@ -32,7 +32,7 @@ class AppBar extends Component {
     network: PropTypes.any.isRequired,
     keyrings: PropTypes.any.isRequired,
     provider: PropTypes.any.isRequired,
-    walletMode: PropTypes.string,
+    walletMode: PropTypes.oneOf(getWalletModesArray()),
   }
 
   static renderSpace () {

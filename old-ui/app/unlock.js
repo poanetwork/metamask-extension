@@ -5,9 +5,9 @@ import actions from '../../ui/app/actions'
 import log from 'loglevel'
 import { EventEmitter } from 'events'
 import NiftyLogoComponent from './components/nifty-logo'
-import { isBurnerWalletMode } from './util'
+import { isBurnerWalletMode, getWalletModesArray } from './util'
 
-class SelectWalletModeScreen extends Component {
+class UnlockScreen extends Component {
   constructor (props) {
     super(props)
     this.animationEventEmitter = new EventEmitter()
@@ -18,7 +18,7 @@ class SelectWalletModeScreen extends Component {
     forgotPassword: PropTypes.func,
     tryUnlockMetamask: PropTypes.func,
     displayWarning: PropTypes.func,
-    walletMode: PropTypes.string,
+    walletMode: PropTypes.oneOf(getWalletModesArray()),
   }
 
   render () {
@@ -132,4 +132,4 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-module.exports = connect(mapStateToProps, mapDispatchToProps)(SelectWalletModeScreen)
+module.exports = connect(mapStateToProps, mapDispatchToProps)(UnlockScreen)

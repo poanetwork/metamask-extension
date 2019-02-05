@@ -493,7 +493,7 @@ describe('MetaMaskController', function () {
   })
 
   describe('#verifyseedPhrase', function () {
-    let seedPhrase, getConfigSeed
+    let seedPhrase
 
     it('errors when no keying is provided', async function () {
       try {
@@ -514,12 +514,9 @@ describe('MetaMaskController', function () {
         if (err) {
          console.log(err)
         } else {
-          getConfigSeed = metamaskController.configManager.getSeedWords()
           assert.equal(result, seedPhrase)
-          assert.equal(result, getConfigSeed)
         }
       })
-      assert.equal(getConfigSeed, undefined)
     })
 
     it('#addNewAccount', async function () {

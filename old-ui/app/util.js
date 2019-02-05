@@ -48,6 +48,7 @@ module.exports = {
   ifContractAcc,
   ifHardwareAcc,
   isBurnerWalletMode,
+  getWalletModesArray,
 }
 
 function valuesFor (obj) {
@@ -373,4 +374,16 @@ function ifHardwareAcc (keyring) {
 **/
 function isBurnerWalletMode (mode) {
   return mode === walletModes.BURNER_WALLET_MODE
+}
+
+/**
+ * returns array of possible wallet modes
+ *
+ * returns {array} array of possible wallet modes + empty
+**/
+function getWalletModesArray () {
+  const walletModesArray = Object.values(walletModes)
+  const emptyWalletModesArray = [null, '']
+  walletModesArray.push(...emptyWalletModesArray)
+  return walletModesArray
 }
