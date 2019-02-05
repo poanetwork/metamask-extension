@@ -232,7 +232,7 @@ class ChooseContractExecutor extends Component {
 	}
 }
 
-function mapStateToProps (state) {
+const mapStateToProps = (state) => {
 	const accounts = getMetaMaskAccounts(state)
 	const result = {
 		selected: state.metamask.selectedAddress,
@@ -250,7 +250,7 @@ function mapStateToProps (state) {
 	return result
 }
 
-function mapDispatchToProps (dispatch) {
+const mapDispatchToProps = (dispatch) => {
 	return {
 		showLoadingIndication: () => dispatch(actions.showLoadingIndication()),
 		hideLoadingIndication: () => dispatch(actions.hideLoadingIndication()),

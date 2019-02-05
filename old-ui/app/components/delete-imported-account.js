@@ -1,22 +1,28 @@
 import ConfirmScreen from './confirm'
+import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../ui/app/actions'
 
 class DeleteImportedAccount extends ConfirmScreen {
+  static propTypes = {
+    goHome: PropTypes.func,
+  }
+
   render () {
+    const { identity, network } = this.props
     return (
       <ConfirmScreen
         subtitle="Delete Imported Account"
         withDescription={true}
         description="Be sure, that you saved a private key or JSON keystore file of this account in a safe place. Otherwise, you will not be able to restore this account."
-        question={`Are you sure to delete imported ${this.props.identity.name} (${this.props.identity.address})?`}
-        onCancelClick={() => this.props.dispatch(actions.showConfigPage())}
-        onNoClick={() => this.props.dispatch(actions.showConfigPage())}
+        question={`Are you sure you want to delete imported ${identity.name} (${identity.address})?`}
+        onCancelClick={() => this.props.goHome()}
+        onNoClick={() => this.props.goHome()}
         onYesClick={() => {
-          this.props.dispatch(actions.removeAccount(this.props.identity.address, this.props.metamask.network))
+          this.props.removeAccount(identity.address, network)
             .then(() => {
-              this.props.dispatch(actions.showConfigPage())
+              this.props.goHome()
             })
         }}
       />
@@ -24,12 +30,18 @@ class DeleteImportedAccount extends ConfirmScreen {
   }
 }
 
-function mapStateToProps (state) {
+const mapStateToProps = (state) => {
   return {
-    metamask: state.metamask,
+    network: state.metamask.network,
     identity: state.appState.identity,
-    provider: state.metamask.provider,
   }
 }
 
-module.exports = connect(mapStateToProps)(DeleteImportedAccount)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    removeAccount: (address, network) => dispatch(actions.removeAccount(address, network)),
+    goHome: () => dispatch(actions.goHome()),
+  }
+}
+
+module.exports = connect(mapStateToProps, mapDispatchToProps)(DeleteImportedAccount)

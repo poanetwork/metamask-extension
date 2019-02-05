@@ -43,9 +43,14 @@ class AccountDropdowns extends Component {
       isProxy: false,
       contractProps: null,
       preventToast: false,
+      isUnmounted: false,
     }
     this.accountSelectorToggleClassName = 'accounts-selector'
     this.optionsMenuToggleClassName = 'account-dropdown'
+  }
+
+  componentWillUnmount () {
+    this.setState({isUnmounted: true})
   }
 
   renderAccounts () {
@@ -170,7 +175,9 @@ class AccountDropdowns extends Component {
       this.props.actions.getContract(address)
       .then(contractProps => {
         if (setProxy) {
-          this.setState({contractProps})
+          if (!this.state.isUnmounted) {
+            this.setState({contractProps})
+          }
         }
         resolve(contractProps && contractProps.contractType === importTypes.CONTRACT.PROXY)
       })

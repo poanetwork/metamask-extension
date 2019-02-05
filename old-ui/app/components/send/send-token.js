@@ -19,6 +19,7 @@ import SendProfile from './send-profile'
 import SendHeader from './send-header'
 import ErrorComponent from '../error'
 import { getMetaMaskAccounts } from '../../../../ui/app/selectors'
+import ToastComponent from '../toast'
 
 class SendTransactionScreen extends PersistentForm {
   constructor (props) {
@@ -33,7 +34,6 @@ class SendTransactionScreen extends PersistentForm {
       amount: '',
       isLoading: true,
     }
-    PersistentForm.call(this)
   }
   render () {
     const { isLoading, token, amount } = this.state
@@ -56,6 +56,7 @@ class SendTransactionScreen extends PersistentForm {
     return (
 
       <div className="send-screen flex-column flex-grow">
+        <ToastComponent isSuccess={false} />
         <SendProfile isToken={true} token={token} />
         <SendHeader title={`Send ${this.state.token.symbol} Tokens`} />
         <ErrorComponent error={error} />
@@ -286,7 +287,7 @@ const mapStateToProps = (state) => {
   return result
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     showAccountsPage: () => dispatch(actions.showAccountsPage()),
     displayWarning: warning => dispatch(actions.displayWarning(warning)),

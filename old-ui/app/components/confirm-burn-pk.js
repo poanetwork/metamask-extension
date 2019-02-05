@@ -9,7 +9,7 @@ class BurnPKScreen extends ConfirmScreen {
     return (
       <ConfirmScreen
         subtitle="Burn Private Keys"
-        question={`Are you sure you want to burn seed phrase?`}
+        question={'Are you sure you want to burn seed phrase?'}
         onCancelClick={() => this.props.goHome()}
         onNoClick={() => this.props.goHome()}
         onYesClick={() => {

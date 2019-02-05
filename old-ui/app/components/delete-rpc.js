@@ -8,13 +8,13 @@ class DeleteRpc extends ConfirmScreen {
     return (
       <ConfirmScreen
         subtitle="Delete Custom RPC"
-        question={`Are you sure to delete ${this.props.url} ?`}
-        onCancelClick={() => this.props.dispatch(actions.showConfigPage())}
-        onNoClick={() => this.props.dispatch(actions.showConfigPage())}
+        question={`Are you sure you want to delete ${this.props.url} ?`}
+        onCancelClick={() => this.props.showConfigPage()}
+        onNoClick={() => this.props.showConfigPage()}
         onYesClick={() => {
-          this.props.dispatch(actions.removeCustomRPC(this.props.url, this.props.provider))
+          this.props.removeCustomRPC(this.props.url, this.props.provider)
             .then(() => {
-              this.props.dispatch(actions.showConfigPage())
+              this.props.showConfigPage()
             })
         }}
       />
@@ -22,12 +22,18 @@ class DeleteRpc extends ConfirmScreen {
   }
 }
 
-function mapStateToProps (state) {
+const mapStateToProps = (state) => {
   return {
-    metamask: state.metamask,
     url: state.appState.RPC_URL ? state.appState.RPC_URL : state.metamask.provider.rpcTarget,
     provider: state.metamask.provider,
   }
 }
 
-module.exports = connect(mapStateToProps)(DeleteRpc)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    removeCustomRPC: (url, provider) => dispatch(actions.removeCustomRPC(url, provider)),
+    showConfigPage: () => dispatch(actions.showConfigPage()),
+  }
+}
+
+module.exports = connect(mapStateToProps, mapDispatchToProps)(DeleteRpc)

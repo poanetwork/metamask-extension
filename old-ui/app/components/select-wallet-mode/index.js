@@ -53,16 +53,10 @@ class SelectWalletModeScreen extends Component {
   }
 }
 
-function mapStateToProps (state) {
-  return {
-    metamask: state.metamask,
-  }
-}
-
 const mapDispatchToProps = dispatch => {
   return {
     setWalletMode: (mode) => dispatch(actions.setWalletMode(mode)),
   }
 }
 
-module.exports = connect(mapStateToProps, mapDispatchToProps)(SelectWalletModeScreen)
+module.exports = connect(null, mapDispatchToProps)(SelectWalletModeScreen)
