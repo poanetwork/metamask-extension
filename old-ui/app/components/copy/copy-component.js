@@ -6,6 +6,7 @@ import Tooltip from '../tooltip'
 class CopyComponent extends Component {
   constructor (props) {
     super(props)
+    this.timerID = null
     this.state = {
       copied: false,
     }
@@ -24,7 +25,7 @@ class CopyComponent extends Component {
   }
 
   componentWillUnmount () {
-    clearTimeout(this.timeout)
+    clearTimeout(this.timerID)
   }
 
   renderTooltip (message, position, children) {
@@ -40,8 +41,8 @@ class CopyComponent extends Component {
 
   debounceRestore () {
     this.setState({ copied: true })
-    clearTimeout(this.timeout)
-    this.timeout = setTimeout(() => {
+    clearTimeout(this.timerID)
+    this.timerID = setTimeout(() => {
       this.setState({ copied: false })
     }, 850)
   }
