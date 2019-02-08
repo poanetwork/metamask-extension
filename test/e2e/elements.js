@@ -400,6 +400,7 @@ module.exports = {
     ROPSTEN: 'ropsten',
     KOVAN: 'kovan',
     RINKEBY: 'rinkeby',
+    GOERLI: 'goerli',
     LOCALHOST: 'localhost',
     CUSTOM: 'http://test.com',
   },

@@ -8,6 +8,7 @@ const connect = require('react-redux').connect
 const CopyButton = require('./copy/copy-button')
 import { isBurnerWalletMode } from '../util'
 
+
 module.exports = connect(mapStateToProps)(ExportAccountView)
 
 inherits(ExportAccountView, Component)
