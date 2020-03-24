@@ -2,10 +2,10 @@ import EventEmitter from 'events'
 import h from 'react-hyperscript'
 import { Component } from 'react'
 import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'recompose'
-import {closeWelcomeScreen} from './actions'
+import { closeWelcomeScreen } from './actions'
 import { INITIALIZE_CREATE_PASSWORD_ROUTE } from './routes'
 
 class WelcomeScreen extends Component {
@@ -13,7 +13,6 @@ class WelcomeScreen extends Component {
     closeWelcomeScreen: PropTypes.func.isRequired,
     welcomeScreenSeen: PropTypes.bool,
     history: PropTypes.object,
-    t: PropTypes.func,
   }
 
   static contextTypes = {
@@ -25,7 +24,7 @@ class WelcomeScreen extends Component {
     this.animationEventEmitter = new EventEmitter()
   }
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     const { history, welcomeScreenSeen } = this.props
 
     if (welcomeScreenSeen) {
@@ -41,19 +40,19 @@ class WelcomeScreen extends Component {
   render () {
     return h('div.welcome-screen', [
 
-        h('div.welcome-screen__info', [
+      h('div.welcome-screen__info', [
 
-          h('div.welcome-screen__info__header', this.context.t('welcomeBeta')),
+        h('div.welcome-screen__info__header', this.context.t('welcomeBeta')),
 
-          h('div.welcome-screen__info__copy', this.context.t('metamaskDescription')),
+        h('div.welcome-screen__info__copy', this.context.t('metamaskDescription')),
 
-          h('div.welcome-screen__info__copy', this.context.t('holdEther')),
+        h('div.welcome-screen__info__copy', this.context.t('holdEther')),
 
-          h('button.welcome-screen__button', {
-            onClick: this.initiateAccountCreation,
-          }, this.context.t('continue')),
+        h('button.welcome-screen__button', {
+          onClick: this.initiateAccountCreation,
+        }, this.context.t('continue')),
 
-        ]),
+      ]),
 
     ])
   }
@@ -69,7 +68,7 @@ export default compose(
   withRouter,
   connect(
     mapStateToProps,
-    dispatch => ({
+    (dispatch) => ({
       closeWelcomeScreen: () => dispatch(closeWelcomeScreen()),
     })
   )

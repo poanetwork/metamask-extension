@@ -34,7 +34,7 @@ module.exports = class MessageManager extends EventEmitter {
    * @property {array} messages Holds all messages that have been created by this MessageManager
    *
    */
-  constructor (opts) {
+  constructor () {
     super()
     this.memStore = new ObservableStore({
       unapprovedMsgs: {},
@@ -60,8 +60,10 @@ module.exports = class MessageManager extends EventEmitter {
    *
    */
   getUnapprovedMsgs () {
-    return this.messages.filter(msg => msg.status === 'unapproved')
-    .reduce((result, msg) => { result[msg.id] = msg; return result }, {})
+    return this.messages.filter((msg) => msg.status === 'unapproved')
+      .reduce((result, msg) => {
+        result[msg.id] = msg; return result
+      }, {})
   }
 
   /**
@@ -101,12 +103,14 @@ module.exports = class MessageManager extends EventEmitter {
    */
   addUnapprovedMessage (msgParams, req) {
     // add origin from request
-    if (req) msgParams.origin = req.origin
+    if (req) {
+      msgParams.origin = req.origin
+    }
     msgParams.data = normalizeMsgData(msgParams.data)
     // create txData obj with parameters and meta data
-    var time = (new Date()).getTime()
-    var msgId = createId()
-    var msgData = {
+    const time = (new Date()).getTime()
+    const msgId = createId()
+    const msgData = {
       id: msgId,
       msgParams: msgParams,
       time: time,
@@ -140,7 +144,7 @@ module.exports = class MessageManager extends EventEmitter {
    *
    */
   getMsg (msgId) {
-    return this.messages.find(msg => msg.id === msgId)
+    return this.messages.find((msg) => msg.id === msgId)
   }
 
   /**
@@ -218,7 +222,9 @@ module.exports = class MessageManager extends EventEmitter {
    */
   _setMsgStatus (msgId, status) {
     const msg = this.getMsg(msgId)
-    if (!msg) throw new Error('MessageManager - Message not found for id: "${msgId}".')
+    if (!msg) {
+      throw new Error('MessageManager - Message not found for id: "${msgId}".')
+    }
     msg.status = status
     this._updateMsg(msg)
     this.emit(`${msgId}:${status}`, msg)

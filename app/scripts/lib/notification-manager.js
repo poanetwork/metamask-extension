@@ -1,4 +1,5 @@
 const extension = require('extensionizer')
+
 const height = 620
 const width = 360
 
@@ -19,7 +20,9 @@ class NotificationManager {
    */
   showPopup () {
     this._getPopup((err, popup) => {
-      if (err) throw err
+      if (err) {
+        throw err
+      }
 
       // Bring focus to chrome popup
       if (popup) {
@@ -49,8 +52,12 @@ class NotificationManager {
   closePopup () {
     // closes notification popup
     this._getPopup((err, popup) => {
-      if (err) throw err
-      if (!popup) return
+      if (err) {
+        throw err
+      }
+      if (!popup) {
+        return
+      }
       extension.windows.remove(popup.id, console.error)
     })
   }
@@ -65,7 +72,9 @@ class NotificationManager {
    */
   _getPopup (cb) {
     this._getWindows((err, windows) => {
-      if (err) throw err
+      if (err) {
+        throw err
+      }
       cb(null, this._getPopupIn(windows))
     })
   }

@@ -40,7 +40,7 @@ I18nProvider.childContextTypes = {
   tOrKey: PropTypes.func,
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const { localeMessages } = state
   return {
     localeMessages,

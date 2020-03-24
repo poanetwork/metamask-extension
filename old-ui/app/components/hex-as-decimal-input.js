@@ -2,6 +2,7 @@ const Component = require('react').Component
 const h = require('react-hyperscript')
 const inherits = require('util').inherits
 const ethUtil = require('ethereumjs-util')
+
 const BN = ethUtil.BN
 const extend = require('xtend')
 
@@ -102,7 +103,7 @@ HexAsDecimalInput.prototype.render = function () {
   )
 }
 
-HexAsDecimalInput.prototype.setValid = function (message) {
+HexAsDecimalInput.prototype.setValid = function () {
   this.setState({ invalid: null })
 }
 
@@ -143,7 +144,7 @@ function hexify (decimalString) {
   return '0x' + hexBN.toString('hex')
 }
 
-function decimalize (input, toEth) {
+function decimalize (input, _toEth) {
   if (input === '') {
     return ''
   } else {

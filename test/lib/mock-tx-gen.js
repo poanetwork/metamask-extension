@@ -1,5 +1,6 @@
 const extend = require('xtend')
 const BN = require('ethereumjs-util').BN
+
 const template = {
   'status': 'submitted',
   'txParams': {

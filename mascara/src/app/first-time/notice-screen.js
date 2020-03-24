@@ -28,11 +28,11 @@ class NoticeScreen extends Component {
     history: PropTypes.object,
     isLoading: PropTypes.bool,
     noActiveNotices: PropTypes.bool,
-  };
+  }
 
   static defaultProps = {
     nextUnreadNotice: {},
-  };
+  }
 
   state = {
     atBottom: false,
@@ -49,7 +49,7 @@ class NoticeScreen extends Component {
   acceptTerms = () => {
     const { markNoticeRead, nextUnreadNotice, history } = this.props
     markNoticeRead(nextUnreadNotice)
-      .then(hasActiveNotices => {
+      .then((hasActiveNotices) => {
         if (!hasActiveNotices) {
           history.push(INITIALIZE_BACKUP_PHRASE_ROUTE)
         } else {
@@ -60,13 +60,15 @@ class NoticeScreen extends Component {
   }
 
   onScroll = debounce(() => {
-    if (this.state.atBottom) return
+    if (this.state.atBottom) {
+      return
+    }
 
     const target = document.querySelector('.tou__body')
-    const {scrollTop, offsetHeight, scrollHeight} = target
+    const { scrollTop, offsetHeight, scrollHeight } = target
     const atBottom = scrollTop + offsetHeight >= scrollHeight
 
-    this.setState({atBottom: atBottom})
+    this.setState({ atBottom: atBottom })
   }, 25)
 
   render () {
@@ -128,8 +130,8 @@ export default compose(
   withRouter,
   connect(
     mapStateToProps,
-    dispatch => ({
-      markNoticeRead: notice => dispatch(markNoticeRead(notice)),
+    (dispatch) => ({
+      markNoticeRead: (notice) => dispatch(markNoticeRead(notice)),
     })
   )
 )(NoticeScreen)

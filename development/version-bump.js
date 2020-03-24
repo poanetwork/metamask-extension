@@ -40,6 +40,8 @@ function newVersionFrom (manifest, bumpType) {
     case 'patch':
       segments[2] += 1
       break
+    default:
+      segments[2] += 1
   }
 
   return segments.map(String).join('.')

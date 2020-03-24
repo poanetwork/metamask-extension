@@ -88,7 +88,7 @@ export default class MenuDroppo extends Component {
       this.globalClickHandler = this.globalClickOccurred.bind(this)
       document.body.addEventListener('click', this.globalClickHandler)
       // eslint-disable-next-line react/no-find-dom-node
-      var container = findDOMNode(this)
+      const container = findDOMNode(this)
       this.container = container
     }
 
@@ -125,18 +125,18 @@ export default class MenuDroppo extends Component {
     }
   }
 
-  transitionstartOccured (event) {
+  transitionstartOccured () {
     this.menuDroppoContainer.current.style.overflow = 'hidden'
   }
 
-  transitionendOccured (event) {
+  transitionendOccured () {
     if (!this.props.constOverflow) {
       this.menuDroppoContainer.current.style.overflow = 'auto'
     }
   }
 
   isDescendant (parent, child) {
-    var node = child.parentNode
+    let node = child.parentNode
     while (node !== null) {
       if (node === parent) {
         return true

@@ -20,7 +20,9 @@ module.exports = class ExtensionStore {
    * @return {Promise<*>}
    */
   async get () {
-    if (!this.isSupported) return undefined
+    if (!this.isSupported) {
+      return undefined
+    }
     const result = await this._get()
     // extension.storage.local always returns an obj
     // if the object is empty, treat it as undefined

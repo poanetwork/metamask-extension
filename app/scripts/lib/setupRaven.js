@@ -1,6 +1,8 @@
 const Raven = require('raven-js')
+
 const METAMASK_DEBUG = process.env.METAMASK_DEBUG
 const extractEthjsErrorMessage = require('./extractEthjsErrorMessage')
+
 const PROD = 'https://3bd485f8ed6047d882f3f010cbae46ca@sentry.io/1250701'
 const DEV = 'https://267dbd2f3447444faa637bc34bcc7317@sentry.io/1253429'
 
@@ -49,8 +51,12 @@ function setupRaven (opts) {
 function rewriteErrorLikeExceptions (report) {
   // handle errors that lost their error-ness in serialization (e.g. dnode)
   rewriteErrorMessages(report, (errorMessage) => {
-    if (!errorMessage.includes('Non-Error exception captured with keys:')) return errorMessage
-    if (!(report.extra && report.extra.__serialized__ && report.extra.__serialized__.message)) return errorMessage
+    if (!errorMessage.includes('Non-Error exception captured with keys:')) {
+      return errorMessage
+    }
+    if (!(report.extra && report.extra.__serialized__ && report.extra.__serialized__.message)) {
+      return errorMessage
+    }
     return `Non-Error Exception: ${report.extra.__serialized__.message}`
   })
 }
@@ -70,11 +76,15 @@ function simplifyErrorMessages (report) {
 
 function rewriteErrorMessages (report, rewriteFn) {
   // rewrite top level message
-  if (typeof report.message === 'string') report.message = rewriteFn(report.message)
+  if (typeof report.message === 'string') {
+    report.message = rewriteFn(report.message)
+  }
   // rewrite each exception message
   if (report.exception && report.exception.values) {
-    report.exception.values.forEach(item => {
-      if (typeof item.value === 'string') item.value = rewriteFn(item.value)
+    report.exception.values.forEach((item) => {
+      if (typeof item.value === 'string') {
+        item.value = rewriteFn(item.value)
+      }
     })
   }
 }
@@ -84,8 +94,8 @@ function rewriteReportUrls (report) {
   report.request.url = toMetamaskUrl(report.request.url)
   // update exception stack trace
   if (report.exception && report.exception.values) {
-    report.exception.values.forEach(item => {
-      item.stacktrace.frames.forEach(frame => {
+    report.exception.values.forEach((item) => {
+      item.stacktrace.frames.forEach((frame) => {
         frame.filename = toMetamaskUrl(frame.filename)
       })
     })
@@ -94,7 +104,9 @@ function rewriteReportUrls (report) {
 
 function toMetamaskUrl (origUrl) {
   const filePath = origUrl.split(location.origin)[1]
-  if (!filePath) return origUrl
+  if (!filePath) {
+    return origUrl
+  }
   const metamaskUrl = `metamask${filePath}`
   return metamaskUrl
 }

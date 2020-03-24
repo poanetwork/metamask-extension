@@ -22,6 +22,9 @@ TypedMessageRenderer.prototype.render = function () {
     case 'V3':
       text = renderTypedDataV3(value)
       break
+    default:
+      text = renderTypedData(value)
+      break
   }
 
   const defaultStyle = extend({
@@ -49,7 +52,7 @@ function renderTypedData (values) {
       v = v.toString()
     }
     return h('div', {}, [
-      h('strong', {style: {display: 'block', fontWeight: 'bold'}}, String(value.name) + ':'),
+      h('strong', { style: { display: 'block', fontWeight: 'bold' } }, String(value.name) + ':'),
       h('div', {}, v),
     ])
   })
@@ -57,7 +60,7 @@ function renderTypedData (values) {
 
 function renderTypedDataV3 (values) {
   const { domain, message } = JSON.parse(values)
-   return [
+  return [
     domain ? h('div', [
       h('h1', 'Domain'),
       h(ObjectInspector, { data: domain, expandLevel: 1, name: 'domain' }),

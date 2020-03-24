@@ -50,7 +50,9 @@ LoadingIndicator.prototype.render = function () {
 }
 
 function showMessageIfAny (loadingMessage) {
-  if (!loadingMessage) return null
+  if (!loadingMessage) {
+    return null
+  }
   return h('span', {
     style: {
       textAlign: 'center',

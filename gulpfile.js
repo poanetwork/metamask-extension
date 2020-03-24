@@ -58,38 +58,38 @@ const copyDevTaskNames = []
 
 createCopyTasks('locales', {
   source: './app/_locales/',
-  destinations: commonPlatforms.map(platform => `./dist/${platform}/_locales`),
+  destinations: commonPlatforms.map((platform) => `./dist/${platform}/_locales`),
 })
 createCopyTasks('images', {
   source: './app/images/',
-  destinations: commonPlatforms.map(platform => `./dist/${platform}/images`),
+  destinations: commonPlatforms.map((platform) => `./dist/${platform}/images`),
 })
 createCopyTasks('contractImages', {
   source: './node_modules/eth-contract-metadata/images/',
-  destinations: commonPlatforms.map(platform => `./dist/${platform}/images/contract`),
+  destinations: commonPlatforms.map((platform) => `./dist/${platform}/images/contract`),
 })
 createCopyTasks('contractImagesPOA', {
   source: './node_modules/poa-contract-metadata/images/',
-  destinations: commonPlatforms.map(platform => `./dist/${platform}/images/contractPOA`),
+  destinations: commonPlatforms.map((platform) => `./dist/${platform}/images/contractPOA`),
 })
 createCopyTasks('fonts', {
   source: './app/fonts/',
-  destinations: commonPlatforms.map(platform => `./dist/${platform}/fonts`),
+  destinations: commonPlatforms.map((platform) => `./dist/${platform}/fonts`),
 })
 createCopyTasks('vendor', {
   source: './app/vendor/',
-  destinations: commonPlatforms.map(platform => `./dist/${platform}/vendor`),
+  destinations: commonPlatforms.map((platform) => `./dist/${platform}/vendor`),
 })
 createCopyTasks('reload', {
   devOnly: true,
   source: './app/scripts/',
   pattern: '/chromereload.js',
-  destinations: commonPlatforms.map(platform => `./dist/${platform}`),
+  destinations: commonPlatforms.map((platform) => `./dist/${platform}`),
 })
 createCopyTasks('html', {
   source: './app/',
   pattern: '/*.html',
-  destinations: commonPlatforms.map(platform => `./dist/${platform}`),
+  destinations: commonPlatforms.map((platform) => `./dist/${platform}`),
 })
 
 // copy extension
@@ -97,7 +97,7 @@ createCopyTasks('html', {
 createCopyTasks('manifest', {
   source: './app/',
   pattern: '/*.json',
-  destinations: browserPlatforms.map(platform => `./dist/${platform}`),
+  destinations: browserPlatforms.map((platform) => `./dist/${platform}`),
 })
 
 // copy mascara
@@ -154,26 +154,26 @@ function copyTask (taskName, opts) {
 
 gulp.task('manifest:chrome', function () {
   return gulp.src('./dist/chrome/manifest.json')
-  .pipe(jsoneditor(function (json) {
-    delete json.applications
-    return json
-  }))
-  .pipe(gulp.dest('./dist/chrome', { overwrite: true }))
+    .pipe(jsoneditor(function (json) {
+      delete json.applications
+      return json
+    }))
+    .pipe(gulp.dest('./dist/chrome', { overwrite: true }))
 })
 
 gulp.task('manifest:opera', function () {
   return gulp.src('./dist/opera/manifest.json')
-  .pipe(jsoneditor(function (json) {
-    json.permissions = [
-      'storage',
-      'tabs',
-      'clipboardWrite',
-      'clipboardRead',
-      'http://localhost:8545/',
-    ]
-    return json
-  }))
-  .pipe(gulp.dest('./dist/opera', { overwrite: true }))
+    .pipe(jsoneditor(function (json) {
+      json.permissions = [
+        'storage',
+        'tabs',
+        'clipboardWrite',
+        'clipboardRead',
+        'http://localhost:8545/',
+      ]
+      return json
+    }))
+    .pipe(gulp.dest('./dist/opera', { overwrite: true }))
 })
 
 gulp.task('manifest:production', function () {
@@ -182,17 +182,17 @@ gulp.task('manifest:production', function () {
     './dist/chrome/manifest.json',
     './dist/edge/manifest.json',
     './dist/opera/manifest.json',
-  ], {base: './dist/'})
+  ], { base: './dist/' })
 
   // Exclude chromereload script in production:
-  .pipe(jsoneditor(function (json) {
-    json.background.scripts = json.background.scripts.filter((script) => {
-      return !script.includes('chromereload')
-    })
-    return json
-  }))
+    .pipe(jsoneditor(function (json) {
+      json.background.scripts = json.background.scripts.filter((script) => {
+        return !script.includes('chromereload')
+      })
+      return json
+    }))
 
-  .pipe(gulp.dest('./dist/', { overwrite: true }))
+    .pipe(gulp.dest('./dist/', { overwrite: true }))
 })
 
 gulp.task('copy',
@@ -248,10 +248,10 @@ createTasksForBuildJsMascara({ taskPrefix: 'dev:mascara:js', devMode: true })
 function createTasksForBuildJsExtension ({ buildJsFiles, taskPrefix, devMode, bundleTaskOpts = {} }) {
   // inpage must be built before all other scripts:
   const rootDir = './app/scripts'
-  const nonInpageFiles = buildJsFiles.filter(file => file !== 'inpage')
+  const nonInpageFiles = buildJsFiles.filter((file) => file !== 'inpage')
   const buildPhase1 = ['inpage']
   const buildPhase2 = nonInpageFiles
-  const destinations = browserPlatforms.map(platform => `./dist/${platform}`)
+  const destinations = browserPlatforms.map((platform) => `./dist/${platform}`)
   bundleTaskOpts = Object.assign({
     buildSourceMaps: true,
     sourceMapDir: devMode ? './' : '../sourcemaps',
@@ -292,8 +292,10 @@ function createTasksForBuildJs ({ rootDir, taskPrefix, bundleTaskOpts, destinati
   })
   // compose into larger task
   const subtasks = []
-  subtasks.push(gulp.parallel(buildPhase1.map(file => `${taskPrefix}:${file}`)))
-  if (buildPhase2.length) subtasks.push(gulp.parallel(buildPhase2.map(file => `${taskPrefix}:${file}`)))
+  subtasks.push(gulp.parallel(buildPhase1.map((file) => `${taskPrefix}:${file}`)))
+  if (buildPhase2.length) {
+    subtasks.push(gulp.parallel(buildPhase2.map((file) => `${taskPrefix}:${file}`)))
+  }
 
   gulp.task(taskPrefix, gulp.series(subtasks))
 }
@@ -304,7 +306,7 @@ buildJsFiles.forEach((jsFile) => {
   gulp.task(`disc:${jsFile}`, discTask({ label: jsFile, filename: `${jsFile}.js` }))
 })
 
-gulp.task('disc', gulp.parallel(buildJsFiles.map(jsFile => `disc:${jsFile}`)))
+gulp.task('disc', gulp.parallel(buildJsFiles.map((jsFile) => `disc:${jsFile}`)))
 
 // clean dist
 
@@ -398,8 +400,8 @@ gulp.task('dist',
 function zipTask (target) {
   return () => {
     return gulp.src(`dist/${target}/**`)
-    .pipe(zip(`metamask-${target}-${manifest.version}.zip`))
-    .pipe(gulp.dest('builds'))
+      .pipe(zip(`metamask-${target}-${manifest.version}.zip`))
+      .pipe(gulp.dest('builds'))
   }
 }
 
@@ -451,8 +453,8 @@ function discTask (opts) {
 
     return (
       bundler.bundle()
-      .pipe(disc())
-      .pipe(fs.createWriteStream(discPath))
+        .pipe(disc())
+        .pipe(fs.createWriteStream(discPath))
     )
   }
 }
@@ -495,11 +497,11 @@ function bundleTask (opts) {
     // Minification
     if (opts.minifyBuild) {
       buildStream = buildStream
-      .pipe(uglify({
-        mangle: {
-          reserved: [ 'MetamaskInpageProvider' ],
-        },
-      }))
+        .pipe(uglify({
+          mangle: {
+            reserved: [ 'MetamaskInpageProvider' ],
+          },
+        }))
     }
 
     // Finalize Source Maps (writes .map file)

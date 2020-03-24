@@ -44,10 +44,14 @@ module.exports = class NoticeController extends EventEmitter {
   }
 
   markNoticeRead (noticeToMark, cb) {
-    cb = cb || function (err) { if (err) throw err }
+    cb = cb || function (err) {
+      if (err) {
+        throw err
+      }
+    }
     try {
-      var notices = this.getNoticesList()
-      var index = notices.findIndex((currentNotice) => currentNotice.id === noticeToMark.id)
+      const notices = this.getNoticesList()
+      const index = notices.findIndex((currentNotice) => currentNotice.id === noticeToMark.id)
       notices[index].read = true
       notices[index].body = ''
       this.setNoticesList(notices)

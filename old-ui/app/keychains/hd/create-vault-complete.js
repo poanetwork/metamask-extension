@@ -20,8 +20,8 @@ function mapStateToProps (state) {
 }
 
 CreateVaultCompleteScreen.prototype.render = function () {
-  var state = this.props
-  var seed = state.seed || state.cachedSeed || ''
+  const state = this.props
+  const seed = state.seed || state.cachedSeed || ''
 
   return (
 
@@ -61,7 +61,7 @@ CreateVaultCompleteScreen.prototype.render = function () {
 
       h('button', {
         onClick: () => this.confirmSeedWords()
-          .then(account => this.showAccountDetail(account)),
+          .then((account) => this.showAccountDetail(account)),
         style: {
           margin: '24px',
           fontSize: '0.9em',

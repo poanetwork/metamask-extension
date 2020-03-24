@@ -8,7 +8,7 @@ module.exports = {
 
 
 function serveBundle (server, path, bundle) {
-  server.get(path, function (req, res) {
+  server.get(path, function (_req, res) {
     res.setHeader('Content-Type', 'application/javascript; charset=UTF-8')
     res.send(bundle.latest)
   })
@@ -16,9 +16,9 @@ function serveBundle (server, path, bundle) {
 
 function createBundle (entryPoint) {
 
-  var bundleContainer = {}
+  const bundleContainer = {}
 
-  var bundler = browserify({
+  const bundler = browserify({
     entries: [entryPoint],
     cache: {},
     packageCache: {},

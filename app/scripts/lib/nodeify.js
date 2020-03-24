@@ -1,4 +1,5 @@
 const promiseToCallback = require('promise-to-callback')
+
 const noop = function () {}
 
 /**

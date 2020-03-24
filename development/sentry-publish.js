@@ -16,7 +16,7 @@ async function start () {
   if (versionAlreadyExists) {
     console.log(`Version "${VERSION}" already exists on Sentry, skipping version creation`)
   } else {
-     // create sentry release
+    // create sentry release
     console.log(`creating Sentry release for "${VERSION}"...`)
     await exec(`sentry-cli releases --org 'poa-network' --project 'nifty-wallet' new ${VERSION}`)
     console.log(`removing any existing files from Sentry release "${VERSION}"...`)

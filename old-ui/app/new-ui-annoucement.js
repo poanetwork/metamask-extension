@@ -1,12 +1,12 @@
 const PropTypes = require('prop-types')
-const {PureComponent} = require('react')
+const { PureComponent } = require('react')
 const h = require('react-hyperscript')
 const actions = require('../../ui/app/actions')
 
 module.exports = class NewUiAnnouncement extends PureComponent {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-  };
+  }
 
   close = async () => {
     await this.props.dispatch(actions.setFeatureFlag('skipAnnounceBetaUI', true))
@@ -59,7 +59,7 @@ module.exports = class NewUiAnnouncement extends PureComponent {
             }),
             h('a', {
               href: 'https://medium.com/metamask/74dba32cc7f7',
-              onClick ({target}) {
+              onClick ({ target }) {
                 const url = target.href
                 global.platform.openWindow({
                   url,

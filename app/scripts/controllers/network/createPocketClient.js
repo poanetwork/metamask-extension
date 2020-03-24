@@ -9,6 +9,7 @@ const providerFromMiddleware = require('eth-json-rpc-middleware/providerFromMidd
 const createPocketMiddleware = require('json-rpc-pocket')
 const BlockTracker = require('eth-block-tracker')
 const { getNetworkID } = require('../../../../old-ui/app/util')
+
 const devid = 'DEVVGQ8VfHgBBet8CyowHcN'
 
 module.exports = createPocketClient
@@ -35,7 +36,7 @@ function createPocketClient ({ network }) {
 }
 
 function createNetworkAndChainIdMiddleware ({ network }) {
-  const networkID = getNetworkID({network})
+  const networkID = getNetworkID({ network })
 
   return createScaffoldMiddleware({
     eth_chainId: networkID.chainId,

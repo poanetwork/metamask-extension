@@ -34,10 +34,14 @@ function createMetamaskMiddleware ({
 
 function createPendingNonceMiddleware ({ getPendingNonce }) {
   return createAsyncMiddleware(async (req, res, next) => {
-    if (req.method !== 'eth_getTransactionCount') return next()
+    if (req.method !== 'eth_getTransactionCount') {
+      return next()
+    }
     const address = req.params[0]
     const blockRef = req.params[1]
-    if (blockRef !== 'pending') return next()
+    if (blockRef !== 'pending') {
+      return next()
+    }
     res.result = await getPendingNonce(address)
   })
 }

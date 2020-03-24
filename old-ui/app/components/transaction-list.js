@@ -16,12 +16,12 @@ function TransactionList () {
 TransactionList.prototype.render = function () {
   const { transactions, network, unapprovedMsgs, conversionRate } = this.props
 
-  var shapeShiftTxList
+  let shapeShiftTxList
   if (Number(network) === MAINNET_CODE) {
     shapeShiftTxList = this.props.shapeShiftTxList
   }
   const txsToRender = !shapeShiftTxList ? transactions.concat(unapprovedMsgs) : transactions.concat(unapprovedMsgs, shapeShiftTxList)
-  .sort((a, b) => b.time - a.time)
+    .sort((a, b) => b.time - a.time)
 
   return (
 
@@ -69,18 +69,18 @@ TransactionList.prototype.render = function () {
               },
             })
           })
-        : h('.flex-center.full-flex-height', {
-          style: {
-            flexDirection: 'column',
-            justifyContent: 'center',
-          },
-        }, [
-          h('p', {
+          : h('.flex-center.full-flex-height', {
             style: {
-              margin: '50px 0',
+              flexDirection: 'column',
+              justifyContent: 'center',
             },
-          }, 'No transaction history.'),
-        ]),
+          }, [
+            h('p', {
+              style: {
+                margin: '50px 0',
+              },
+            }, 'No transaction history.'),
+          ]),
       ]),
     ])
   )

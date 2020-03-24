@@ -5,12 +5,12 @@ import classnames from 'classnames'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'recompose'
 import Identicon from '../../../../ui/app/components/identicon'
-import {exportAsFile} from '../../../../ui/app/util'
+import { exportAsFile } from '../../../../ui/app/util'
 import Breadcrumbs from './breadcrumbs'
 import LoadingScreen from './loading-screen'
 import { DEFAULT_ROUTE, INITIALIZE_CONFIRM_SEED_ROUTE } from '../../../../ui/app/routes'
 
-const LockIcon = props => (
+const LockIcon = (props) => (
   <svg
     version="1.1"
     id="Capa_1"
@@ -21,7 +21,7 @@ const LockIcon = props => (
     width="401.998px"
     height="401.998px"
     viewBox="0 0 401.998 401.998"
-    style={{enableBackground: 'new 0 0 401.998 401.998'}}
+    style={{ enableBackground: 'new 0 0 401.998 401.998' }}
     xmlSpace="preserve"
     {...props}
   >
@@ -45,7 +45,7 @@ class BackupPhraseScreen extends Component {
     address: PropTypes.string.isRequired,
     seedWords: PropTypes.string,
     history: PropTypes.object,
-  };
+  }
 
   static defaultProps = {
     seedWords: '',
@@ -58,7 +58,7 @@ class BackupPhraseScreen extends Component {
     }
   }
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     const { seedWords, history } = this.props
 
     if (!seedWords) {
@@ -79,7 +79,8 @@ class BackupPhraseScreen extends Component {
       <div className="backup-phrase__secret">
         <div className={classnames('backup-phrase__secret-words', {
           'backup-phrase__secret-words--hidden': !isShowingSecret,
-        })}>
+        })}
+        >
           {this.props.seedWords}
         </div>
         {!isShowingSecret && (

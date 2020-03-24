@@ -11,13 +11,13 @@ QUnit.skip('successful add token flow', (assert) => {
   const done = assert.async()
   runAddTokenFlowTest(assert)
     .then(done)
-    .catch(err => {
+    .catch((err) => {
       assert.notOk(err, `Error was thrown: ${err.stack}`)
       done()
     })
 })
 
-async function runAddTokenFlowTest (assert, done) {
+async function runAddTokenFlowTest (assert, _done) {
   const selectState = await queryAsync($, 'select')
 
   selectState.val('add token')

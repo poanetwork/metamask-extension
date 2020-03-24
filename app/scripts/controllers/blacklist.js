@@ -63,7 +63,9 @@ class BlacklistController {
    *
    */
   checkForPhishing (hostname) {
-    if (!hostname) return false
+    if (!hostname) {
+      return false
+    }
 
     const { whitelist } = this.store.getState()
     if (whitelist.some((e) => e === hostname)) {

@@ -8,7 +8,7 @@ const startPopup = require('../../app/scripts/popup-core')
 // create platform global
 global.platform = new MetamascaraPlatform()
 
-var css = MetaMaskUiCss()
+const css = MetaMaskUiCss()
 injectCss(css)
 const container = document.getElementById('app-content')
 
@@ -51,10 +51,14 @@ function connectApp () {
   return new Promise((resolve, reject) => {
     startPopup({ container, connectionStream }, (err, store) => {
       console.log('hello from MetaMascara ui!')
-      if (err) reject(err)
+      if (err) {
+        reject(err)
+      }
       store.subscribe(() => {
         const state = store.getState()
-        if (state.appState.shouldClose) window.close()
+        if (state.appState.shouldClose) {
+          window.close()
+        }
       })
       resolve()
     })
@@ -62,7 +66,9 @@ function connectApp () {
 }
 
 function windowReload () {
-  if (window.METAMASK_SKIP_RELOAD) return
+  if (window.METAMASK_SKIP_RELOAD) {
+    return
+  }
   window.location.reload()
 }
 

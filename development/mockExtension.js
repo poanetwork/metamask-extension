@@ -5,6 +5,7 @@
  */
 
 const extension = require('extensionizer')
+
 const noop = function () {}
 
 const apis = [

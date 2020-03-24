@@ -21,7 +21,7 @@ RangeSlider.prototype.render = function () {
     defaultValue = 50,
     mirrorInput = false,
   } = this.props.options
-  const {container, input, range} = props.style
+  const { container, input, range } = props.style
 
   return (
     h('.flex-row', {
@@ -54,5 +54,5 @@ RangeSlider.prototype.render = function () {
 }
 
 RangeSlider.prototype.mirrorInputs = function (event) {
-  this.setState({value: event.target.value})
+  this.setState({ value: event.target.value })
 }

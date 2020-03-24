@@ -23,9 +23,11 @@ const Selector = require('./selector')
 const MetamaskController = require('../app/scripts/metamask-controller')
 const firstTimeState = require('../app/scripts/first-time-state')
 const ExtensionPlatform = require('../app/scripts/platforms/extension')
+
 const noop = function () {}
 
 const log = require('loglevel')
+
 window.log = log
 log.setLevel('debug')
 
@@ -34,6 +36,7 @@ log.setLevel('debug')
 //
 
 const qs = require('qs')
+
 const routerPath = window.location.href.split('#')[1]
 let queryString = {}
 let selectedView
@@ -101,11 +104,11 @@ function modifyBackgroundConnection (backgroundConnectionModifier) {
   actions._setBackgroundConnection(modifiedBackgroundConnection)
 }
 
-var css = MetaMaskUiCss()
+const css = MetaMaskUiCss()
 injectCss(css)
 
 // parse opts
-var store = configureStore(firstState)
+const store = configureStore(firstState)
 
 // start app
 startApp()
@@ -147,10 +150,10 @@ function startApp () {
         },
       }, [
         h(Root, {
-         store: store,
+          store: store,
         }),
       ]),
 
     ]
-  ), container)
+    ), container)
 }

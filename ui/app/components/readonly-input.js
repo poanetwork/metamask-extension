@@ -20,12 +20,12 @@ ReadOnlyInput.prototype.render = function () {
 
   const inputType = textarea ? 'textarea' : 'input'
 
-  return h('div', {className: wrapperClass}, [
+  return h('div', { className: wrapperClass }, [
     h(inputType, {
       className: inputClass,
       value,
       readOnly: true,
-      onFocus: event => event.target.select(),
+      onFocus: (event) => event.target.select(),
       onClick,
     }),
   ])

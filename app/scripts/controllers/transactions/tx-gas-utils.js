@@ -5,6 +5,7 @@ const {
   bnToHex,
 } = require('../../lib/util')
 const { addHexPrefix } = require('ethereumjs-util')
+
 const SIMPLE_GAS_COST = '0x5208' // Hex for 21000, cost of a simple send.
 
 /**
@@ -60,7 +61,9 @@ class TxGasUtil {
     const recipient = txParams.to
     const hasRecipient = Boolean(recipient)
     let code
-    if (recipient) code = await this.query.getCode(recipient)
+    if (recipient) {
+      code = await this.query.getCode(recipient)
+    }
 
     if (hasRecipient && (!code || code === '0x' || code === '0x0')) {
       txParams.gas = SIMPLE_GAS_COST
@@ -114,9 +117,13 @@ class TxGasUtil {
     const bufferedGasLimitBn = initialGasLimitBn.muln(1.5)
 
     // if initialGasLimit is above blockGasLimit, dont modify it
-    if (initialGasLimitBn.gt(upperGasLimitBn)) return bnToHex(initialGasLimitBn)
+    if (initialGasLimitBn.gt(upperGasLimitBn)) {
+      return bnToHex(initialGasLimitBn)
+    }
     // if bufferedGasLimit is below blockGasLimit, use bufferedGasLimit
-    if (bufferedGasLimitBn.lt(upperGasLimitBn)) return bnToHex(bufferedGasLimitBn)
+    if (bufferedGasLimitBn.lt(upperGasLimitBn)) {
+      return bnToHex(bufferedGasLimitBn)
+    }
     // otherwise use blockGasLimit
     return bnToHex(upperGasLimitBn)
   }

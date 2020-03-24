@@ -9,7 +9,7 @@ class DeleteImportedAccount extends ConfirmScreen {
   }
 
   render () {
-  const withDescription = !ifContractAcc(this.props.keyring)
+    const withDescription = !ifContractAcc(this.props.keyring)
     return (
       <ConfirmScreen
         subtitle="Delete Imported Account"
@@ -49,7 +49,7 @@ function mapStateToProps (state) {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     removeAccount: (address, network) => dispatch(actions.removeAccount(address, network)),
     showAccountsPage: () => dispatch(actions.showAccountsPage()),

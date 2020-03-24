@@ -26,9 +26,9 @@ class RemoveTokenScreen extends ConfirmScreen {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    removeToken: address => dispatch(actions.removeToken(address)),
+    removeToken: (address) => dispatch(actions.removeToken(address)),
     goHome: () => dispatch(actions.goHome()),
   }
 }

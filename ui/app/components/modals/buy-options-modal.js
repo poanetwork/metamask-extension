@@ -24,7 +24,7 @@ function mapDispatchToProps (dispatch) {
     showAccountDetailModal: () => {
       dispatch(actions.showModal({ name: 'ACCOUNT_DETAILS' }))
     },
-    toFaucet: network => dispatch(actions.buyEth({ network })),
+    toFaucet: (network) => dispatch(actions.buyEth({ network })),
   }
 }
 
@@ -51,7 +51,7 @@ BuyOptions.prototype.renderModalContentOption = function (title, header, onClick
 
 BuyOptions.prototype.render = function () {
   const { network, toCoinbase, address, toFaucet } = this.props
-  const isTestNetwork = ['3', '4', '42'].find(n => n === network)
+  const isTestNetwork = ['3', '4', '42'].find((n) => n === network)
   const networkName = getNetworkDisplayName(network)
 
   return h('div', {}, [
@@ -89,7 +89,9 @@ BuyOptions.prototype.render = function () {
         style: {
           background: 'white',
         },
-        onClick: () => { this.props.hideModal() },
+        onClick: () => {
+          this.props.hideModal()
+        },
       }, h('div.buy-modal-content-footer#buy-modal-content-footer-text', {}, this.context.t('cancel'))),
     ]),
   ])

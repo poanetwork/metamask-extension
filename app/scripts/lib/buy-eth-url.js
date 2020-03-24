@@ -16,7 +16,7 @@ const {
   KOVAN_CODE,
   GOERLI_TESTNET_CODE,
   RSK_CODE,
-  RSK_TESTNET_CODE} = require('../controllers/network/enums')
+  RSK_TESTNET_CODE } = require('../controllers/network/enums')
 
 /**
  * Gives the caller a url at which the user can acquire coin, depending on the network they are in
@@ -38,7 +38,7 @@ function getBuyEthUrl ({ network, amount, address, ind }) {
     case DAI_CODE:
     case CLASSIC_CODE:
     case RSK_CODE:
-      url = getExchanges({network, amount, address})[ind].link
+      url = getExchanges({ network, amount, address })[ind].link
       break
     case ROPSTEN_CODE:
     case RINKEBY_CODE:
@@ -47,6 +47,9 @@ function getBuyEthUrl ({ network, amount, address, ind }) {
     case RSK_TESTNET_CODE:
     case GOERLI_TESTNET_CODE:
       url = getFaucets(network)[ind]
+      break
+    default:
+      url = ''
       break
   }
   return url
@@ -71,7 +74,7 @@ function getFaucets (network) {
  * @param {string} opts.address The address the bought ETH should be sent to.  Only relevant if network === '1'.
  * @returns {array} The array of exchanges for given network ID
  */
-function getExchanges ({network, amount, address}) {
+function getExchanges ({ network, amount, address }) {
   const networkID = Number(network)
   switch (networkID) {
     case 1:

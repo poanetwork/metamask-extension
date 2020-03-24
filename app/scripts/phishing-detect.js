@@ -1,6 +1,6 @@
 window.onload = function () {
   if (window.location.pathname === '/phishing.html') {
-    const {hostname} = parseHash()
+    const { hostname } = parseHash()
     document.getElementById('esdbLink').innerHTML = '<b>To read more about this scam, navigate to: <a href="https://etherscamdb.info/domain/' + hostname + '"> https://etherscamdb.info/domain/' + hostname + '</a></b>'
   }
 }

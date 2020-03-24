@@ -1,6 +1,6 @@
 const express = require('express')
 const path = require('path')
-const createMetamascaraServer = require('../server/')
+const createMetamascaraServer = require('../server')
 const createBundle = require('../server/util').createBundle
 const serveBundle = require('../server/util').serveBundle
 //

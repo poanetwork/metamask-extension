@@ -21,7 +21,9 @@ function ens (name, provider) {
           return Resolver.content(hash)
         }
       }).then((contentHash) => {
-        if (contentHash['0'] === '0x0000000000000000000000000000000000000000000000000000000000000000') reject(null)
+        if (contentHash['0'] === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+          reject(null)
+        }
         if (contentHash.ret !== '0x') {
           const hex = contentHash['0'].substring(2)
           const buf = multihash.fromHexString(hex)
@@ -64,7 +66,7 @@ module.exports.resolve = function (name, provider) {
   if (topLevelDomain === 'eth' || topLevelDomain === 'test') {
     return ens(name, provider)
   } else {
-    return new Promise((resolve, reject) => {
+    return new Promise((_resolve, reject) => {
       reject(null)
     })
   }

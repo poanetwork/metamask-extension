@@ -25,14 +25,16 @@ module.exports = {
 
 function transformState (state) {
   const newState = state
-  if (!newState.TransactionController) return newState
+  if (!newState.TransactionController) {
+    return newState
+  }
   const transactions = newState.TransactionController.transactions
-  newState.TransactionController.transactions = transactions.map((txMeta, _, txList) => {
+  newState.TransactionController.transactions = transactions.map((txMeta, _, _txList) => {
     if (
       txMeta.status === 'unapproved' &&
       txMeta.txParams &&
       txMeta.txParams.from
-      ) {
+    ) {
       txMeta.txParams.from = txMeta.txParams.from.toLowerCase()
     }
     return txMeta

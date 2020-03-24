@@ -24,11 +24,13 @@ const Selector = require('./selector')
 
 // logger
 const log = require('loglevel')
+
 window.log = log
 log.setDefaultLevel(1)
 
 // Query String
 const qs = require('qs')
+
 const queryString = qs.parse(window.location.href.split('#')[1])
 let selectedView = queryString.view || 'first time'
 updateQueryParams(selectedView)
@@ -57,11 +59,11 @@ const actions = {
   },
 }
 
-var css = MetaMaskUiCss()
+const css = MetaMaskUiCss()
 injectCss(css)
 
 // parse opts
-var store = configureStore(states[selectedView])
+const store = configureStore(states[selectedView])
 
 // start app
 startApp()
@@ -86,11 +88,11 @@ function startApp () {
         },
       }, [
         h(Root, {
-         store: store,
+          store: store,
         }),
       ]),
 
     ]
-  ), container)
+    ), container)
 }
 

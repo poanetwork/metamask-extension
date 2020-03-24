@@ -19,7 +19,7 @@ class AddressBookController {
    * to a new address.
    *
    */
-  constructor ({initState, preferencesStore}) {
+  constructor ({ initState, preferencesStore }) {
     this.store = new ObservableStore(extend({
       addressBook: [],
     }, initState))
@@ -40,12 +40,12 @@ class AddressBookController {
    */
   setAddressBook (address, name) {
     return this._addToAddressBook(address, name)
-    .then((addressBook) => {
-      this.store.updateState({
-        addressBook,
+      .then((addressBook) => {
+        this.store.updateState({
+          addressBook,
+        })
+        return Promise.resolve()
       })
-      return Promise.resolve()
-    })
   }
 
   /**
@@ -60,10 +60,14 @@ class AddressBookController {
    */
   _addToAddressBook (address, name) {
     const addressBook = this._getAddressBook()
-    const {identities} = this._preferencesStore.getState()
+    const { identities } = this._preferencesStore.getState()
 
-    const addressBookIndex = addressBook.findIndex((element) => { return element.address.toLowerCase() === address.toLowerCase() || element.name === name })
-    const identitiesIndex = Object.keys(identities).findIndex((element) => { return element.toLowerCase() === address.toLowerCase() })
+    const addressBookIndex = addressBook.findIndex((element) => {
+      return element.address.toLowerCase() === address.toLowerCase() || element.name === name
+    })
+    const identitiesIndex = Object.keys(identities).findIndex((element) => {
+      return element.toLowerCase() === address.toLowerCase()
+    })
     // trigger this condition if we own this address--no need to overwrite.
     if (identitiesIndex !== -1) {
       return Promise.resolve(addressBook)

@@ -9,6 +9,7 @@ const copyToClipboard = require('copy-to-clipboard')
 const actions = require('../../../ui/app/actions')
 const connect = require('react-redux').connect
 const { MAINNET_CODE } = require('../../../app/scripts/controllers/network/enums')
+
 import { countSignificantDecimals, toChecksumAddress } from '../util'
 
 const tokenCellDropDownPrefix = 'token-cell_dropdown_'
@@ -158,7 +159,7 @@ TokenCell.prototype.send = function (address, event) {
   navigateTo(url)
 }
 
-TokenCell.prototype.view = function (address, userAddress, network, event) {
+TokenCell.prototype.view = function (address, userAddress, network, _event) {
   const url = ethNetProps.explorerLinks.getExplorerTokenLinkFor(address, userAddress, network)
   if (url) {
     navigateTo(url)
@@ -173,7 +174,7 @@ function tokenFactoryFor (tokenAddress) {
   return `https://tokenfactory.surge.sh/#/token/${tokenAddress}`
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     showSendTokenPage: (tokenAddress) => dispatch(actions.showSendTokenPage(tokenAddress)),
   }

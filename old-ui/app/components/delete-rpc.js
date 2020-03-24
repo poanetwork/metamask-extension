@@ -34,7 +34,7 @@ function mapStateToProps (state) {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     showConfigPage: () => dispatch(actions.showConfigPage()),
     removeCustomRPC: (url, provider) => dispatch(actions.removeCustomRPC(url, provider)),

@@ -1,6 +1,7 @@
 const log = require('loglevel')
 const util = require('./util')
 const BigNumber = require('bignumber.js')
+
 import contractMapETH from 'eth-contract-metadata'
 import contractMapPOA from 'poa-contract-metadata'
 
@@ -128,6 +129,6 @@ export function calcTokenAmountWithDec (valueWithoutDec, decimals) {
 }
 
 export function getTokenValue (tokenParams = []) {
-  const valueData = tokenParams.find(param => param.name === '_value')
+  const valueData = tokenParams.find((param) => param.name === '_value')
   return valueData && valueData.value
 }

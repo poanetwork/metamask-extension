@@ -55,7 +55,7 @@ Network.prototype.render = function () {
       (function () {
         return h(props.isUnlocked ? '.network-indicator' : '.network-indicator.hidden', [
           h('.network-name',
-          displayName),
+            displayName),
           props.onClick && h('i.fa.fa-caret-down.fa-lg'),
         ])
       })(),

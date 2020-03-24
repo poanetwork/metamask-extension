@@ -1,5 +1,5 @@
 module.exports = [
-	'#5bdd95',
+  '#5bdd95',
   '#5bddcf',
   '#47b1ee',
   '#3677ee',

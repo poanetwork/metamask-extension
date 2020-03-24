@@ -7,7 +7,7 @@ const getPreferredLocales = extension.i18n ? promisify(
   { errorFirst: false }
 ) : async () => []
 
-const existingLocaleCodes = allLocales.map(locale => locale.code.toLowerCase().replace('_', '-'))
+const existingLocaleCodes = allLocales.map((locale) => locale.code.toLowerCase().replace('_', '-'))
 
 /**
  * Returns a preferred language code, based on settings within the user's browser. If we have no translations for the
@@ -33,8 +33,8 @@ async function getFirstPreferredLangCode () {
   }
 
   const firstPreferredLangCode = userPreferredLocaleCodes
-    .map(code => code.toLowerCase())
-    .find(code => existingLocaleCodes.includes(code))
+    .map((code) => code.toLowerCase())
+    .find((code) => existingLocaleCodes.includes(code))
   return firstPreferredLangCode || 'en'
 }
 
