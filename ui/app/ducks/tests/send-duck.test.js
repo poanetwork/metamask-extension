@@ -8,7 +8,7 @@ import SendReducer, {
   updateSendErrors,
 } from '../send.duck.js'
 
-describe('Send Duck', () => {
+describe('Send Duck', function () {
   const mockState = {
     send: {
       mockProp: 123,
@@ -26,15 +26,15 @@ describe('Send Duck', () => {
   const UPDATE_SEND_ERRORS = 'metamask/send/UPDATE_SEND_ERRORS'
   const RESET_SEND_STATE = 'metamask/send/RESET_SEND_STATE'
 
-  describe('SendReducer()', () => {
-    it('should initialize state', () => {
+  describe('SendReducer()', function () {
+    it('should initialize state', function () {
       assert.deepEqual(
         SendReducer({}),
         initState
       )
     })
 
-    it('should return state unchanged if it does not match a dispatched actions type', () => {
+    it('should return state unchanged if it does not match a dispatched actions type', function () {
       assert.deepEqual(
         SendReducer(mockState, {
           type: 'someOtherAction',
@@ -44,48 +44,48 @@ describe('Send Duck', () => {
       )
     })
 
-    it('should set fromDropdownOpen to true when receiving a OPEN_FROM_DROPDOWN action', () => {
+    it('should set fromDropdownOpen to true when receiving a OPEN_FROM_DROPDOWN action', function () {
       assert.deepEqual(
         SendReducer(mockState, {
           type: OPEN_FROM_DROPDOWN,
         }),
-        Object.assign({fromDropdownOpen: true}, mockState.send)
+        Object.assign({ fromDropdownOpen: true }, mockState.send)
       )
     })
 
-    it('should return a new object (and not just modify the existing state object)', () => {
+    it('should return a new object (and not just modify the existing state object)', function () {
       assert.deepEqual(SendReducer(mockState), mockState.send)
       assert.notEqual(SendReducer(mockState), mockState.send)
     })
 
-    it('should set fromDropdownOpen to false when receiving a CLOSE_FROM_DROPDOWN action', () => {
+    it('should set fromDropdownOpen to false when receiving a CLOSE_FROM_DROPDOWN action', function () {
       assert.deepEqual(
         SendReducer(mockState, {
           type: CLOSE_FROM_DROPDOWN,
         }),
-        Object.assign({fromDropdownOpen: false}, mockState.send)
+        Object.assign({ fromDropdownOpen: false }, mockState.send)
       )
     })
 
-    it('should set toDropdownOpen to true when receiving a OPEN_TO_DROPDOWN action', () => {
+    it('should set toDropdownOpen to true when receiving a OPEN_TO_DROPDOWN action', function () {
       assert.deepEqual(
         SendReducer(mockState, {
           type: OPEN_TO_DROPDOWN,
         }),
-        Object.assign({toDropdownOpen: true}, mockState.send)
+        Object.assign({ toDropdownOpen: true }, mockState.send)
       )
     })
 
-    it('should set toDropdownOpen to false when receiving a CLOSE_TO_DROPDOWN action', () => {
+    it('should set toDropdownOpen to false when receiving a CLOSE_TO_DROPDOWN action', function () {
       assert.deepEqual(
         SendReducer(mockState, {
           type: CLOSE_TO_DROPDOWN,
         }),
-        Object.assign({toDropdownOpen: false}, mockState.send)
+        Object.assign({ toDropdownOpen: false }, mockState.send)
       )
     })
 
-    it('should extend send.errors with the value of a UPDATE_SEND_ERRORS action', () => {
+    it('should extend send.errors with the value of a UPDATE_SEND_ERRORS action', function () {
       const modifiedMockState = Object.assign({}, mockState, {
         send: {
           errors: {
@@ -107,7 +107,7 @@ describe('Send Duck', () => {
       )
     })
 
-    it('should return the initial state in response to a RESET_SEND_STATE action', () => {
+    it('should return the initial state in response to a RESET_SEND_STATE action', function () {
       assert.deepEqual(
         SendReducer(mockState, {
           type: RESET_SEND_STATE,
@@ -117,35 +117,35 @@ describe('Send Duck', () => {
     })
   })
 
-  describe('openFromDropdown', () => {
+  describe('openFromDropdown', function () {
     assert.deepEqual(
       openFromDropdown(),
       { type: OPEN_FROM_DROPDOWN }
     )
   })
 
-  describe('closeFromDropdown', () => {
+  describe('closeFromDropdown', function () {
     assert.deepEqual(
       closeFromDropdown(),
       { type: CLOSE_FROM_DROPDOWN }
     )
   })
 
-  describe('openToDropdown', () => {
+  describe('openToDropdown', function () {
     assert.deepEqual(
       openToDropdown(),
       { type: OPEN_TO_DROPDOWN }
     )
   })
 
-  describe('closeToDropdown', () => {
+  describe('closeToDropdown', function () {
     assert.deepEqual(
       closeToDropdown(),
       { type: CLOSE_TO_DROPDOWN }
     )
   })
 
-  describe('updateSendErrors', () => {
+  describe('updateSendErrors', function () {
     assert.deepEqual(
       updateSendErrors('mockErrorObject'),
       { type: UPDATE_SEND_ERRORS, value: 'mockErrorObject' }

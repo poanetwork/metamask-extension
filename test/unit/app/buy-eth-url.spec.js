@@ -67,7 +67,7 @@ describe('', function () {
   })
 
   it('returns exchanges for POA', function () {
-    const exchanges = getExchanges({network: 99})
+    const exchanges = getExchanges({ network: 99 })
     assert.deepEqual(exchanges, [
       {
         name: 'Binance',
@@ -89,7 +89,7 @@ describe('', function () {
   })
 
   it('returns xDai bridge link for xDai network', function () {
-    const exchanges = getExchanges({network: 100})
+    const exchanges = getExchanges({ network: 100 })
     assert.deepEqual(exchanges, [
       {
         name: 'xDai TokenBridge',
@@ -99,7 +99,7 @@ describe('', function () {
   })
 
   it('returns xDai Coinbase link for Mainnet', function () {
-    const exchanges = getExchanges({network: 1, amount: 1, address: '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'})
+    const exchanges = getExchanges({ network: 1, amount: 1, address: '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc' })
     assert.deepEqual(exchanges, [
       {
         link: `https://buy.coinbase.com/?code=9ec56d01-7e81-5017-930c-513daa27bb6a&amount=1&address=0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc&crypto_currency=ETH`,

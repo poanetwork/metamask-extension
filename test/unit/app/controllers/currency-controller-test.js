@@ -3,7 +3,7 @@ const nock = require('nock')
 const CurrencyController = require('../../../../app/scripts/controllers/currency')
 
 describe('currency-controller', function () {
-  var currencyController
+  let currencyController
 
   beforeEach(function () {
     currencyController = new CurrencyController()
@@ -18,14 +18,14 @@ describe('currency-controller', function () {
       it('should be able to set to other currency', function () {
         assert.equal(currencyController.getCurrentCurrency(), 'usd')
         currencyController.setCurrentCurrency('JPY')
-        var result = currencyController.getCurrentCurrency()
+        const result = currencyController.getCurrentCurrency()
         assert.equal(result, 'JPY')
       })
     })
 
     describe('#getConversionRate', function () {
       it('should return undefined if non-existent', function () {
-        var result = currencyController.getConversionRate()
+        const result = currencyController.getConversionRate()
         assert.ok(!result)
       })
     })
@@ -40,13 +40,13 @@ describe('currency-controller', function () {
         assert.equal(currencyController.getConversionRate(), 0)
         currencyController.setCurrentCurrency('usd')
         currencyController.updateConversionRate()
-        .then(function () {
-          var result = currencyController.getConversionRate()
-          assert.equal(typeof result, 'number')
-          done()
-        }).catch(function (err) {
-          done(err)
-        })
+          .then(function () {
+            const result = currencyController.getConversionRate()
+            assert.equal(typeof result, 'number')
+            done()
+          }).catch(function (err) {
+            done(err)
+          })
       })
 
       it('should work for JPY as well.', function () {
@@ -58,8 +58,8 @@ describe('currency-controller', function () {
           .reply(200, '{"base": "ETH", "quote": "JPY", "bid": 32300.0, "ask": 32400.0, "volume": 247.4616071, "exchange": "kraken", "total_volume": 247.4616071, "num_exchanges": 1, "timestamp": 1506444676}')
 
 
-        var promise = new Promise(
-          function (resolve, reject) {
+        const promise = new Promise(
+          function (resolve, _reject) {
             currencyController.setCurrentCurrency('jpy')
             currencyController.updateConversionRate().then(function () {
               resolve()
@@ -67,7 +67,7 @@ describe('currency-controller', function () {
           })
 
         promise.then(function () {
-          var result = currencyController.getConversionRate()
+          const result = currencyController.getConversionRate()
           assert.equal(typeof result, 'number')
         }).catch(function (done, err) {
           done(err)

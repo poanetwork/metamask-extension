@@ -62,19 +62,14 @@ NotificationModal.propTypes = {
   showCancelButton: PropTypes.bool,
   showConfirmButton: PropTypes.bool,
   onConfirm: PropTypes.func,
-    t: PropTypes.func,
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     hideModal: () => {
       dispatch(actions.hideModal())
     },
   }
-}
-
-NotificationModal.contextTypes = {
-  t: PropTypes.func,
 }
 
 module.exports = connect(null, mapDispatchToProps)(NotificationModal)

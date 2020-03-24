@@ -2,6 +2,7 @@ const Component = require('react').Component
 const h = require('react-hyperscript')
 const inherits = require('util').inherits
 const ethUtil = require('ethereumjs-util')
+
 const BN = ethUtil.BN
 const extend = require('xtend')
 
@@ -115,7 +116,7 @@ BnAsDecimalInput.prototype.render = function () {
   )
 }
 
-BnAsDecimalInput.prototype.setValid = function (message) {
+BnAsDecimalInput.prototype.setValid = function () {
   this.setState({ invalid: null })
 }
 
@@ -161,7 +162,7 @@ BnAsDecimalInput.prototype.downsize = function (number, scale) {
     return Number(number)
   } else {
     // if the scale is the same as the precision, account for this edge case.
-    var adjustedNumber = number
+    let adjustedNumber = number
     while (adjustedNumber.length < scale) {
       adjustedNumber = '0' + adjustedNumber
     }
@@ -170,9 +171,9 @@ BnAsDecimalInput.prototype.downsize = function (number, scale) {
 }
 
 BnAsDecimalInput.prototype.upsize = function (number, scale, precision) {
-  var stringArray = number.toString().split('.')
-  var decimalLength = stringArray[1] ? stringArray[1].length : 0
-  var newString = stringArray[0]
+  const stringArray = number.toString().split('.')
+  const decimalLength = stringArray[1] ? stringArray[1].length : 0
+  let newString = stringArray[0]
 
   // If there is scaling and decimal parts exist, integrate them in.
   if ((scale !== 0) && (decimalLength !== 0)) {
@@ -180,7 +181,7 @@ BnAsDecimalInput.prototype.upsize = function (number, scale, precision) {
   }
 
   // Add 0s to account for the upscaling.
-  for (var i = decimalLength; i < scale; i++) {
+  for (let i = decimalLength; i < scale; i++) {
     newString += '0'
   }
   return newString

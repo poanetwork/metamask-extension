@@ -37,7 +37,7 @@ class NewAccountModal extends Component {
           h('input.new-account-input', {
             value: this.state.newAccountName,
             placeholder: this.context.t('sampleAccountName'),
-            onChange: event => this.setState({ newAccountName: event.target.value }),
+            onChange: (event) => this.setState({ newAccountName: event.target.value }),
           }, []),
         ]),
 
@@ -69,10 +69,9 @@ NewAccountModal.propTypes = {
   showImportPage: PropTypes.func,
   createAccount: PropTypes.func,
   numberOfExistingAccounts: PropTypes.number,
-    t: PropTypes.func,
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const { metamask: { network, selectedAddress, identities = {} } } = state
   const numberOfExistingAccounts = Object.keys(identities).length
 
@@ -83,7 +82,7 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     toCoinbase: (address) => {
       dispatch(actions.buyEth({ network: '1', address, amount: 0 }))
@@ -102,10 +101,6 @@ const mapDispatchToProps = dispatch => {
     },
     showImportPage: () => dispatch(actions.showImportPage()),
   }
-}
-
-NewAccountModal.contextTypes = {
-  t: PropTypes.func,
 }
 
 module.exports = connect(mapStateToProps, mapDispatchToProps)(NewAccountModal)

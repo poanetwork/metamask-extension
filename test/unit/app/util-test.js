@@ -40,8 +40,8 @@ describe('SufficientBalance', function () {
   })
 })
 
-describe('capitalizeFirstLetter', () => {
-  it('returns correct output with capitalized first letter of the first word', () => {
+describe('capitalizeFirstLetter', function () {
+  it('returns correct output with capitalized first letter of the first word', function () {
     assert.equal('T', capitalizeFirstLetter('t'))
     assert.equal('Test', capitalizeFirstLetter('test'))
     assert.equal('Test with multiple words', capitalizeFirstLetter('test with multiple words'))

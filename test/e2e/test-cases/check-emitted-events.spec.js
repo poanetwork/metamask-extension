@@ -1,9 +1,10 @@
 const assert = require('assert')
 const { screens, menus, NETWORKS } = require('../elements')
+
 const eventsEmitter = 'https://vbaranov.github.io/event-listener-dapp/'
 
 const checkEmittedEvents = async (f, account1, account2) => {
-	it('emit event', async () => {
+  it('emit event', async function () {
     await f.setProvider(NETWORKS.SOKOL)
     let account
     if (process.env.SELENIUM_BROWSER === 'chrome') {
@@ -29,7 +30,7 @@ const checkEmittedEvents = async (f, account1, account2) => {
     await f.delay(1000)
   })
 
-  it('confirms transaction in MetaMask popup', async () => {
+  it('confirms transaction in MetaMask popup', async function () {
     const windowHandles = await f.driver.getAllWindowHandles()
     await f.driver.switchTo().window(windowHandles[windowHandles.length - 1])
     await f.delay(5000)
@@ -39,21 +40,22 @@ const checkEmittedEvents = async (f, account1, account2) => {
     await f.click(button)
   })
 
-  it('check  number of events', async () => {
+  it('check  number of events', async function () {
     const windowHandles = await f.driver.getAllWindowHandles()
     await f.driver.switchTo().window(windowHandles[0])
     await f.delay(5000)
     const event = await f.waitUntilShowUp(screens.eventsEmitter.event, 600)
     const events = await f.driver.findElements(screens.eventsEmitter.event)
     console.log('number of events = ' + events.length)
-    if (!event) console.log("event wasn't created or transaction failed".toUpperCase())
-    else {
+    if (!event) {
+      console.log("event wasn't created or transaction failed".toUpperCase())
+    } else {
       const events = await f.driver.findElements(screens.eventsEmitter.event)
       assert.equal(events.length, 1, 'More than 1 event was fired: ' + events.length + ' events')
     }
   })
 
-  it('open app', async () => {
+  it('open app', async function () {
     if (process.env.SELENIUM_BROWSER === 'chrome') {
       await f.driver.get(`chrome-extension://${f.extensionId}/popup.html`)
     } else if (process.env.SELENIUM_BROWSER === 'firefox') {

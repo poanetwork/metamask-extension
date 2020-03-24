@@ -8,9 +8,9 @@ import {
 
 import { selectedTokenAddressSelector } from './tokens'
 
-export const shapeShiftTxListSelector = state => state.metamask.shapeShiftTxList
-export const unapprovedMsgsSelector = state => state.metamask.unapprovedMsgs
-export const selectedAddressTxListSelector = state => state.metamask.selectedAddressTxList
+export const shapeShiftTxListSelector = (state) => state.metamask.shapeShiftTxList
+export const unapprovedMsgsSelector = (state) => state.metamask.unapprovedMsgs
+export const selectedAddressTxListSelector = (state) => state.metamask.selectedAddressTxList
 
 const pendingStatusHash = {
   [UNAPPROVED_STATUS]: true,
@@ -39,20 +39,20 @@ export const transactionsSelector = createSelector(
 export const pendingTransactionsSelector = createSelector(
   transactionsSelector,
   (transactions = []) => (
-    transactions.filter(transaction => transaction.status in pendingStatusHash).reverse()
+    transactions.filter((transaction) => transaction.status in pendingStatusHash).reverse()
   )
 )
 
 export const submittedPendingTransactionsSelector = createSelector(
   transactionsSelector,
   (transactions = []) => (
-    transactions.filter(transaction => transaction.status === SUBMITTED_STATUS)
+    transactions.filter((transaction) => transaction.status === SUBMITTED_STATUS)
   )
 )
 
 export const completedTransactionsSelector = createSelector(
   transactionsSelector,
   (transactions = []) => (
-    transactions.filter(transaction => !(transaction.status in pendingStatusHash))
+    transactions.filter((transaction) => !(transaction.status in pendingStatusHash))
   )
 )

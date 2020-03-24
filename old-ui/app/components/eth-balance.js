@@ -14,10 +14,10 @@ function EthBalanceComponent () {
 }
 
 EthBalanceComponent.prototype.render = function () {
-  var props = this.props
+  const props = this.props
   let { value } = props
   const { style, width, network, isToken, tokenSymbol } = props
-  var needsParse = this.props.needsParse !== undefined ? this.props.needsParse : true
+  const needsParse = this.props.needsParse !== undefined ? this.props.needsParse : true
   value = value ? formatBalance(value, 6, needsParse, network, isToken, tokenSymbol) : '...'
 
   return (
@@ -36,15 +36,19 @@ EthBalanceComponent.prototype.render = function () {
   )
 }
 EthBalanceComponent.prototype.renderBalance = function (value) {
-  var props = this.props
+  const props = this.props
   const { conversionRate, shorten, incoming, currentCurrency } = props
-  if (value === 'None') return value
-  if (value === '...') return value
-  var balanceObj = generateBalanceObject(value, shorten ? 1 : 3)
-  var balance
-  var splitBalance = value.split(' ')
-  var ethNumber = splitBalance[0]
-  var ethSuffix = splitBalance[1]
+  if (value === 'None') {
+    return value
+  }
+  if (value === '...') {
+    return value
+  }
+  const balanceObj = generateBalanceObject(value, shorten ? 1 : 3)
+  let balance
+  const splitBalance = value.split(' ')
+  const ethNumber = splitBalance[0]
+  const ethSuffix = splitBalance[1]
   const showFiat = 'showFiat' in props ? props.showFiat : true
 
   if (shorten) {
@@ -53,7 +57,7 @@ EthBalanceComponent.prototype.renderBalance = function (value) {
     balance = balanceObj.balance
   }
 
-  var label = balanceObj.label
+  const label = balanceObj.label
   const valueStyle = props.valueStyle ? props.valueStyle : {
     color: '#ffffff',
     width: '100%',

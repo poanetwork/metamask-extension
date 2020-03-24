@@ -13,25 +13,25 @@ describe('Account Import Strategies', function () {
       assert.equal(importPrivKey, ethUtil.stripHexPrefix(privkey))
     })
 
-    it('throws an error for empty string private key', async () => {
+    it('throws an error for empty string private key', async function () {
       assertRejects(async function () {
         await accountImporter.importAccount('Private Key', [ '' ])
       }, Error, 'no empty strings')
     })
 
-    it('throws an error for undefined string private key', async () => {
+    it('throws an error for undefined string private key 1', async function () {
       assertRejects(async function () {
         await accountImporter.importAccount('Private Key', [ undefined ])
       })
     })
 
-    it('throws an error for undefined string private key', async () => {
+    it('throws an error for undefined string private key 2', async function () {
       assertRejects(async function () {
         await accountImporter.importAccount('Private Key', [])
       })
     })
 
-    it('throws an error for invalid private key', async () => {
+    it('throws an error for invalid private key', async function () {
       assertRejects(async function () {
         await accountImporter.importAccount('Private Key', [ 'popcorn' ])
       })

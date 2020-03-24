@@ -226,7 +226,7 @@ Modal.prototype.render = function () {
   )
 }
 
-Modal.prototype.componentWillReceiveProps = function (nextProps) {
+Modal.prototype.UNSAFE_componentWillReceiveProps = function (nextProps) {
   if (nextProps.active) {
     this.show()
   } else if (this.props.active) {

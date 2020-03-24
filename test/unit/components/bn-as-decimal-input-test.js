@@ -1,13 +1,16 @@
-var assert = require('assert')
+const assert = require('assert')
 
 const additions = require('react-testutils-additions')
 const h = require('react-hyperscript')
+
 import TestRenderer from 'react-test-renderer'
 import ReactTestUtils from 'react-dom/test-utils'
+
 const ethUtil = require('ethereumjs-util')
+
 const BN = ethUtil.BN
 
-var BnInput = require('../../../old-ui/app/components/bn-as-decimal-input')
+const BnInput = require('../../../old-ui/app/components/bn-as-decimal-input')
 
 describe('BnInput', function () {
   it('can tolerate a gas decimal number at a high precision', function (done) {
@@ -44,7 +47,9 @@ describe('BnInput', function () {
     const input = additions.find(component, 'input.hex-input')[0]
     ReactTestUtils.Simulate.change(input, { preventDefault () {}, target: {
       value: inputStr,
-      checkValidity () { return true } },
+      checkValidity () {
+        return true
+      } },
     })
   })
 
@@ -80,7 +85,9 @@ describe('BnInput', function () {
     const input = additions.find(component, 'input.hex-input')[0]
     ReactTestUtils.Simulate.change(input, { preventDefault () {}, target: {
       value: inputStr,
-      checkValidity () { return true } },
+      checkValidity () {
+        return true
+      } },
     })
   })
 })

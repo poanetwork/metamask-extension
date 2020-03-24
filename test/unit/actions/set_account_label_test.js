@@ -1,9 +1,8 @@
 const assert = require('assert')
 const freeze = require('deep-freeze-strict')
-const path = require('path')
 
-const actions = require(path.join(__dirname, '..', '..', '..', 'ui', 'app', 'actions.js'))
-const reducers = require(path.join(__dirname, '..', '..', '..', 'ui', 'app', 'reducers.js'))
+const actions = require('../../../ui/app/actions')
+const reducers = require('../../../ui/app/reducers')
 
 describe('SET_ACCOUNT_LABEL', function () {
   it('updates the state.metamask.identities[:i].name property of the state to the action.value.label', function () {

@@ -20,7 +20,7 @@ function mapStateToProps (state) {
 
 inherits(AddSuggestedTokenScreen, Component)
 function AddSuggestedTokenScreen () {
-    this.state = {
+  this.state = {
     warning: null,
   }
   Component.call(this)
@@ -63,7 +63,7 @@ AddSuggestedTokenScreen.prototype.render = function () {
               id: 'addSuggestedToken',
             }, [
               h('a', {
-                style: { fontWeight: 'bold', paddingRight: '10px'},
+                style: { fontWeight: 'bold', paddingRight: '10px' },
                 href: 'https://support.metamask.io/kb/article/24-what-is-a-token-contract-address',
                 target: '_blank',
                 'data-tip': '',
@@ -79,7 +79,7 @@ AddSuggestedTokenScreen.prototype.render = function () {
             style: { display: 'flex' },
           }, [
             h(Copyable, {
-            value: toChecksumAddress(network, address),
+              value: toChecksumAddress(network, address),
             }, [
               h('span#token-address', {
                 style: {
@@ -95,11 +95,11 @@ AddSuggestedTokenScreen.prototype.render = function () {
 
           h('div', [
             h('span', {
-              style: { fontWeight: 'bold', paddingRight: '10px'},
+              style: { fontWeight: 'bold', paddingRight: '10px' },
             }, 'Token Symbol'),
           ]),
 
-          h('div', { style: {display: 'flex'} }, [
+          h('div', { style: { display: 'flex' } }, [
             h('p#token_symbol', {
               style: {
                 width: 'inherit',
@@ -112,11 +112,11 @@ AddSuggestedTokenScreen.prototype.render = function () {
 
           h('div', [
             h('span', {
-              style: { fontWeight: 'bold', paddingRight: '10px'},
+              style: { fontWeight: 'bold', paddingRight: '10px' },
             }, 'Decimals of Precision'),
           ]),
 
-          h('div', { style: {display: 'flex'} }, [
+          h('div', { style: { display: 'flex' } }, [
             h('p#token_decimals', {
               type: 'number',
               style: {
@@ -133,7 +133,7 @@ AddSuggestedTokenScreen.prototype.render = function () {
               alignSelf: 'center',
               margin: '8px',
             },
-            onClick: (event) => {
+            onClick: (_event) => {
               dispatch(actions.removeSuggestedTokens())
             },
           }, 'Cancel'),
@@ -143,9 +143,11 @@ AddSuggestedTokenScreen.prototype.render = function () {
               alignSelf: 'center',
               margin: '8px',
             },
-            onClick: (event) => {
+            onClick: (_event) => {
               const valid = this.validateInputs({ address, symbol, decimals })
-              if (!valid) return
+              if (!valid) {
+                return
+              }
 
               dispatch(actions.addToken(address.trim(), symbol.trim(), decimals))
                 .then(() => {
@@ -159,8 +161,10 @@ AddSuggestedTokenScreen.prototype.render = function () {
   )
 }
 
-AddSuggestedTokenScreen.prototype.componentWillMount = function () {
-  if (typeof global.ethereumProvider === 'undefined') return
+AddSuggestedTokenScreen.prototype.UNSAFE_componentWillMount = function () {
+  if (typeof global.ethereumProvider === 'undefined') {
+    return
+  }
 }
 
 AddSuggestedTokenScreen.prototype.validateInputs = function (opts) {

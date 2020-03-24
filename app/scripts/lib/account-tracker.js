@@ -45,7 +45,7 @@ class AccountTracker {
     this._blockTracker = opts.blockTracker
     // blockTracker.currentBlock may be null
     this._currentBlockNumber = this._blockTracker.getCurrentBlock()
-    this._blockTracker.once('latest', blockNumber => {
+    this._blockTracker.once('latest', (blockNumber) => {
       this._currentBlockNumber = blockNumber
     })
     // bind function for easier listener syntax
@@ -109,14 +109,16 @@ class AccountTracker {
   addAccounts (addresses) {
     const accounts = this.store.getState().accounts
     // add initial state for addresses
-    addresses.forEach(address => {
+    addresses.forEach((address) => {
       accounts[address] = {}
     })
     // save accounts state
     this.store.updateState({ accounts })
     // fetch balances for the accounts if there is block number ready
-    if (!this._currentBlockNumber) return
-    addresses.forEach(address => this._updateAccount(address))
+    if (!this._currentBlockNumber) {
+      return
+    }
+    addresses.forEach((address) => this._updateAccount(address))
   }
 
   /**
@@ -128,7 +130,7 @@ class AccountTracker {
   removeAccount (addresses) {
     const accounts = this.store.getState().accounts
     // remove each state object
-    addresses.forEach(address => {
+    addresses.forEach((address) => {
       delete accounts[address]
     })
     // save accounts state
@@ -149,7 +151,9 @@ class AccountTracker {
 
     // block gasLimit polling shouldn't be in account-tracker shouldn't be here...
     const currentBlock = await this._query.getBlockByNumber(blockNumber, false)
-    if (!currentBlock) return
+    if (!currentBlock) {
+      return
+    }
     const currentBlockGasLimit = currentBlock.gasLimit
     this.store.updateState({ currentBlockGasLimit })
 
@@ -187,7 +191,9 @@ class AccountTracker {
     // update accounts state
     const { accounts } = this.store.getState()
     // only populate if the entry is still present
-    if (!accounts[address]) return
+    if (!accounts[address]) {
+      return
+    }
     accounts[address] = result
     this.store.updateState({ accounts })
   }

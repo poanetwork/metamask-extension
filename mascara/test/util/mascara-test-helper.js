@@ -1,27 +1,30 @@
 const EventEmitter = require('events')
 const IDB = require('idb-global')
+
 const KEY = 'metamask-test-config'
 module.exports = class Helper extends EventEmitter {
 
   tryToCleanContext () {
     this.unregister()
-    .then(() => this.clearDb())
-    .then(() => super.emit('complete'))
-    .catch((err) => {
-      if (err) {
-        super.emit('complete')
-      }
-    })
+      .then(() => this.clearDb())
+      .then(() => super.emit('complete'))
+      .catch((err) => {
+        if (err) {
+          super.emit('complete')
+        }
+      })
   }
 
   unregister () {
     return global.navigator.serviceWorker.getRegistration()
-    .then((registration) => {
-      if (registration) {
- return registration.unregister()
-      .then((b) => b ? Promise.resolve() : Promise.reject())
-} else return Promise.resolve()
-    })
+      .then((registration) => {
+        if (registration) {
+          return registration.unregister()
+            .then((b) => (b ? Promise.resolve() : Promise.reject()))
+        } else {
+          return Promise.resolve()
+        }
+      })
   }
   clearDb () {
     return new Promise((resolve, reject) => {

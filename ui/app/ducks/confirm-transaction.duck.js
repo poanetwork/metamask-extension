@@ -25,7 +25,7 @@ import { getSymbolAndDecimals } from '../token-util'
 import { conversionUtil } from '../conversion-util'
 
 // Actions
-const createActionType = action => `metamask/confirm-transaction/${action}`
+const createActionType = (action) => `metamask/confirm-transaction/${action}`
 
 const UPDATE_TX_DATA = createActionType('UPDATE_TX_DATA')
 const CLEAR_TX_DATA = createActionType('CLEAR_TX_DATA')

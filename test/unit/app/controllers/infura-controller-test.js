@@ -4,7 +4,7 @@ const InfuraController = require('../../../../app/scripts/controllers/infura')
 
 describe('infura-controller', function () {
   let infuraController, sandbox, networkStatus
-  const response = {'mainnet': 'degraded', 'ropsten': 'ok', 'kovan': 'ok', 'rinkeby': 'down'}
+  const response = { 'mainnet': 'degraded', 'ropsten': 'ok', 'kovan': 'ok', 'rinkeby': 'down' }
 
   before(async function () {
     infuraController = new InfuraController()

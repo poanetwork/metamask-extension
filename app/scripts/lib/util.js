@@ -48,7 +48,7 @@ const getEnvironmentType = (url = window.location.href) => {
  * @returns {string} the platform ENUM
  *
  */
-const getPlatform = _ => {
+const getPlatform = (_) => {
   const ua = navigator.userAgent
   if (ua.search('Firefox') !== -1) {
     return PLATFORM_FIREFOX

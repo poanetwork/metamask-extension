@@ -5,6 +5,7 @@ const debounce = require('debounce')
 const copyToClipboard = require('copy-to-clipboard')
 const ENS = require('ethjs-ens')
 const networkMap = require('ethjs-ens/lib/network-map.json')
+
 const ensRE = /.+\..+$/
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const log = require('loglevel')
@@ -24,7 +25,9 @@ EnsInput.prototype.render = function () {
   function onInputChange () {
     const network = this.props.network
     const networkHasEnsSupport = getNetworkEnsSupport(network)
-    if (!networkHasEnsSupport) return
+    if (!networkHasEnsSupport) {
+      return
+    }
 
     const recipient = document.querySelector('input[name="address"]').value
     if (recipient.match(ensRE) === null) {
@@ -96,40 +99,42 @@ EnsInput.prototype.lookupEnsName = function () {
 
   log.info(`ENS attempting to resolve name: ${recipient}`)
   this.ens.lookup(recipient.trim())
-  .then((address) => {
-    if (address === ZERO_ADDRESS) throw new Error('No address has been set for this name.')
-    if (address !== ensResolution) {
-      this.setState({
+    .then((address) => {
+      if (address === ZERO_ADDRESS) {
+        throw new Error('No address has been set for this name.')
+      }
+      if (address !== ensResolution) {
+        this.setState({
+          loadingEns: false,
+          ensResolution: address,
+          nickname: recipient.trim(),
+          hoverText: address + '\nClick to Copy',
+          ensFailure: false,
+          toError: null,
+        })
+      }
+    })
+    .catch((reason) => {
+      const setStateObj = {
         loadingEns: false,
-        ensResolution: address,
-        nickname: recipient.trim(),
-        hoverText: address + '\nClick to Copy',
-        ensFailure: false,
+        ensResolution: recipient,
+        ensFailure: true,
         toError: null,
-      })
-    }
-  })
-  .catch((reason) => {
-    const setStateObj = {
-      loadingEns: false,
-      ensResolution: recipient,
-      ensFailure: true,
-      toError: null,
-    }
-    if (isValidENSAddress(recipient) && reason.message === 'ENS name not defined.') {
-      setStateObj.hoverText = 'ENS name not found'
-      setStateObj.toError = 'ensNameNotFound'
-      setStateObj.ensFailure = false
-    } else {
-      log.error(reason)
-      setStateObj.hoverText = reason.message
-    }
+      }
+      if (isValidENSAddress(recipient) && reason.message === 'ENS name not defined.') {
+        setStateObj.hoverText = 'ENS name not found'
+        setStateObj.toError = 'ensNameNotFound'
+        setStateObj.ensFailure = false
+      } else {
+        log.error(reason)
+        setStateObj.hoverText = reason.message
+      }
 
-    return this.setState(setStateObj)
-  })
+      return this.setState(setStateObj)
+    })
 }
 
-EnsInput.prototype.componentDidUpdate = function (prevProps, prevState) {
+EnsInput.prototype.componentDidUpdate = function (_prevProps, prevState) {
   const state = this.state || {}
   const ensResolution = state.ensResolution
   // If an address is sent without a nickname, meaning not from ENS or from
@@ -154,10 +159,12 @@ EnsInput.prototype.ensIcon = function (recipient) {
   }, this.ensIconContents(recipient))
 }
 
-EnsInput.prototype.ensIconContents = function (recipient) {
-  const { loadingEns, ensFailure, ensResolution, toError } = this.state || { ensResolution: ZERO_ADDRESS}
+EnsInput.prototype.ensIconContents = function () {
+  const { loadingEns, ensFailure, ensResolution, toError } = this.state || { ensResolution: ZERO_ADDRESS }
 
-  if (toError) return
+  if (toError) {
+    return
+  }
 
   if (loadingEns) {
     return h('img', {

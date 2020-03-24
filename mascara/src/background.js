@@ -1,6 +1,7 @@
 global.window = global
 
 const SwGlobalListener = require('sw-stream/lib/sw-global-listener.js')
+
 const connectionListener = new SwGlobalListener(global)
 const setupMultiplex = require('../../app/scripts/lib/stream-utils.js').setupMultiplex
 
@@ -9,8 +10,8 @@ const DbController = require('idb-global')
 const SwPlatform = require('../../app/scripts/platforms/sw')
 const MetamaskController = require('../../app/scripts/metamask-controller')
 
-const Migrator = require('../../app/scripts/lib/migrator/')
-const migrations = require('../../app/scripts/migrations/')
+const Migrator = require('../../app/scripts/lib/migrator')
+const migrations = require('../../app/scripts/migrations')
 const firstTimeState = require('../../app/scripts/first-time-state')
 
 const STORAGE_KEY = 'metamask-config'
@@ -18,6 +19,7 @@ const METAMASK_DEBUG = process.env.METAMASK_DEBUG
 global.metamaskPopupIsOpen = false
 
 const log = require('loglevel')
+
 global.log = log
 log.setDefaultLevel(METAMASK_DEBUG ? 'debug' : 'warn')
 
@@ -58,7 +60,7 @@ async function loadStateFromPersistence () {
   return migratedData.data
 }
 
-async function setupController (initState, client) {
+async function setupController (initState, _client) {
 
   //
   // MetaMask Controller
@@ -82,7 +84,9 @@ async function setupController (initState, client) {
     try {
       const versionedData = await versionifyData(state)
       await dbController.put(versionedData)
-    } catch (e) { console.error('METAMASK Error:', e) }
+    } catch (e) {
+      console.error('METAMASK Error:', e)
+    }
   })
 
   async function versionifyData (state) {
@@ -103,7 +107,7 @@ async function setupController (initState, client) {
   })
 
   function connectRemote (connectionStream, context) {
-    var isMetaMaskInternalProcess = (context === 'popup')
+    const isMetaMaskInternalProcess = (context === 'popup')
     if (isMetaMaskInternalProcess) {
       // communication with popup
       controller.setupTrustedCommunication(connectionStream, 'MetaMask')
@@ -116,7 +120,7 @@ async function setupController (initState, client) {
 
   function setupUntrustedCommunication (connectionStream, originDomain) {
     // setup multiplexing
-    var mx = setupMultiplex(connectionStream)
+    const mx = setupMultiplex(connectionStream)
     // connect features
     controller.setupProviderConnection(mx.createStream('provider'), originDomain)
     controller.setupPublicConfig(mx.createStream('publicConfig'))

@@ -1,9 +1,10 @@
-var fs = require('fs')
-var path = require('path')
-var browserify = require('browserify')
-var tests = fs.readdirSync(path.join(__dirname, 'lib'))
-var bundlePath = path.join(__dirname, 'test-bundle.js')
-var b = browserify()
+const fs = require('fs')
+const path = require('path')
+const browserify = require('browserify')
+
+const tests = fs.readdirSync(path.join(__dirname, 'lib'))
+const bundlePath = path.join(__dirname, 'test-bundle.js')
+const b = browserify()
 
 // Remove old bundle
 try {
@@ -12,7 +13,7 @@ try {
   console.error(e)
 }
 
-var writeStream = fs.createWriteStream(bundlePath)
+const writeStream = fs.createWriteStream(bundlePath)
 
 tests.forEach(function (fileName) {
   b.add(path.join(__dirname, 'lib', fileName))

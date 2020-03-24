@@ -4,7 +4,7 @@ const BlacklistController = require('../../../../app/scripts/controllers/blackli
 describe('blacklist controller', function () {
   let blacklistController
 
-  before(() => {
+  before(function () {
     blacklistController = new BlacklistController()
   })
 

@@ -1,6 +1,7 @@
 const assert = require('assert')
 const TxStateManager = require('../../../../../app/scripts/controllers/transactions/tx-state-manager')
 const txStateHistoryHelper = require('../../../../../app/scripts/controllers/transactions/lib/tx-state-history-helper')
+
 const noop = () => true
 
 describe('TransactionStateManager', function () {
@@ -29,7 +30,7 @@ describe('TransactionStateManager', function () {
       assert.equal(result[0].status, 'signed')
     })
 
-    it('should emit a signed event to signal the exciton of callback', (done) => {
+    it('should emit a signed event to signal the exciton of callback', function (done) {
       const tx = { id: 1, status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {} }
       const noop = function () {
         assert(true, 'event listener has been triggered and noop executed')
@@ -43,7 +44,7 @@ describe('TransactionStateManager', function () {
   })
 
   describe('#setTxStatusRejected', function () {
-     it('sets the tx status to rejected and removes it from history', function () {
+    it('sets the tx status to rejected and removes it from history', function () {
       const tx = { id: 1, status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {} }
       txStateManager.addTx(tx)
       txStateManager.setTxStatusRejected(1)
@@ -52,15 +53,15 @@ describe('TransactionStateManager', function () {
       assert.equal(result.length, 0)
     })
 
-    it('should emit a rejected event to signal the exciton of callback', (done) => {
+    it('should emit a rejected event to signal the exciton of callback', function (done) {
       const tx = { id: 1, status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {} }
       txStateManager.addTx(tx)
-      const noop = function (err, txId) {
-          if (err) {
-            console.log('Error: ', err)
-          }
-          assert(true, 'event listener has been triggered and noop executed')
-          done()
+      const noop = function (err, _txId) {
+        if (err) {
+          console.log('Error: ', err)
+        }
+        assert(true, 'event listener has been triggered and noop executed')
+        done()
       }
       txStateManager.on('1:rejected', noop)
       txStateManager.setTxStatusRejected(1)
@@ -288,14 +289,14 @@ describe('TransactionStateManager', function () {
   })
 
   describe('#_removeTx', function () {
-    it('should remove the transaction from the storage', () => {
-      txStateManager._saveTxList([ {id: 1} ])
+    it('should remove the transaction from the storage', function () {
+      txStateManager._saveTxList([ { id: 1 } ])
       txStateManager._removeTx(1)
       assert(!txStateManager.getFullTxList().length, 'txList should be empty')
     })
 
-    it('should only remove the transaction with ID 1 from the storage', () => {
-      txStateManager._saveTxList([ {id: 1}, {id: 2} ])
+    it('should only remove the transaction with ID 1 from the storage', function () {
+      txStateManager._saveTxList([ { id: 1 }, { id: 2 } ])
       txStateManager._removeTx(1)
       assert.equal(txStateManager.getFullTxList()[0].id, 2, 'txList should have a id of 2')
     })

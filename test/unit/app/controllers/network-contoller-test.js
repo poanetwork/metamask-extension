@@ -5,7 +5,7 @@ const {
   getNetworkDisplayName,
 } = require('../../../../app/scripts/controllers/network/util')
 
-describe('# Network Controller', function () {
+describe('#Network Controller', function () {
   let networkController
   const noop = () => {}
   const networkControllerProviderConfig = {
@@ -68,8 +68,8 @@ describe('# Network Controller', function () {
   })
 })
 
-describe('Network utils', () => {
-  it('getNetworkDisplayName should return the correct network name', () => {
+describe('Network utils', function () {
+  it('getNetworkDisplayName should return the correct network name', function () {
     const tests = [
       {
         input: 3,

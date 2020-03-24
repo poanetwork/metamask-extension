@@ -10,7 +10,6 @@ class JsonImportSubview extends Component {
     super(props)
 
     this.state = {
-      file: null,
       fileContents: '',
     }
   }
@@ -63,8 +62,8 @@ class JsonImportSubview extends Component {
     )
   }
 
-  onLoad (event, file) {
-    this.setState({file: file, fileContents: event.target.result})
+  onLoad (event, _file) {
+    this.setState({ fileContents: event.target.result })
   }
 
   createKeyringOnEnter (event) {
@@ -102,17 +101,17 @@ JsonImportSubview.propTypes = {
   importNewAccount: PropTypes.func,
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     error: state.appState.warning,
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     goHome: () => dispatch(actions.goHome()),
-    displayWarning: warning => dispatch(actions.displayWarning(warning)),
-    importNewAccount: options => dispatch(actions.importNewAccount('JSON File', options)),
+    displayWarning: (warning) => dispatch(actions.displayWarning(warning)),
+    importNewAccount: (options) => dispatch(actions.importNewAccount('JSON File', options)),
   }
 }
 

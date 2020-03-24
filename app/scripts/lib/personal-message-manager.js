@@ -2,6 +2,7 @@ const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
 const createId = require('./random-id')
+
 const hexRe = /^[0-9A-Fa-f]+$/g
 const log = require('loglevel')
 
@@ -36,7 +37,7 @@ module.exports = class PersonalMessageManager extends EventEmitter {
    * @property {array} messages Holds all messages that have been created by this PersonalMessageManager
    *
    */
-  constructor (opts) {
+  constructor (_opts) {
     super()
     this.memStore = new ObservableStore({
       unapprovedPersonalMsgs: {},
@@ -63,8 +64,10 @@ module.exports = class PersonalMessageManager extends EventEmitter {
    *
    */
   getUnapprovedMsgs () {
-    return this.messages.filter(msg => msg.status === 'unapproved')
-    .reduce((result, msg) => { result[msg.id] = msg; return result }, {})
+    return this.messages.filter((msg) => msg.status === 'unapproved')
+      .reduce((result, msg) => {
+        result[msg.id] = msg; return result
+      }, {})
   }
 
   /**
@@ -109,12 +112,14 @@ module.exports = class PersonalMessageManager extends EventEmitter {
   addUnapprovedMessage (msgParams, req) {
     log.debug(`PersonalMessageManager addUnapprovedMessage: ${JSON.stringify(msgParams)}`)
     // add origin from request
-    if (req) msgParams.origin = req.origin
+    if (req) {
+      msgParams.origin = req.origin
+    }
     msgParams.data = this.normalizeMsgData(msgParams.data)
     // create txData obj with parameters and meta data
-    var time = (new Date()).getTime()
-    var msgId = createId()
-    var msgData = {
+    const time = (new Date()).getTime()
+    const msgId = createId()
+    const msgData = {
       id: msgId,
       msgParams: msgParams,
       time: time,
@@ -149,7 +154,7 @@ module.exports = class PersonalMessageManager extends EventEmitter {
    *
    */
   getMsg (msgId) {
-    return this.messages.find(msg => msg.id === msgId)
+    return this.messages.find((msg) => msg.id === msgId)
   }
 
   /**
@@ -228,7 +233,9 @@ module.exports = class PersonalMessageManager extends EventEmitter {
    */
   _setMsgStatus (msgId, status) {
     const msg = this.getMsg(msgId)
-    if (!msg) throw new Error('PersonalMessageManager - Message not found for id: "${msgId}".')
+    if (!msg) {
+      throw new Error('PersonalMessageManager - Message not found for id: "${msgId}".')
+    }
     msg.status = status
     this._updateMsg(msg)
     this.emit(`${msgId}:${status}`, msg)

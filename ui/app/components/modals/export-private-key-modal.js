@@ -11,6 +11,7 @@ const { getSelectedIdentity } = require('../../selectors')
 const ReadOnlyInput = require('../readonly-input')
 const copyToClipboard = require('copy-to-clipboard')
 const { checksumAddress } = require('../../util')
+
 import Button from '../button'
 
 function mapStateToPropsFactory () {
@@ -68,7 +69,7 @@ ExportPrivateKeyModal.prototype.exportAccountAndGetPrivateKey = function (passwo
   const { exportAccount, dPath } = this.props
 
   exportAccount(password, address, dPath)
-    .then(privateKey => this.setState({
+    .then((privateKey) => this.setState({
       privateKey,
       showWarning: false,
     }))
@@ -87,19 +88,19 @@ ExportPrivateKeyModal.prototype.renderPasswordInput = function (privateKey) {
 
   return privateKey
     ? h(ReadOnlyInput, {
-        wrapperClass: 'private-key-password-display-wrapper',
-        inputClass: 'private-key-password-display-textarea',
-        textarea: true,
-        value: plainKey,
-        onClick: () => copyToClipboard(plainKey),
-      })
+      wrapperClass: 'private-key-password-display-wrapper',
+      inputClass: 'private-key-password-display-textarea',
+      textarea: true,
+      value: plainKey,
+      onClick: () => copyToClipboard(plainKey),
+    })
     : h('input.private-key-password-input', {
       type: 'password',
-      onChange: event => this.setState({ password: event.target.value }),
+      onChange: (event) => this.setState({ password: event.target.value }),
     })
 }
 
-ExportPrivateKeyModal.prototype.renderButtons = function (privateKey, password, address, hideModal) {
+ExportPrivateKeyModal.prototype.renderButtons = function (privateKey, _password, address, hideModal) {
   return h('div.export-private-key-buttons', {}, [
     !privateKey && h(Button, {
       type: 'default',
@@ -110,14 +111,14 @@ ExportPrivateKeyModal.prototype.renderButtons = function (privateKey, password, 
 
     (privateKey
       ? (
-          h(Button, {
+        h(Button, {
           type: 'primary',
           large: true,
           className: 'export-private-key__button',
           onClick: () => hideModal(),
         }, this.context.t('done'))
       ) : (
-          h(Button, {
+        h(Button, {
           type: 'primary',
           large: true,
           className: 'export-private-key__button',
@@ -150,29 +151,29 @@ ExportPrivateKeyModal.prototype.render = function () {
     backButtonAction: () => showAccountDetailModal(),
   }, [
 
-      h('span.account-name', name),
+    h('span.account-name', name),
 
-      h(ReadOnlyInput, {
-        wrapperClass: 'ellip-address-wrapper',
-        inputClass: 'qr-ellip-address ellip-address',
-        value: checksumAddress(address),
-      }),
+    h(ReadOnlyInput, {
+      wrapperClass: 'ellip-address-wrapper',
+      inputClass: 'qr-ellip-address ellip-address',
+      value: checksumAddress(address),
+    }),
 
-      h('div.account-modal-divider'),
+    h('div.account-modal-divider'),
 
-      h('span.modal-body-title', this.context.t('showPrivateKeys')),
+    h('span.modal-body-title', this.context.t('showPrivateKeys')),
 
-      h('div.private-key-password', {}, [
-        this.renderPasswordLabel(privateKey),
+    h('div.private-key-password', {}, [
+      this.renderPasswordLabel(privateKey),
 
-        this.renderPasswordInput(privateKey),
+      this.renderPasswordInput(privateKey),
 
-        showWarning && warning ? h('span.private-key-password-error', warning) : null,
-      ]),
+      showWarning && warning ? h('span.private-key-password-error', warning) : null,
+    ]),
 
-      h('div.private-key-password-warning', this.context.t('privateKeyWarning')),
+    h('div.private-key-password-warning', this.context.t('privateKeyWarning')),
 
-      this.renderButtons(privateKey, this.state.password, address, hideModal),
+    this.renderButtons(privateKey, this.state.password, address, hideModal),
 
   ])
 }

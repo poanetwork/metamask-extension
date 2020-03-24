@@ -1,4 +1,5 @@
 const ethUtil = (/** @type {object} */ (require('ethereumjs-util')))
+
 const BN = ethUtil.BN
 
 /**

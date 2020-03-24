@@ -2,16 +2,19 @@ const assert = require('assert')
 const versionBump = require('../../../development/version-bump')
 const promisify = require('pify')
 const fs = require('fs')
+
 const readFile = promisify(fs.readFile)
 const path = require('path')
+
 const changelogPath = path.join(__dirname, 'sample-changelog.md')
 const manifest = require('./sample-manifest.json')
+
 let changelog
 
 
 describe('version bumper', function () {
 
-  beforeEach(async () => {
+  beforeEach(async function () {
     // load changelog. Mock version is 4.1.3
     const changeBuffer = await readFile(changelogPath)
     changelog = changeBuffer.toString()

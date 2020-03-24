@@ -1,8 +1,7 @@
-var assert = require('assert')
-var sinon = require('sinon')
+const assert = require('assert')
+const sinon = require('sinon')
 
-var path = require('path')
-var contractNamer = require(path.join(__dirname, '..', '..', 'old-ui', 'lib', 'contract-namer.js'))
+const contractNamer = require('../../old-ui/lib/contract-namer')
 
 describe('contractNamer', function () {
   beforeEach(function () {

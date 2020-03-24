@@ -3,11 +3,6 @@ const promiseToCallback = require('promise-to-callback')
 
 module.exports = createStreamSink
 
-
-function createStreamSink (asyncWriteFn, _opts) {
-  return new AsyncWritableStream(asyncWriteFn, _opts)
-}
-
 class AsyncWritableStream extends WritableStream {
 
   constructor (asyncWriteFn, _opts) {
@@ -21,4 +16,8 @@ class AsyncWritableStream extends WritableStream {
     promiseToCallback(this._asyncWriteFn(chunk, encoding))(callback)
   }
 
+}
+
+function createStreamSink (asyncWriteFn, _opts) {
+  return new AsyncWritableStream(asyncWriteFn, _opts)
 }

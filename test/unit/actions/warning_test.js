@@ -1,14 +1,13 @@
 // var jsdom = require('mocha-jsdom')
-var assert = require('assert')
-var freeze = require('deep-freeze-strict')
-var path = require('path')
+const assert = require('assert')
+const freeze = require('deep-freeze-strict')
 
-var actions = require(path.join(__dirname, '..', '..', '..', 'ui', 'app', 'actions.js'))
-var reducers = require(path.join(__dirname, '..', '..', '..', 'ui', 'app', 'reducers.js'))
+import * as actions from '../../../ui/app/actions'
+import rootReducer from '../../../ui/app/reducers'
 
 describe('action DISPLAY_WARNING', function () {
   it('sets appState.warning to provided value', function () {
-    var initialState = {
+    const initialState = {
       appState: {},
     }
     freeze(initialState)
@@ -16,7 +15,7 @@ describe('action DISPLAY_WARNING', function () {
     const warningText = 'This is a sample warning message'
 
     const action = actions.displayWarning(warningText)
-    const resultingState = reducers(initialState, action)
+    const resultingState = rootReducer(initialState, action)
 
     assert.equal(resultingState.appState.warning, warningText, 'warning text set')
   })

@@ -1,5 +1,5 @@
-var assert = require('assert')
-var BinaryRenderer = require('../../../old-ui/app/components/binary-renderer')
+const assert = require('assert')
+const BinaryRenderer = require('../../../old-ui/app/components/binary-renderer')
 
 describe('BinaryRenderer', function () {
   let binaryRenderer

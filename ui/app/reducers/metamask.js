@@ -11,7 +11,7 @@ function reduceMetamask (state, action) {
   let newState
 
   // clone + defaults
-  var metamaskState = extend({
+  const metamaskState = extend({
     isInitialized: false,
     isUnlocked: false,
     isAccountMenuOpen: false,
@@ -113,7 +113,7 @@ function reduceMetamask (state, action) {
       })
 
     case actions.COMPLETED_TX:
-      var stringId = String(action.id)
+      const stringId = String(action.id)
       newState = extend(metamaskState, {
         unapprovedTxs: {},
         unapprovedMsgs: {},
@@ -303,7 +303,7 @@ function reduceMetamask (state, action) {
     case actions.UPDATE_TRANSACTION_PARAMS:
       const { id: txId, value } = action
       let { selectedAddressTxList } = metamaskState
-      selectedAddressTxList = selectedAddressTxList.map(tx => {
+      selectedAddressTxList = selectedAddressTxList.map((tx) => {
         if (tx.id === txId) {
           tx.txParams = value
         }
@@ -334,9 +334,9 @@ function reduceMetamask (state, action) {
       })
 
     case actions.SET_USE_BLOCKIE:
-          return extend(metamaskState, {
-            useBlockie: action.value,
-          })
+      return extend(metamaskState, {
+        useBlockie: action.value,
+      })
 
     case actions.UPDATE_FEATURE_FLAGS:
       return extend(metamaskState, {

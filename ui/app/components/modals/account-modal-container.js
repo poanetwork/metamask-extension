@@ -45,7 +45,7 @@ AccountModalContainer.prototype.render = function () {
     children = [children]
   }
 
-  return h('div', { style: { borderRadius: '4px' }}, [
+  return h('div', { style: { borderRadius: '4px' } }, [
     h('div.account-modal-container', [
 
       h('div', [

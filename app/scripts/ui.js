@@ -7,6 +7,7 @@ const { ENVIRONMENT_TYPE_NOTIFICATION } = require('./lib/enums')
 const extension = require('extensionizer')
 const ExtensionPlatform = require('./platforms/extension')
 const NotificationManager = require('./lib/notification-manager')
+
 const notificationManager = new NotificationManager()
 const setupRaven = require('./lib/setupRaven')
 const log = require('loglevel')
@@ -37,8 +38,10 @@ async function start () {
 
   // start ui
   const container = document.getElementById('app-content')
-  startPopup({ container, connectionStream }, (err, store) => {
-    if (err) return displayCriticalError(err)
+  startPopup({ container, connectionStream }, (err, _store) => {
+    if (err) {
+      return displayCriticalError(err)
+    }
 
     // Code commented out until we begin auto adding users to NewUI
     // const { isMascara, identities = {}, featureFlags = {} } = store.getState().metamask
