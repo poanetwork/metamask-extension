@@ -75,26 +75,23 @@ describe('Transaction Controller', function () {
 
   describe('#getConfirmedTransactions', function () {
     let address
-    beforeEach(function () {
+    it('should return the number of confirmed txs', function () {
       address = '0xc684832530fcbddae4b4230a47e991ddcec2831d'
       const txParams = {
         'from': address,
         'to': '0xc684832530fcbddae4b4230a47e991ddcec2831d',
       }
       txController.txStateManager._saveTxList([
-        {id: 0, status: 'confirmed', metamaskNetworkId: currentNetworkId, txParams, history: [] },
-        {id: 1, status: 'confirmed', metamaskNetworkId: currentNetworkId, txParams, history: [] },
-        {id: 2, status: 'confirmed', metamaskNetworkId: currentNetworkId, txParams, history: [] },
-        {id: 3, status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams, history: [] },
-        {id: 4, status: 'rejected', metamaskNetworkId: currentNetworkId, txParams, history: [] },
-        {id: 5, status: 'approved', metamaskNetworkId: currentNetworkId, txParams, history: [] },
-        {id: 6, status: 'signed', metamaskNetworkId: currentNetworkId, txParams, history: [] },
-        {id: 7, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [] },
-        {id: 8, status: 'failed', metamaskNetworkId: currentNetworkId, txParams, history: [] },
+        { id: 0, status: 'confirmed', metamaskNetworkId: currentNetworkId, txParams, history: [] },
+        { id: 1, status: 'confirmed', metamaskNetworkId: currentNetworkId, txParams, history: [] },
+        { id: 2, status: 'confirmed', metamaskNetworkId: currentNetworkId, txParams, history: [] },
+        { id: 3, status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams, history: [] },
+        { id: 4, status: 'rejected', metamaskNetworkId: currentNetworkId, txParams, history: [] },
+        { id: 5, status: 'approved', metamaskNetworkId: currentNetworkId, txParams, history: [] },
+        { id: 6, status: 'signed', metamaskNetworkId: currentNetworkId, txParams, history: [] },
+        { id: 7, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [] },
+        { id: 8, status: 'failed', metamaskNetworkId: currentNetworkId, txParams, history: [] },
       ])
-    })
-
-    it('should return the number of confirmed txs', function () {
       assert.equal(txController.nonceTracker.getConfirmedTransactions(address).length, 3)
     })
   })
@@ -118,13 +115,14 @@ describe('Transaction Controller', function () {
       stub = sinon.stub(txController, 'addUnapprovedTransaction').callsFake(() => {
         txController.emit('newUnapprovedTx', txMeta)
         return Promise.resolve(txController.txStateManager.addTx(txMeta))
+      })
+
     })
 
     afterEach(function () {
       txController.txStateManager._saveTxList([])
       stub.restore()
     })
-  })
 
     it('should resolve when finished and status is submitted and resolve with the hash', function (done) {
       txController.once('newUnapprovedTx', (txMetaFromEmit) => {
@@ -135,11 +133,11 @@ describe('Transaction Controller', function () {
       })
 
       txController.newUnapprovedTransaction(txParams)
-      .then((hash) => {
-        assert(hash, 'newUnapprovedTransaction needs to return the hash')
-        done()
-      })
-      .catch(done)
+        .then((hash) => {
+          assert(hash, 'newUnapprovedTransaction needs to return the hash')
+          done()
+        })
+        .catch(done)
     })
 
     it('should reject when finished and status is rejected', function (done) {
@@ -150,10 +148,13 @@ describe('Transaction Controller', function () {
       })
 
       txController.newUnapprovedTransaction(txParams)
-      .catch((err) => {
-        if (err.message === 'Nifty Wallet Tx Signature: User denied transaction signature.') done()
-        else done(err)
-      })
+        .catch((err) => {
+          if (err.message === 'Nifty Wallet Tx Signature: User denied transaction signature.') {
+            done()
+          } else {
+            done(err)
+          }
+        })
     })
   })
 
@@ -171,17 +172,17 @@ describe('Transaction Controller', function () {
 
     it('should add an unapproved transaction and return a valid txMeta', function (done) {
       txController.addUnapprovedTransaction({ from: selectedAddress })
-      .then((txMeta) => {
-        assert(('id' in txMeta), 'should have a id')
-        assert(('time' in txMeta), 'should have a time stamp')
-        assert(('metamaskNetworkId' in txMeta), 'should have a metamaskNetworkId')
-        assert(('txParams' in txMeta), 'should have a txParams')
-        assert(('history' in txMeta), 'should have a history')
+        .then((txMeta) => {
+          assert(('id' in txMeta), 'should have a id')
+          assert(('time' in txMeta), 'should have a time stamp')
+          assert(('metamaskNetworkId' in txMeta), 'should have a metamaskNetworkId')
+          assert(('txParams' in txMeta), 'should have a txParams')
+          assert(('history' in txMeta), 'should have a history')
 
-        const memTxMeta = txController.txStateManager.getTx(txMeta.id)
-        assert.deepEqual(txMeta, memTxMeta, `txMeta should be stored in txController after adding it\n  expected: ${txMeta} \n  got: ${memTxMeta}`)
-        done()
-      }).catch(done)
+          const memTxMeta = txController.txStateManager.getTx(txMeta.id)
+          assert.deepEqual(txMeta, memTxMeta, `txMeta should be stored in txController after adding it\n  expected: ${txMeta} \n  got: ${memTxMeta}`)
+          done()
+        }).catch(done)
     })
 
     it('should emit newUnapprovedTx event and pass txMeta as the first argument', function (done) {
@@ -191,20 +192,23 @@ describe('Transaction Controller', function () {
         done()
       })
       txController.addUnapprovedTransaction({ from: selectedAddress })
-      .catch(done)
+        .catch(done)
     })
 
     it('should fail if recipient is public', function (done) {
       txController.networkStore = new ObservableStore(1)
       txController.addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' })
-      .catch((err) => {
-        if (err.message === 'Recipient is a public account') done()
-        else done(err)
-      })
+        .catch((err) => {
+          if (err.message === 'Recipient is a public account') {
+            done()
+          } else {
+            done(err)
+          }
+        })
     })
 
     it('should fail if the from address isn\'t the selected address', function (done) {
-      txController.addUnapprovedTransaction({from: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2'})
+      txController.addUnapprovedTransaction({ from: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' })
         .then(function () {
           assert.fail('transaction should not have been added')
           done()
@@ -221,12 +225,12 @@ describe('Transaction Controller', function () {
         done()
       })
       txController.addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' })
-      .catch(done)
+        .catch(done)
     })
   })
 
   describe('#addTxGasDefaults', function () {
-    it('should add the tx defaults if their are none', async () => {
+    it('should add the tx defaults if their are none', async function () {
       const txMeta = {
         txParams: {
           from: '0xc684832530fcbddae4b4230a47e991ddcec2831d',
@@ -264,11 +268,11 @@ describe('Transaction Controller', function () {
         }))
       })
       Promise.all(listeners)
-      .then((returnValues) => {
-        assert.deepEqual(returnValues.pop(), txMeta, 'last event 1:unapproved should return txMeta')
-        done()
-      })
-      .catch(done)
+        .then((returnValues) => {
+          assert.deepEqual(returnValues.pop(), txMeta, 'last event 1:unapproved should return txMeta')
+          done()
+        })
+        .catch(done)
       txController.addTx(txMeta)
     })
   })
@@ -276,7 +280,7 @@ describe('Transaction Controller', function () {
   describe('#approveTransaction', function () {
     let txMeta, originalValue
 
-    beforeEach(function () {
+    it('does not overwrite set values', function (done) {
       originalValue = '0x01'
       txMeta = {
         id: '1',
@@ -288,10 +292,6 @@ describe('Transaction Controller', function () {
           gasPrice: originalValue,
         },
       }
-    })
-
-
-    it('does not overwrite set values', function (done) {
       this.timeout(15000)
       const wrongValue = '0x05'
 
@@ -333,7 +333,7 @@ describe('Transaction Controller', function () {
 
   describe('#updateAndApproveTransaction', function () {
     let txMeta
-    beforeEach(() => {
+    it('should update and approve transactions', async function () {
       txMeta = {
         id: 1,
         status: 'unapproved',
@@ -346,8 +346,6 @@ describe('Transaction Controller', function () {
         },
         metamaskNetworkId: currentNetworkId,
       }
-    })
-    it('should update and approve transactions', async () => {
       txController.txStateManager.addTx(txMeta)
       const approvalPromise = txController.updateAndApproveTransaction(txMeta)
       const tx = txController.txStateManager.getTx(1)
@@ -364,7 +362,7 @@ describe('Transaction Controller', function () {
   })
 
   describe('#cancelTransaction', function () {
-    beforeEach(function () {
+    it('should emit a status change to rejected', function (done) {
       txController.txStateManager._saveTxList([
         { id: 0, status: 'unapproved', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
         { id: 1, status: 'rejected', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
@@ -374,15 +372,14 @@ describe('Transaction Controller', function () {
         { id: 5, status: 'confirmed', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
         { id: 6, status: 'failed', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
       ])
-    })
-
-    it('should emit a status change to rejected', function (done) {
       txController.once('tx:status-update', (txId, status) => {
         try {
           assert.equal(status, 'rejected', 'status should e rejected')
           assert.equal(txId, 0, 'id should e 0')
           done()
-        } catch (e) { done(e) }
+        } catch (e) {
+          done(e)
+        }
       })
 
       txController.cancelTransaction(0)
@@ -392,7 +389,7 @@ describe('Transaction Controller', function () {
 
   describe('#publishTransaction', function () {
     let hash, txMeta
-    beforeEach(function () {
+    it('should publish a tx, updates the rawTx when provided a one', async function () {
       hash = '0x2a5523c6fa98b47b7d9b6c8320179785150b42a16bcff36b398c5062b65657e8'
       txMeta = {
         id: 1,
@@ -401,9 +398,6 @@ describe('Transaction Controller', function () {
         metamaskNetworkId: currentNetworkId,
       }
       providerResultStub.eth_sendRawTransaction = hash
-    })
-
-    it('should publish a tx, updates the rawTx when provided a one', async function () {
       const rawTx = '0x477b2e6553c917af0db0388ae3da62965ff1a184558f61b749d1266b2e6d024c'
       txController.txStateManager.addTx(txMeta)
       await txController.publishTransaction(txMeta.id, rawTx)
@@ -425,15 +419,15 @@ describe('Transaction Controller', function () {
         { id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [] },
       ])
       txController.retryTransaction(1)
-      .then((txMeta) => {
-        assert.equal(txMeta.txParams.nonce, txParams.nonce, 'nonce should be the same')
-        assert.equal(txMeta.txParams.from, txParams.from, 'from should be the same')
-        assert.equal(txMeta.txParams.to, txParams.to, 'to should be the same')
-        assert.equal(txMeta.txParams.data, txParams.data, 'data should be the same')
-        assert.ok(('lastGasPrice' in txMeta), 'should have the key `lastGasPrice`')
-        assert.equal(txController.txStateManager.getTxList().length, 2)
-        done()
-      }).catch(done)
+        .then((txMeta) => {
+          assert.equal(txMeta.txParams.nonce, txParams.nonce, 'nonce should be the same')
+          assert.equal(txMeta.txParams.from, txParams.from, 'from should be the same')
+          assert.equal(txMeta.txParams.to, txParams.to, 'to should be the same')
+          assert.equal(txMeta.txParams.data, txParams.data, 'data should be the same')
+          assert.ok(('lastGasPrice' in txMeta), 'should have the key `lastGasPrice`')
+          assert.equal(txController.txStateManager.getTxList().length, 2)
+          done()
+        }).catch(done)
     })
   })
 
@@ -458,7 +452,7 @@ describe('Transaction Controller', function () {
   })
 
   describe('#getPendingTransactions', function () {
-    beforeEach(function () {
+    it('should show only submitted transactions as pending transasction', function () {
       txController.txStateManager._saveTxList([
         { id: 1, status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {} },
         { id: 2, status: 'rejected', metamaskNetworkId: currentNetworkId, txParams: {} },
@@ -468,8 +462,6 @@ describe('Transaction Controller', function () {
         { id: 6, status: 'confirmed', metamaskNetworkId: currentNetworkId, txParams: {} },
         { id: 7, status: 'failed', metamaskNetworkId: currentNetworkId, txParams: {} },
       ])
-    })
-    it('should show only submitted transactions as pending transasction', function () {
       assert(txController.pendingTxTracker.getPendingTransactions().length, 1)
       assert(txController.pendingTxTracker.getPendingTransactions()[0].status, 'submitted')
     })

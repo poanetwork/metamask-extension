@@ -1,11 +1,10 @@
 const injectCss = require('inject-css')
-const MetaMaskUi = require('./index.js')
 const MetaMaskUiCss = require('./css.js')
 const EventEmitter = require('events').EventEmitter
 
 // account management
 
-var identities = {
+const identities = {
   '0x1113462427bcc9133bb46e88bcbe39cd7ef0e111': {
     name: 'Walrus',
     img: 'QmW6hcwYzXrNkuHrpvo58YeZvbZxUddv69ATSHY3BHpPdd',
@@ -29,7 +28,7 @@ var identities = {
   },
 }
 
-var unapprovedTxs = {}
+const unapprovedTxs = {}
 addUnconfTx({
   from: '0x222462427bcc9133bb46e88bcbe39cd7ef0e7222',
   to: '0x1113462427bcc9133bb46e88bcbe39cd7ef0e111',
@@ -43,8 +42,8 @@ addUnconfTx({
 })
 
 function addUnconfTx (txParams) {
-  var time = (new Date()).getTime()
-  var id = createRandomId()
+  const time = (new Date()).getTime()
+  const id = createRandomId()
   unapprovedTxs[id] = {
     id: id,
     txParams: txParams,
@@ -52,8 +51,8 @@ function addUnconfTx (txParams) {
   }
 }
 
-var isUnlocked = false
-var selectedAccount = null
+let isUnlocked = false
+let selectedAccount = null
 
 function getState () {
   return {
@@ -64,7 +63,7 @@ function getState () {
   }
 }
 
-var accountManager = new EventEmitter()
+const accountManager = new EventEmitter()
 
 accountManager.getState = function (cb) {
   cb(null, getState())
@@ -91,7 +90,7 @@ accountManager.setSelectedAccount = function (address, cb) {
   this._didUpdate()
 }
 
-accountManager.signTransaction = function (txParams, cb) {
+accountManager.signTransaction = function (_txParams, _cb) {
   alert('signing tx....')
 }
 
@@ -101,23 +100,16 @@ accountManager._didUpdate = function () {
 
 // start app
 
-var container = document.getElementById('app-content')
-
-var css = MetaMaskUiCss()
+const css = MetaMaskUiCss()
 injectCss(css)
-
-MetaMaskUi({
-  container: container,
-  accountManager: accountManager,
-})
 
 // util
 
 function createRandomId () {
   // 13 time digits
-  var datePart = new Date().getTime() * Math.pow(10, 3)
+  const datePart = new Date().getTime() * Math.pow(10, 3)
   // 3 random digits
-  var extraPart = Math.floor(Math.random() * Math.pow(10, 3))
+  const extraPart = Math.floor(Math.random() * Math.pow(10, 3))
   // 16 digits
   return datePart + extraPart
 }

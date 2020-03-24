@@ -1,10 +1,9 @@
-var assert = require('assert')
-var path = require('path')
+const assert = require('assert')
 
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 
-const actions = require(path.join(__dirname, '../../../ui/app/actions.js'))
+const actions = require('../../../ui/app/actions')
 
 const middlewares = [thunk]
 const mockStore = configureMockStore(middlewares)
@@ -31,17 +30,21 @@ describe('tx confirmation screen', function () {
   const store = mockStore(initialState)
 
   describe('cancelTx', function () {
-    before(function (done) {
-      actions._setBackgroundConnection({
-        approveTransaction (txId, cb) { cb('An error!') },
-        cancelTransaction (txId, cb) { cb() },
-        clearSeedWordCache (cb) { cb() },
-        getState (cb) { cb() },
-      })
-      done()
-    })
-
     it('creates COMPLETED_TX with the cancelled transaction ID', function (done) {
+      actions._setBackgroundConnection({
+        approveTransaction (_txId, cb) {
+          cb('An error!')
+        },
+        cancelTransaction (_txId, cb) {
+          cb()
+        },
+        clearSeedWordCache (cb) {
+          cb()
+        },
+        getState (cb) {
+          cb()
+        },
+      })
       store.dispatch(actions.cancelTx({ id: txId }))
         .then(() => {
           const storeActions = store.getActions()

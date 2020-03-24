@@ -7,8 +7,8 @@ import configureMockStore from 'redux-mock-store'
 import { Provider } from 'react-redux'
 
 const state = {
-	metamask: {},
-	appState: {},
+  metamask: {},
+  appState: {},
 }
 
 const middlewares = [thunk]
@@ -16,31 +16,26 @@ const mockStore = configureMockStore(middlewares)
 const store = mockStore(state)
 let wrapper
 
-describe('ErrorComponent', () => {
-	describe('renders ErrorComponent', () => {
-		beforeEach(function () {
-			wrapper = mount(
-				<Provider store={store}>
-					<ErrorComponent error="Error!"/>
-				</Provider>
-			)
-		})
-		it('shows error', () => {
-			assert.equal(wrapper.find('.error').text(), 'Error!')
-		})
-	})
+describe('ErrorComponent', function () {
+  describe('renders ErrorComponent', function () {
+    it('shows error', function () {
+      wrapper = mount(
+        <Provider store={store}>
+          <ErrorComponent error="Error!" />
+        </Provider>
+      )
+      assert.equal(wrapper.find('.error').text(), 'Error!')
+    })
+  })
 
-	describe('doesn\'t render ErrorComponent component', () => {
-		beforeEach(function () {
-			wrapper = mount(
-				<Provider store={store}>
-					<ErrorComponent/>
-				</Provider>
-			)
-		})
-
-		it('doesn\'t show error', () => {
-			assert.equal(wrapper.find('.error').isEmpty(), true)
-		})
-	})
+  describe('doesn\'t render ErrorComponent component', function () {
+    it('doesn\'t show error', function () {
+      wrapper = mount(
+        <Provider store={store}>
+          <ErrorComponent />
+        </Provider>
+      )
+      assert.equal(wrapper.find('.error').isEmpty(), true)
+    })
+  })
 })

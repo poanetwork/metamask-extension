@@ -1,28 +1,29 @@
+/* eslint-disable mocha/no-async-describe */
 const path = require('path')
 const Func = require('./func').Functions
+
 const account1 = '0x2E428ABd9313D256d64D1f69fe3929C3BE18fD1f'
 const account1RSK = '0x7a9bc05F7441d862d1B83CB724861a9872FF43fe'
 const account2 = '0xd7b7AFeCa35e32594e29504771aC847E2a803742'
-const testsFolder = './test-cases'
-const setup = require(`${testsFolder}/setup.spec`)
-const login = require(`${testsFolder}/login.spec`)
-const { accountCreation } = require(`${testsFolder}/account-creation.spec`)
-const connectHDWallet = require(`${testsFolder}/connect-hd-wallet.spec`)
-const importAccount = require(`${testsFolder}/import-account.spec`)
-// const importContractAccount = require(`${testsFolder}/import-contract-account.spec`)
-const deleteImportedAccount = require(`${testsFolder}/delete-imported-account.spec`)
-const signData = require(`${testsFolder}/sign-data.spec`)
-const exportPrivateKey = require(`${testsFolder}/export-private-key.spec`)
-const importGanacheSeedPhrase = require(`${testsFolder}/import-ganache-seed-phrase.spec`)
-const RSKNetworkTests = require(`${testsFolder}/RSK-network-tests.js`)
-const checkEmittedEvents = require(`${testsFolder}/check-emitted-events.spec`)
-// const addCustomToken = require(`${testsFolder}/add-token-custom.spec`)
-const changePassword = require(`${testsFolder}/change-password.spec`)
-// const addTokenFromSearch = require(`${testsFolder}/add-token-search.spec`)
-const customRPC = require(`${testsFolder}/custom-rpc.spec`)
+const setup = require(`./test-cases/setup.spec`)
+const login = require(`./test-cases/login.spec`)
+const { accountCreation } = require(`./test-cases/account-creation.spec`)
+const connectHDWallet = require(`./test-cases/connect-hd-wallet.spec`)
+const importAccount = require(`./test-cases/import-account.spec`)
+// const importContractAccount = require(`./test-cases/import-contract-account.spec`)
+const deleteImportedAccount = require(`./test-cases/delete-imported-account.spec`)
+const signData = require(`./test-cases/sign-data.spec`)
+const exportPrivateKey = require(`./test-cases/export-private-key.spec`)
+const importGanacheSeedPhrase = require(`./test-cases/import-ganache-seed-phrase.spec`)
+const RSKNetworkTests = require(`./test-cases/RSK-network-tests.js`)
+const checkEmittedEvents = require(`./test-cases/check-emitted-events.spec`)
+// const addCustomToken = require(`./test-cases/add-token-custom.spec`)
+const changePassword = require(`./test-cases/change-password.spec`)
+// const addTokenFromSearch = require(`./test-cases/add-token-search.spec`)
+const customRPC = require(`./test-cases/custom-rpc.spec`)
 const { buildWebDriver } = require(`./webdriver`)
 
-describe('Metamask popup page', async function () {
+describe('Metamask popup page', function () {
 
   this.timeout(15 * 60 * 1000)
   const f = new Func()
@@ -36,7 +37,7 @@ describe('Metamask popup page', async function () {
 
   before(async function () {
     if (process.env.SELENIUM_BROWSER === 'chrome') {
-      const { driver: chromeDriver, extensionId: _extensionId } = await buildWebDriver({responsive: false})
+      const { driver: chromeDriver, extensionId: _extensionId } = await buildWebDriver({ responsive: false })
       const extensionUrl = chromeDriver.extensionUrl
       driver = chromeDriver.driver
       extensionId = _extensionId
@@ -63,7 +64,7 @@ describe('Metamask popup page', async function () {
       // check for console errors
       const errors = await f.checkBrowserForConsoleErrors(driver)
       if (errors.length) {
-        const errorReports = errors.map(err => err.message)
+        const errorReports = errors.map((err) => err.message)
         const errorMessage = `Errors found in browser console:\n${errorReports.join('\n')}`
         console.log(errorMessage)
       }
@@ -78,23 +79,24 @@ describe('Metamask popup page', async function () {
     await f.driver.quit()
   })
 
-  describe('Setup', async () => {
+  describe('Setup', async function () {
+    // eslint-disable-next-line mocha/no-hooks-for-single-case
     await setup(f)
   })
 
-  describe('Log In', async () => {
+  describe('Log In', async function () {
     await login(f, password)
   })
 
-  describe('Account Creation', async () => {
+  describe('Account Creation', async function () {
     await accountCreation(f, password)
   })
 
-  describe('Connect Hardware Wallet', async () => {
+  describe('Connect Hardware Wallet', async function () {
     await connectHDWallet(f)
   })
 
-  describe('Import Account', async () => {
+  describe('Import Account', async function () {
     await importAccount(f)
   })
 
@@ -102,27 +104,27 @@ describe('Metamask popup page', async function () {
   //   await importContractAccount(f, account1, getCreatedAccounts)
   // })
 
-  describe('Delete Imported Account', async () => {
+  describe('Delete Imported Account', async function () {
     await deleteImportedAccount(f)
   })
 
-  describe('Sign Data', async () => {
+  describe('Sign Data', async function () {
     await signData(f)
   })
 
-  describe('Export private key', async () => {
+  describe('Export private key', async function () {
     await exportPrivateKey(f, password)
   })
 
-  describe('Import Ganache seed phrase', async () => {
+  describe('Import Ganache seed phrase', async function () {
     await importGanacheSeedPhrase(f, account2, password)
   })
 
-  describe('RSK network tests', async () => {
+  describe('RSK network tests', async function () {
     await RSKNetworkTests(f, account1RSK)
   })
 
-  describe('Check the filter of emitted events', async () => {
+  describe('Check the filter of emitted events', async function () {
     await checkEmittedEvents(f, account1, account2)
   })
 
@@ -131,7 +133,7 @@ describe('Metamask popup page', async function () {
   //   await addCustomToken(f, account1, account2)
   // })
 
-  describe('Change password', async () => {
+  describe('Change password', async function () {
     await changePassword(f, password, newPassword)
   })
 
@@ -140,7 +142,7 @@ describe('Metamask popup page', async function () {
   //   await addTokenFromSearch(f)
   // })
 
-  describe('Custom RPC', async () => {
+  describe('Custom RPC', async function () {
     await customRPC(f)
   })
 })

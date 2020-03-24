@@ -36,26 +36,26 @@ TransactionIcon.prototype.render = function () {
           'data-for': 'transactionIcon',
         }),
       ])
-  }
+    default:
+      if (isMsg) {
+        return h('i.fa.fa-certificate.fa-lg', {
+          style: {
+            width: '40px',
+          },
+        })
+      }
 
-  if (isMsg) {
-    return h('i.fa.fa-certificate.fa-lg', {
-      style: {
-        width: '40px',
-      },
-    })
-  }
-
-  if (txParams.to) {
-    return h(Identicon, {
-      diameter: 40,
-      address: txParams.to || transaction.hash,
-    })
-  } else {
-    return h('i.contract-small', {
-      style: {
-        marginLeft: '11px',
-      },
-    })
+      if (txParams.to) {
+        return h(Identicon, {
+          diameter: 40,
+          address: txParams.to || transaction.hash,
+        })
+      } else {
+        return h('i.contract-small', {
+          style: {
+            marginLeft: '11px',
+          },
+        })
+      }
   }
 }
