@@ -26,14 +26,18 @@ ExportAccountView.prototype.render = function () {
   const accountDetail = state.accountDetail
   const nickname = state.identities[state.address].name
 
-  if (!accountDetail) return h('div')
+  if (!accountDetail) {
+    return h('div')
+  }
   const accountExport = accountDetail.accountExport
 
   const notExporting = accountExport === 'none'
   const exportRequested = accountExport === 'requested'
   const accountExported = accountExport === 'completed'
 
-  if (notExporting) return h('div')
+  if (notExporting) {
+    return h('div')
+  }
 
   if (exportRequested) {
     const warning = `Export private keys at your own risk`
@@ -45,57 +49,57 @@ ExportAccountView.prototype.render = function () {
           width: '100%',
         },
       },
-        [
-          h('div', {
-            key: 'exporting',
-            style: {
-              margin: '0 30px',
-            },
-          }, [
-            h('p.error', {
-              style: {
-                color: '#333333',
-                marginBottom: '0px',
-                marginTop: '30px',
-              },
-            }, warning),
-            h('input#exportAccount.sizing-input', {
-              type: 'password',
-              placeholder: 'Confirm Password',
-              onKeyPress: this.onExportKeyPress.bind(this),
-              style: {
-                position: 'relative',
-                top: '27px',
-                marginBottom: '20px',
-                width: '100%',
-                padding: '10px',
-              },
-            }),
-          ]),
-          h('div', {
-            key: 'buttons',
-            style: {
-              margin: '25px 30px',
-            },
+      [
+        h('div', {
+          key: 'exporting',
+          style: {
+            margin: '0 30px',
           },
-            [
-              h('button.btn-violet', {
-                onClick: () => this.props.dispatch(actions.backToAccountDetail(this.props.address)),
-              }, 'Cancel'),
-              h('button', {
-                onClick: () => this.onExportKeyPress({ key: 'Enter', preventDefault: () => {} }),
-              }, 'Submit'),
-            ]),
-          (this.props.warning) && (
-          h('div', {style: {
-              margin: '0 30px',
-            }},
-            [
-              h('div.error', this.props.warning.split('-')),
-            ]
+        }, [
+          h('p.error', {
+            style: {
+              color: '#333333',
+              marginBottom: '0px',
+              marginTop: '30px',
+            },
+          }, warning),
+          h('input#exportAccount.sizing-input', {
+            type: 'password',
+            placeholder: 'Confirm Password',
+            onKeyPress: this.onExportKeyPress.bind(this),
+            style: {
+              position: 'relative',
+              top: '27px',
+              marginBottom: '20px',
+              width: '100%',
+              padding: '10px',
+            },
+          }),
+        ]),
+        h('div', {
+          key: 'buttons',
+          style: {
+            margin: '25px 30px',
+          },
+        },
+        [
+          h('button.btn-violet', {
+            onClick: () => this.props.dispatch(actions.backToAccountDetail(this.props.address)),
+          }, 'Cancel'),
+          h('button', {
+            onClick: () => this.onExportKeyPress({ key: 'Enter', preventDefault: () => {} }),
+          }, 'Submit'),
+        ]),
+        (this.props.warning) && (
+          h('div', { style: {
+            margin: '0 30px',
+          } },
+          [
+            h('div.error', this.props.warning.split('-')),
+          ]
           )
         ),
-        ])
+      ])
     )
   }
 
@@ -129,12 +133,12 @@ ExportAccountView.prototype.render = function () {
           },
         }, plainKey),
         h('div', {
-            style: {
-              paddingTop: '25px',
-            },
-          }, h(CopyButton, {
-            value: accountDetail.privateKey,
-          })
+          style: {
+            paddingTop: '25px',
+          },
+        }, h(CopyButton, {
+          value: accountDetail.privateKey,
+        })
         ),
       ]),
       h('div', {
@@ -162,7 +166,9 @@ ExportAccountView.prototype.componentWillUnmount = function () {
 }
 
 ExportAccountView.prototype.onExportKeyPress = function (event) {
-  if (event.key !== 'Enter') return
+  if (event.key !== 'Enter') {
+    return
+  }
   event.preventDefault()
 
   const input = document.getElementById('exportAccount').value

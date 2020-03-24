@@ -1,94 +1,97 @@
 const assert = require('assert')
 const { screens, menus, NETWORKS } = require('../elements')
+
 const token = { supply: 101, name: 'Test', decimals: 0, ticker: 'ABC' }
 let tokenAddress
 
 const addCustomToken = async (f, account1, account2) => {
-	describe('Add token to LOCALHOST', function () {
+  describe('Add token to LOCALHOST', function () {
 
-      it('Create custom token in LOCALHOST', async () => {
-        await f.setProvider(NETWORKS.LOCALHOST)
-        tokenAddress = await f.createToken(account1, token, true)
-        console.log('Token contract address: ' + tokenAddress)
-        assert.equal(tokenAddress.length, 42, 'failed to create token')
-      })
-
-      it('navigates to the add token screen', async () => {
-        await f.waitUntilShowUp(screens.main.identicon)
-        const tab = await f.waitUntilShowUp(screens.main.tokens.menu)
-        await tab.click()
-        const addTokenButton = await f.waitUntilShowUp(screens.main.tokens.buttonAdd2)
-        assert.equal(await addTokenButton.getText(), screens.main.tokens.buttonAddText)
-        await f.click(addTokenButton)
-        await f.delay(2000)
-      })
-
-      it('checks add token screen has correct title', async () => {
-        const addTokenScreen = await f.waitUntilShowUp(screens.addToken.title)
-        assert.equal(await addTokenScreen.getText(), screens.addToken.titleText)
-      })
-
-      it('adds token parameters', async () => {
-        const tab = await f.waitUntilShowUp(screens.addToken.tab.custom, 30)
-        if (!await f.waitUntilShowUp(screens.addToken.custom.fields.contractAddress)) await tab.click()
-      })
-
-      it('address input is displayed and has correct placeholder', async () => {
-        const field = await f.waitUntilShowUp(screens.addToken.custom.fields.contractAddress)
-        assert.equal(await field.getAttribute('placeholder'), 'Token Contract Address', 'incorrect placeholder')
-      })
-
-      it('fill out address input', async () => {
-        const tokenContractAddress = await f.waitUntilShowUp(screens.addToken.custom.fields.contractAddress)
-        await tokenContractAddress.sendKeys(tokenAddress)
-        await f.delay(2000)
-      })
-
-      it('field \'Symbol\' enabled and has correct value', async () => {
-        const field = await f.waitUntilShowUp(screens.addToken.custom.fields.tokenSymbol)
-        assert.equal(await field.isEnabled(), true, 'field disabled')
-        assert.equal(await field.getAttribute('placeholder'), 'Like "ETH"', 'incorrect placeholder')
-        assert.equal(await field.getAttribute('value'), token.ticker, 'incorrect value')
-      })
-
-      it('field \'Decimals\' enabled and has correct value', async () => {
-        const field = await f.waitUntilShowUp(screens.addToken.custom.fields.decimals)
-        assert.equal(await field.isEnabled(), false, 'field disabled')
-        assert.equal(await field.getAttribute('value'), token.decimals, 'incorrect value')
-      })
-
-      it('checks the token balance', async () => {
-        const button = await f.waitUntilShowUp(screens.addToken.custom.buttons.add)
-        await f.click(button)
-        await f.delay(2000)
-        const tokenBalance = await f.waitUntilShowUp(screens.main.tokens.balance)
-        assert.equal(await tokenBalance.getText(), token.supply + ' ' + token.ticker, 'balance is incorrect or not displayed')
-      })
-
-      it('click to token opens the Blockscout', async () => {
-        const link = await f.waitUntilShowUp(screens.main.tokens.token)
-        await link.click()
-        await f.delay(2000)
-        const allHandles = await f.driver.getAllWindowHandles()
-        console.log('allHandles.length ' + allHandles.length)
-        assert.equal(allHandles.length, 2, 'blockscout wasn\'t opened')
-        await f.switchToLastPage()
-        await f.delay(2000)
-        const title = await f.waitUntilCurrentUrl()
-        console.log(title)
-        assert.equal(title.includes('https://blockscout.com/poa/sokol/tokens/'), true, 'blockscout wasn\'t opened')
-        await f.switchToFirstPage()
-      })
+    it('Create custom token in LOCALHOST', async function () {
+      await f.setProvider(NETWORKS.LOCALHOST)
+      tokenAddress = await f.createToken(account1, token, true)
+      console.log('Token contract address: ' + tokenAddress)
+      assert.equal(tokenAddress.length, 42, 'failed to create token')
     })
+
+    it('navigates to the add token screen', async function () {
+      await f.waitUntilShowUp(screens.main.identicon)
+      const tab = await f.waitUntilShowUp(screens.main.tokens.menu)
+      await tab.click()
+      const addTokenButton = await f.waitUntilShowUp(screens.main.tokens.buttonAdd2)
+      assert.equal(await addTokenButton.getText(), screens.main.tokens.buttonAddText)
+      await f.click(addTokenButton)
+      await f.delay(2000)
+    })
+
+    it('checks add token screen has correct title', async function () {
+      const addTokenScreen = await f.waitUntilShowUp(screens.addToken.title)
+      assert.equal(await addTokenScreen.getText(), screens.addToken.titleText)
+    })
+
+    it('adds token parameters', async function () {
+      const tab = await f.waitUntilShowUp(screens.addToken.tab.custom, 30)
+      if (!await f.waitUntilShowUp(screens.addToken.custom.fields.contractAddress)) {
+        await tab.click()
+      }
+    })
+
+    it('address input is displayed and has correct placeholder', async function () {
+      const field = await f.waitUntilShowUp(screens.addToken.custom.fields.contractAddress)
+      assert.equal(await field.getAttribute('placeholder'), 'Token Contract Address', 'incorrect placeholder')
+    })
+
+    it('fill out address input', async function () {
+      const tokenContractAddress = await f.waitUntilShowUp(screens.addToken.custom.fields.contractAddress)
+      await tokenContractAddress.sendKeys(tokenAddress)
+      await f.delay(2000)
+    })
+
+    it('field \'Symbol\' enabled and has correct value', async function () {
+      const field = await f.waitUntilShowUp(screens.addToken.custom.fields.tokenSymbol)
+      assert.equal(await field.isEnabled(), true, 'field disabled')
+      assert.equal(await field.getAttribute('placeholder'), 'Like "ETH"', 'incorrect placeholder')
+      assert.equal(await field.getAttribute('value'), token.ticker, 'incorrect value')
+    })
+
+    it('field \'Decimals\' enabled and has correct value', async function () {
+      const field = await f.waitUntilShowUp(screens.addToken.custom.fields.decimals)
+      assert.equal(await field.isEnabled(), false, 'field disabled')
+      assert.equal(await field.getAttribute('value'), token.decimals, 'incorrect value')
+    })
+
+    it('checks the token balance', async function () {
+      const button = await f.waitUntilShowUp(screens.addToken.custom.buttons.add)
+      await f.click(button)
+      await f.delay(2000)
+      const tokenBalance = await f.waitUntilShowUp(screens.main.tokens.balance)
+      assert.equal(await tokenBalance.getText(), token.supply + ' ' + token.ticker, 'balance is incorrect or not displayed')
+    })
+
+    it('click to token opens the Blockscout', async function () {
+      const link = await f.waitUntilShowUp(screens.main.tokens.token)
+      await link.click()
+      await f.delay(2000)
+      const allHandles = await f.driver.getAllWindowHandles()
+      console.log('allHandles.length ' + allHandles.length)
+      assert.equal(allHandles.length, 2, 'blockscout wasn\'t opened')
+      await f.switchToLastPage()
+      await f.delay(2000)
+      const title = await f.waitUntilCurrentUrl()
+      console.log(title)
+      assert.equal(title.includes('https://blockscout.com/poa/sokol/tokens/'), true, 'blockscout wasn\'t opened')
+      await f.switchToFirstPage()
+    })
+  })
 
   describe('Token menu', function () {
 
-    it('token menu is displayed and clickable ', async () => {
+    it('token menu is displayed and clickable ', async function () {
       const menu = await f.waitUntilShowUp(menus.token.menu)
       await menu.click()
     })
 
-    it('link \'View on Blockscout...\' leads to correct page ', async () => {
+    it('link \'View on Blockscout...\' leads to correct page ', async function () {
       const menu = await f.waitUntilShowUp(menus.token.view)
       assert.notEqual(menu, false, 'item isn\'t displayed')
       assert.equal(await menu.getText(), menus.token.viewText, 'incorrect name')
@@ -105,7 +108,7 @@ const addCustomToken = async (f, account1, account2) => {
       await f.switchToFirstPage()
     })
 
-    it('item \'Copy\' is displayed and clickable ', async () => {
+    it('item \'Copy\' is displayed and clickable ', async function () {
       let menu = await f.waitUntilShowUp(menus.token.menu)
       await menu.click()
       const item = await f.waitUntilShowUp(menus.token.copy)
@@ -116,7 +119,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.notEqual(menu, false, 'menu wasn\'t closed')
     })
 
-    it('item \'Remove\' is displayed', async () => {
+    it('item \'Remove\' is displayed', async function () {
       const menu = await f.waitUntilShowUp(menus.token.menu)
       await menu.click()
       const item = await f.waitUntilShowUp(menus.token.remove)
@@ -124,7 +127,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await item.getText(), menus.token.removeText, 'incorrect name')
     })
 
-    it('item \'Send \' is displayed', async () => {
+    it('item \'Send \' is displayed', async function () {
       const item = await f.waitUntilShowUp(menus.token.send)
       assert.notEqual(item, false, 'item isn\'t displayed')
       assert.equal(await item.getText(), menus.token.sendText, 'incorrect name')
@@ -132,100 +135,100 @@ const addCustomToken = async (f, account1, account2) => {
     })
   })
 
-  describe('Check support of token per network basis ', async () => {
+  describe('Check support of token per network basis ', function () {
     const inexistentToken = '0xB8c77482e45F1F44dE1745F52C74426C631bDD51'
-    describe('Token should be displayed only for network, where it was added ', async () => {
+    describe('Token should be displayed only for network, where it was added ', function () {
 
-      it('token should not be displayed in POA network', async () => {
+      it('token should not be displayed in POA network', async function () {
         await f.setProvider(NETWORKS.POA)
         assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
       })
 
-      it('token should not be displayed in SOKOL testnet', async () => {
+      it('token should not be displayed in SOKOL testnet', async function () {
         await f.setProvider(NETWORKS.SOKOL)
         assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
       })
 
-      it('token should not be displayed in MAINNET', async () => {
+      it('token should not be displayed in MAINNET', async function () {
         await f.setProvider(NETWORKS.MAINNET)
         assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
       })
 
-      it('token should not be displayed in ROPSTEN testnet', async () => {
+      it('token should not be displayed in ROPSTEN testnet', async function () {
         await f.setProvider(NETWORKS.ROPSTEN)
         assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
       })
 
-      it('token should not be displayed in KOVAN testnet', async () => {
+      it('token should not be displayed in KOVAN testnet', async function () {
         await f.setProvider(NETWORKS.KOVAN)
         assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
       })
 
-      it('token should not be displayed in RINKEBY testnet', async () => {
+      it('token should not be displayed in RINKEBY testnet', async function () {
         await f.setProvider(NETWORKS.RINKEBY)
         assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
       })
 
-      it('token should not be displayed in RSK network', async () => {
+      it('token should not be displayed in RSK network', async function () {
         await f.setProvider(NETWORKS.RSK)
         assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
       })
 
-      it('token should not be displayed in RSK testnet', async () => {
+      it('token should not be displayed in RSK testnet', async function () {
         await f.setProvider(NETWORKS.RSK_TESTNET)
         assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
       })
     })
 
-    describe.skip('Custom tokens validation ', async () => {
+    describe('Custom tokens validation ', function () {
 
-      it('can not add inexistent token to POA network', async () => {
+      it('can not add inexistent token to POA network', async function () {
         await f.setProvider(NETWORKS.POA)
         console.log(tokenAddress)
         assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in POA network')
       })
 
-      it('can not add inexistent token to SOKOL testnet', async () => {
+      it('can not add inexistent token to SOKOL testnet', async function () {
         await f.setProvider(NETWORKS.SOKOL)
         assert(await f.isDisabledAddInexistentToken(inexistentToken), true, 'can add inexistent token in SOKOL testnet')
       })
 
-      it('can not add inexistent token to ROPSTEN testnet', async () => {
+      it('can not add inexistent token to ROPSTEN testnet', async function () {
         await f.setProvider(NETWORKS.ROPSTEN)
         assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in ROPSTEN testnet')
       })
 
-      it('can not add inexistent token to KOVAN testnet', async () => {
+      it('can not add inexistent token to KOVAN testnet', async function () {
         await f.setProvider(NETWORKS.KOVAN)
         assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in KOVAN testnet')
       })
 
-      it('can not add inexistent token to RINKEBY testnet', async () => {
+      it('can not add inexistent token to RINKEBY testnet', async function () {
         await f.setProvider(NETWORKS.RINKEBY)
         assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in RINKEBY testnet')
       })
 
-      it('can not add inexistent token to MAINNET', async () => {
+      it('can not add inexistent token to MAINNET', async function () {
         await f.setProvider(NETWORKS.MAINNET)
         assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in MAINNET')
       })
 
-      it('can not add inexistent token to RSK', async () => {
+      it('can not add inexistent token to RSK', async function () {
         await f.setProvider(NETWORKS.RSK)
         assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in RSK')
       })
 
-      it('can not add inexistent token to RSK testnet', async () => {
+      it('can not add inexistent token to RSK testnet', async function () {
         await f.setProvider(NETWORKS.RSK_TESTNET)
         assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in RSK testnet')
       })
 
-      it('can not add inexistent token to LOCALHOST network', async () => {
+      it('can not add inexistent token to LOCALHOST network', async function () {
         await f.setProvider(NETWORKS.LOCALHOST)
         assert(await f.isDisabledAddInexistentToken(tokenAddress.slice(0, tokenAddress.length - 2) + '0'), true, 'can add inexistent token in LOCALHOST network')
       })
 
-      it('token still should be displayed in LOCALHOST network', async () => {
+      it('token still should be displayed in LOCALHOST network', async function () {
         await f.setProvider(NETWORKS.LOCALHOST)
         await f.waitUntilDisappear(screens.main.tokens.amount)
         assert.notEqual(await f.waitUntilShowUp(screens.main.tokens.amount), false, 'App is frozen')
@@ -244,7 +247,7 @@ const addCustomToken = async (f, account1, account2) => {
     const preciseAmount = '0.123456789123456789123'
     const negativeAmount = '-1'
 
-    it('switch to account 1 ', async () => {
+    it('switch to account 1 ', async function () {
       await f.setProvider(NETWORKS.LOCALHOST)
       const accountMenu = await f.waitUntilShowUp(menus.account.menu)
       await accountMenu.click()
@@ -255,34 +258,34 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await accountName.getText(), 'Account 1', 'account name incorrect')
     })
 
-    it('open screen \'Transfer tokens\' ', async () => {
+    it('open screen \'Transfer tokens\' ', async function () {
       const menu = await f.waitUntilShowUp(menus.token.menu)
       await menu.click()
       const item = await f.waitUntilShowUp(menus.token.send)
       await item.click()
     })
 
-    it('field \'Amount\' is displayed and has correct placeholder ', async () => {
+    it('field \'Amount\' is displayed and has correct placeholder ', async function () {
       const item = await f.waitUntilShowUp(screens.sendTokens.field.amount)
       assert.equal(await item.getAttribute('placeholder'), screens.sendTokens.field.amountPlaceholder, 'placeholder is incorrect')
     })
 
-    it('field \'Address\' is displayed and has correct placeholder ', async () => {
+    it('field \'Address\' is displayed and has correct placeholder ', async function () {
       const item = await f.waitUntilShowUp(screens.sendTokens.field.address)
       assert.equal(await item.getAttribute('placeholder'), screens.sendTokens.field.addressPlaceholder, 'placeholder is incorrect')
     })
 
-    it('token\'s balance is correct ', async () => {
+    it('token\'s balance is correct ', async function () {
       const item = await f.waitUntilShowUp(screens.sendTokens.balance)
       assert.equal(await item.getText(), token.supply, 'token\'s balance is incorrect')
     })
 
-    it('token\'s symbol is correct ', async () => {
+    it('token\'s symbol is correct ', async function () {
       const item = await f.waitUntilShowUp(screens.sendTokens.symbol)
       assert.equal(await item.getText(), token.ticker, 'token\'s symbol is incorrect')
     })
 
-    it('error message if invalid token\'s amount', async () => {
+    it('error message if invalid token\'s amount', async function () {
       const button = await f.waitUntilShowUp(screens.sendTokens.button.next)
       assert.equal(await button.getText(), 'Next', 'button \'Next\' has incorrect name')
       await f.click(button)
@@ -290,7 +293,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await error.getText(), screens.sendTokens.errorText.invalidAmount, ' error message is incorrect')
     })
 
-    it('error message if invalid address', async () => {
+    it('error message if invalid address', async function () {
       const amount = await f.waitUntilShowUp(screens.sendTokens.field.amount)
       await amount.sendKeys('1')
       const address = await f.waitUntilShowUp(screens.sendTokens.field.address)
@@ -303,7 +306,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await error.getText(), screens.sendTokens.errorText.address, ' error message is incorrect')
     })
 
-    it('error message if amount is large', async () => {
+    it('error message if amount is large', async function () {
       const amount = await f.waitUntilShowUp(screens.sendTokens.field.amount)
       await amount.sendKeys(largeAmount)
       const address = await f.waitUntilShowUp(screens.sendTokens.field.address)
@@ -317,7 +320,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await error.getText(), screens.sendTokens.errorText.largeAmount, ' error message is incorrect')
     })
 
-    it('error message if amount is invalid', async () => {
+    it('error message if amount is invalid', async function () {
       const amount = await f.waitUntilShowUp(screens.sendTokens.field.amount)
       await f.clearField(amount)
       await amount.sendKeys(invalidAmount)
@@ -329,7 +332,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await error.getText(), screens.sendTokens.errorText.invalidAmount, ' error message is incorrect')
     })
 
-    it.skip('error message if amount is too precise', async () => {
+    it('error message if amount is too precise', async function () {
       const amount = await f.waitUntilShowUp(screens.sendTokens.field.amount)
       await f.clearField(amount)
       await amount.sendKeys(preciseAmount)
@@ -341,7 +344,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await error.getText(), screens.sendTokens.errorText.tooPrecise, ' error message is incorrect')
     })
 
-    it('error message if amount is negative', async () => {
+    it('error message if amount is negative', async function () {
       const amount = await f.waitUntilShowUp(screens.sendTokens.field.amount)
       await f.clearField(amount)
       await amount.sendKeys(negativeAmount)
@@ -353,7 +356,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await error.getText(), screens.sendTokens.errorText.negativeAmount, ' error message is incorrect')
     })
 
-    it('\'Confirm transaction\' screen is opened if address and amount are correct', async () => {
+    it('Confirm transaction screen is opened if address and amount are correct', async function () {
       const amount = await f.waitUntilShowUp(screens.sendTokens.field.amount)
       await f.clearField(amount)
       await amount.sendKeys('5')
@@ -364,17 +367,17 @@ const addCustomToken = async (f, account1, account2) => {
       assert.notEqual(buttonSubmit, false, 'incorrect screen was opened')
     })
 
-    it('\'Confirm transaction\' screen: token\'s amount is correct', async () => {
+    it('Confirm transaction screen: token\'s amount is correct', async function () {
       const amount = await f.waitUntilShowUp(screens.confirmTransaction.amount)
       assert.equal(await amount.getText(), '5.000', ' amount is incorrect')
     })
 
-    it('\'Confirm transaction\' screen: token\'s symbol is correct', async () => {
+    it('Confirm transaction screen: token\'s symbol is correct', async function () {
       const symbol = await f.waitUntilShowUp(screens.confirmTransaction.symbol)
       assert.equal(await symbol.getText(), token.ticker, ' symbol is incorrect')
     })
 
-    it('submit transaction', async () => {
+    it('submit transaction', async function () {
       await f.driver.navigate().refresh()
       const button = await f.waitUntilShowUp(screens.confirmTransaction.button.submit)
       await f.click(button)
@@ -382,7 +385,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.notEqual(list, false, ' main screen isn\'t opened')
     })
 
-    it('correct amount substracted from sender\'s tokens balance', async () => {
+    it('correct amount substracted from sender\'s tokens balance', async function () {
       const tab = await f.waitUntilShowUp(screens.main.tokens.menu)
       await tab.click()
       await f.driver.navigate().refresh()
@@ -395,7 +398,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await balance.getText(), (token.supply - 5) + ' ' + token.ticker, 'balance is incorrect')
     })
 
-    it('switch to account 2 ', async () => {
+    it('switch to account 2 ', async function () {
       const accountMenu = await f.waitUntilShowUp(menus.account.menu)
       await accountMenu.click()
       const item = await f.waitUntilShowUp(menus.account.account2)
@@ -405,7 +408,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await accountName.getText(), 'Account 2', 'account name incorrect')
     })
 
-    it('added token isn\'t displayed for another account in the same network', async () => {
+    it('added token isn\'t displayed for another account in the same network', async function () {
       const accountMenu = await f.waitUntilShowUp(menus.account.menu)
       await accountMenu.click()
       const item = await f.waitUntilShowUp(menus.account.createAccount)
@@ -414,7 +417,7 @@ const addCustomToken = async (f, account1, account2) => {
       await f.delay(2000)
     })
 
-    it('add token to another account in the same network', async () => {
+    it('add token to another account in the same network', async function () {
       const addTokenButton = await f.waitUntilShowUp(screens.main.tokens.buttonAdd)
       assert.equal(await addTokenButton.getText(), screens.main.tokens.buttonAddText)
       await f.click(addTokenButton)
@@ -426,7 +429,7 @@ const addCustomToken = async (f, account1, account2) => {
       await f.click(buttonAdd)
     })
 
-    it('tokens were transfered, balance is updated', async () => {
+    it('tokens were transfered, balance is updated', async function () {
       const balance = await f.waitUntilShowUp(screens.main.tokens.balance)
       assert.equal(await balance.getText(), '5 ' + token.ticker, 'balance is incorrect')
     })
@@ -434,7 +437,7 @@ const addCustomToken = async (f, account1, account2) => {
 
   describe('Remove token, provider is localhost', function () {
 
-    it('switch to account 1 ', async () => {
+    it('switch to account 1 ', async function () {
       const accountMenu = await f.waitUntilShowUp(menus.account.menu)
       await accountMenu.click()
       const item = await f.waitUntilShowUp(menus.account.account1)
@@ -444,7 +447,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await accountName.getText(), 'Account 1', 'account name incorrect')
     })
 
-    it('remove option opens \'Remove token\' screen ', async () => {
+    it('remove option opens \'Remove token\' screen ', async function () {
       await f.setProvider(NETWORKS.LOCALHOST)
       const menu = await f.waitUntilShowUp(menus.token.menu)
       await menu.click()
@@ -452,17 +455,17 @@ const addCustomToken = async (f, account1, account2) => {
       await remove.click()
     })
 
-    it('screen \'Remove token\' has correct title', async () => {
+    it('screen \'Remove token\' has correct title', async function () {
       const title = await f.waitUntilShowUp(screens.removeToken.title)
       assert.equal(await title.getText(), screens.removeToken.titleText, 'title is incorrect')
     })
 
-    it('screen \'Remove token\' has correct label', async () => {
+    it('screen \'Remove token\' has correct label', async function () {
       const title = await f.waitUntilShowUp(screens.removeToken.label)
       assert.equal((await title.getText()).includes(screens.removeToken.labelText + token.ticker), true, 'label is incorrect')
     })
 
-    it('button "No" bring back to "Main" screen', async () => {
+    it('button "No" bring back to "Main" screen', async function () {
       const title = await f.waitUntilShowUp(screens.removeToken.title)
       assert.equal(await title.getText(), screens.removeToken.titleText, 'title is incorrect')
       const button = await f.waitUntilShowUp(screens.removeToken.buttons.no)
@@ -473,7 +476,7 @@ const addCustomToken = async (f, account1, account2) => {
       assert.notEqual(await token.getText(), '', 'token is disapeared after return from remove token screen ')
     })
 
-    it('button "Yes" delete token', async () => {
+    it('button "Yes" delete token', async function () {
       const menu = await f.waitUntilShowUp(menus.token.menu)
       await menu.click()
       const remove = await f.waitUntilShowUp(menus.token.remove)
@@ -489,32 +492,32 @@ const addCustomToken = async (f, account1, account2) => {
       assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
     })
 
-    it('check if token was removed from SOKOL network', async () => {
+    it('check if token was removed from SOKOL network', async function () {
       await f.setProvider(NETWORKS.SOKOL)
       assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
     })
 
-    it('check if token was removed from KOVAN network', async () => {
+    it('check if token was removed from KOVAN network', async function () {
       await f.setProvider(NETWORKS.KOVAN)
       assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
     })
 
-    it('check if token was removed from ROPSTEN network', async () => {
+    it('check if token was removed from ROPSTEN network', async function () {
       await f.setProvider(NETWORKS.ROPSTEN)
       assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
     })
 
-    it('check if token was removed from MAINNET network', async () => {
+    it('check if token was removed from MAINNET network', async function () {
       await f.setProvider(NETWORKS.MAINNET)
       assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
     })
 
-    it('check if token was removed from POA network', async () => {
+    it('check if token was removed from POA network', async function () {
       await f.setProvider(NETWORKS.POA)
       assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
     })
 
-    it('check if token was removed from RINKEBY network', async () => {
+    it('check if token was removed from RINKEBY network', async function () {
       await f.setProvider(NETWORKS.RINKEBY)
       assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
     })

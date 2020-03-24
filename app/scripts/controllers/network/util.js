@@ -167,7 +167,7 @@ const RSK_TESTNET_OBJ = {
 networks[RSK_TESTNET_CODE] = RSK_TESTNET_OBJ
 networks[RSK_TESTNET] = RSK_TESTNET_OBJ
 
-const getNetworkDisplayName = key => networks[key].displayName
+const getNetworkDisplayName = (key) => networks[key].displayName
 
 module.exports = {
   networks,

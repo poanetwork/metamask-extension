@@ -47,17 +47,17 @@ TokenBalance.prototype.render = function () {
   return isLoading
     ? h('div', '')
     : h('.flex-row', {
-        style: {
-          alignItems: 'flex-end',
-          lineHeight: '20px',
-          textRendering: 'geometricPrecision',
-        },
-      }, [
+      style: {
+        alignItems: 'flex-end',
+        lineHeight: '20px',
+        textRendering: 'geometricPrecision',
+      },
+    }, [
       h('div.hide-text-overflow.token-balance__amount', {
-          style: valueStyle,
+        style: valueStyle,
       }, string),
       !balanceOnly && h('span.token-balance__symbol', {
-          style: dimStyle,
+        style: dimStyle,
       }, symbol),
     ])
 }
@@ -74,7 +74,9 @@ TokenBalance.prototype.createFreshTokenTracker = function () {
     this.tracker.removeListener('error', this.showError)
   }
 
-  if (!global.ethereumProvider) return
+  if (!global.ethereumProvider) {
+    return
+  }
   const { userAddress, token } = this.props
 
   this.tracker = new TokenTracker({
@@ -87,7 +89,7 @@ TokenBalance.prototype.createFreshTokenTracker = function () {
 
   // Set up listener instances for cleaning up
   this.balanceUpdater = this.updateBalance.bind(this)
-  this.showError = error => {
+  this.showError = (error) => {
     this.setState({ error, isLoading: false })
   }
   this.tracker.on('update', this.balanceUpdater)
@@ -113,8 +115,12 @@ TokenBalance.prototype.componentDidUpdate = function (nextProps) {
     token: { address: newTokenAddress },
   } = nextProps
 
-  if ((!oldAddress || !newAddress) && (!oldTokenAddress || !newTokenAddress)) return
-  if ((oldAddress === newAddress) && (oldTokenAddress === newTokenAddress)) return
+  if ((!oldAddress || !newAddress) && (!oldTokenAddress || !newTokenAddress)) {
+    return
+  }
+  if ((oldAddress === newAddress) && (oldTokenAddress === newTokenAddress)) {
+    return
+  }
 
   this.setState({ isLoading: true })
   this.createFreshTokenTracker()
@@ -135,7 +141,9 @@ TokenBalance.prototype.updateBalance = function (tokens = []) {
 }
 
 TokenBalance.prototype.componentWillUnmount = function () {
-  if (!this.tracker) return
+  if (!this.tracker) {
+    return
+  }
   this.tracker.stop()
   this.tracker.removeListener('update', this.balanceUpdater)
   this.tracker.removeListener('error', this.showError)

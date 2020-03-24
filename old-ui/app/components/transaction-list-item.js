@@ -29,9 +29,9 @@ const { POA_CODE,
   RSK_TESTNET_CODE,
 } = require('../../../app/scripts/controllers/network/enums')
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    retryTransaction: transactionId => dispatch(actions.retryTransaction(transactionId)),
+    retryTransaction: (transactionId) => dispatch(actions.retryTransaction(transactionId)),
   }
 }
 
@@ -52,15 +52,17 @@ TransactionListItem.prototype.showRetryButton = function () {
 
   let currentTxSharesEarliestNonce = false
   const currentNonce = txParams.nonce
-  const currentNonceTxs = transactions.filter(tx => tx.txParams.nonce === currentNonce)
-  const currentNonceSubmittedTxs = currentNonceTxs.filter(tx => tx.status === 'submitted')
-  const currentSubmittedTxs = transactions.filter(tx => tx.status === 'submitted')
+  const currentNonceTxs = transactions.filter((tx) => tx.txParams.nonce === currentNonce)
+  const currentNonceSubmittedTxs = currentNonceTxs.filter((tx) => tx.status === 'submitted')
+  const currentSubmittedTxs = transactions.filter((tx) => tx.status === 'submitted')
   const lastSubmittedTxWithCurrentNonce = currentNonceSubmittedTxs[0]
   const currentTxIsLatestWithNonce = lastSubmittedTxWithCurrentNonce &&
     lastSubmittedTxWithCurrentNonce.id === transaction.id
   if (currentSubmittedTxs.length > 0) {
     const earliestSubmitted = currentSubmittedTxs.reduce((tx1, tx2) => {
-      if (tx1.submittedTime < tx2.submittedTime) return tx1
+      if (tx1.submittedTime < tx2.submittedTime) {
+        return tx1
+      }
       return tx2
     })
     currentTxSharesEarliestNonce = currentNonce === earliestSubmitted.txParams.nonce
@@ -73,9 +75,11 @@ TransactionListItem.prototype.render = function () {
   const { transaction, network, conversionRate, currentCurrency } = this.props
   const { status } = transaction
   if (transaction.key === 'shapeshift') {
-    if (Number(network) === MAINNET_CODE) return h(ShiftListItem, transaction)
+    if (Number(network) === MAINNET_CODE) {
+      return h(ShiftListItem, transaction)
+    }
   }
-  var date = formatDate(transaction.time)
+  const date = formatDate(transaction.time)
 
   let isLinkable = false
   const numericNet = isNaN(network) ? network : parseInt(network)
@@ -91,9 +95,9 @@ TransactionListItem.prototype.render = function () {
     numericNet === RSK_CODE ||
     numericNet === RSK_TESTNET_CODE
 
-  var isMsg = ('msgParams' in transaction)
-  var isTx = ('txParams' in transaction)
-  var isPending = status === 'unapproved'
+  const isMsg = ('msgParams' in transaction)
+  const isTx = ('txParams' in transaction)
+  const isPending = status === 'unapproved'
   let txParams
   if (isTx) {
     txParams = transaction.txParams
@@ -125,7 +129,9 @@ TransactionListItem.prototype.render = function () {
           this.props.showTx(transaction.id)
         }
         event.stopPropagation()
-        if (!transaction.hash || !isLinkable) return
+        if (!transaction.hash || !isLinkable) {
+          return
+        }
         const url = ethNetProps.explorerLinks.getExplorerTxLinkFor(transaction.hash, numericNet)
         global.platform.openWindow({ url })
       },
@@ -197,7 +203,7 @@ TransactionListItem.prototype.render = function () {
       ]),
 
       this.showRetryButton() && h('.transition-list-item__retry.grow-on-hover.error', {
-        onClick: event => {
+        onClick: (event) => {
           event.stopPropagation()
           this.resubmit()
         },
@@ -245,7 +251,7 @@ function domainField (txParams) {
   ])
 }
 
-function recipientField (txParams, transaction, isTx, isMsg, network) {
+function recipientField (txParams, transaction, _isTx, isMsg, network) {
   let message
 
   if (isMsg) {
@@ -262,9 +268,9 @@ function recipientField (txParams, transaction, isTx, isMsg, network) {
       color: '#333333',
     },
   }, [
-    h('span', (!txParams.to ? {style: {whiteSpace: 'nowrap'}} : null), message),
+    h('span', (!txParams.to ? { style: { whiteSpace: 'nowrap' } } : null), message),
     // Places a copy button if tx is successful, else places a placeholder empty div.
-    transaction.hash ? h(CopyButton, { value: transaction.hash, display: 'inline' }) : h('div', {style: { display: 'flex', alignItems: 'center', width: '26px' }}),
+    transaction.hash ? h(CopyButton, { value: transaction.hash, display: 'inline' }) : h('div', { style: { display: 'flex', alignItems: 'center', width: '26px' } }),
     renderErrorOrWarning(transaction, network),
   ])
 }
@@ -290,28 +296,28 @@ function renderErrorOrWarning (transaction, network) {
   if (err) {
     const message = err.message || ''
     return (
-        h(Tooltip, {
-          title: message,
-          position: 'bottom',
-          id: 'transactionListErrorItem',
-        }, [
-          h(`div`, {
-            'data-tip': '',
-            'data-for': 'transactionListErrorItem',
-          }, ` (Failed)`),
-        ])
+      h(Tooltip, {
+        title: message,
+        position: 'bottom',
+        id: 'transactionListErrorItem',
+      }, [
+        h(`div`, {
+          'data-tip': '',
+          'data-for': 'transactionListErrorItem',
+        }, ` (Failed)`),
+      ])
     )
   }
 
   // show warning
   const isRSK = ifRSK(network)
-  if (warning && !isRSK || (
-      isRSK &&
+  if ((warning && !isRSK) || (
+    isRSK &&
       warning &&
       !warning.error.includes('[ethjs-rpc] rpc error with payload') &&
       !warning.error.includes('[ethjs-query] while formatting outputs from rpc')
-      )
-    ) {
+  )
+  ) {
     const message = warning.message
     return h(Tooltip, {
       title: message,

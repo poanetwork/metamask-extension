@@ -1,4 +1,5 @@
 const React = require('react')
+
 const { Component } = React
 const h = require('react-hyperscript')
 const Tooltip = require('../tooltip.js')
@@ -36,8 +37,6 @@ export default class AddTokenScreen extends Component {
     tokens: PropTypes.array,
     identities: PropTypes.object,
     keyrings: PropTypes.array,
-    address: PropTypes.string,
-    dispatch: PropTypes.func,
     network: PropTypes.string,
     addToken: PropTypes.func,
   }
@@ -70,7 +69,7 @@ export default class AddTokenScreen extends Component {
       let selectedTokens = {}
       let customToken = {}
 
-      pendingTokenKeys.forEach(tokenAddress => {
+      pendingTokenKeys.forEach((tokenAddress) => {
         const token = pendingTokens[tokenAddress]
         const { isCustom } = token
 
@@ -137,7 +136,7 @@ export default class AddTokenScreen extends Component {
   }
 
   setCurrentAddTokenTab (key) {
-    this.setState({displayedTab: key})
+    this.setState({ displayedTab: key })
   }
 
   tabSwitchView () {
@@ -157,17 +156,17 @@ export default class AddTokenScreen extends Component {
     const { warning, customAddress, customSymbol, customDecimals, autoFilled } = state
     const { network, goHome, addToken } = props
     return h('.flex-column.flex-justify-center.flex-grow.select-none', [
-        warning ? h('div', {
+      warning ? h('div', {
+        style: {
+          margin: '20px 30px 0 30px',
+        },
+      }, [
+        h('.error', {
           style: {
-            margin: '20px 30px 0 30px',
+            display: 'block',
           },
-        }, [
-          h('.error', {
-            style: {
-              display: 'block',
-            },
-          }, warning),
-        ]) : null,
+        }, warning),
+      ]) : null,
       h('.flex-space-around', {
         style: {
           padding: '30px',
@@ -181,7 +180,7 @@ export default class AddTokenScreen extends Component {
             id: 'addToken',
           }, [
             h('span', {
-              style: { fontWeight: 'bold'},
+              style: { fontWeight: 'bold' },
               'data-tip': '',
               'data-for': 'addToken',
             }, 'Token Address' /* this.context.t('tokenAddress')*/),
@@ -197,17 +196,17 @@ export default class AddTokenScreen extends Component {
               width: '100%',
               margin: '10px 0',
             },
-            onChange: e => this.handleCustomAddressChange(e.target.value),
+            onChange: (e) => this.handleCustomAddressChange(e.target.value),
           }),
         ]),
 
         h('div', [
           h('span', {
-            style: { fontWeight: 'bold', paddingRight: '10px'},
+            style: { fontWeight: 'bold', paddingRight: '10px' },
           }, 'Token Symbol' /* this.context.t('tokenSymbol')*/),
         ]),
 
-        h('div', { style: {display: 'flex'} }, [
+        h('div', { style: { display: 'flex' } }, [
           h('input.large-input#token_symbol', {
             disabled: !autoFilled,
             placeholder: `Like "ETH"`,
@@ -216,17 +215,17 @@ export default class AddTokenScreen extends Component {
               width: '100%',
               margin: '10px 0',
             },
-            onChange: e => this.handleCustomSymbolChange(e.target.value),
+            onChange: (e) => this.handleCustomSymbolChange(e.target.value),
           }),
         ]),
 
         h('div', [
           h('span', {
-            style: { fontWeight: 'bold', paddingRight: '10px'},
+            style: { fontWeight: 'bold', paddingRight: '10px' },
           }, 'Decimals of Precision' /* this.context.t('decimal')*/),
         ]),
 
-        h('div', { style: {display: 'flex'} }, [
+        h('div', { style: { display: 'flex' } }, [
           h('input.large-input#token_decimals', {
             disabled: true,
             value: customDecimals,
@@ -237,7 +236,7 @@ export default class AddTokenScreen extends Component {
               width: '100%',
               margin: '10px 0',
             },
-            onChange: e => this.handleCustomDecimalsChange(e.target.value),
+            onChange: (e) => this.handleCustomDecimalsChange(e.target.value),
           }),
         ]),
 
@@ -256,9 +255,11 @@ export default class AddTokenScreen extends Component {
           }, 'Cancel' /* this.context.t('cancel')*/),
           h('button', {
             disabled: this.hasError() || !this.hasSelected(),
-            onClick: (event) => {
+            onClick: () => {
               const valid = this.validateInputs()
-              if (!valid) return
+              if (!valid) {
+                return
+              }
 
               const { customAddress, customSymbol, customDecimals } = this.state
               addToken(customAddress.trim(), customSymbol.trim(), customDecimals, network)
@@ -277,12 +278,12 @@ export default class AddTokenScreen extends Component {
     const { clearPendingTokens, goHome, network } = this.props
     return h('div', [
       h('.add-token__search-token', [
-       h(TokenSearch, {
-        onSearch: ({ results = [] }) => this.setState({ searchResults: results }),
-        error: tokenSelectorError,
-        network: network,
-       }),
-       h('.add-token__token-list', {
+        h(TokenSearch, {
+          onSearch: ({ results = [] }) => this.setState({ searchResults: results }),
+          error: tokenSelectorError,
+          network: network,
+        }),
+        h('.add-token__token-list', {
           style: {
             marginTop: '20px',
             height: '250px',
@@ -293,7 +294,7 @@ export default class AddTokenScreen extends Component {
             results: searchResults,
             selectedTokens: selectedTokens,
             network: network,
-            onToggleToken: token => this.handleToggleToken(token),
+            onToggleToken: (token) => this.handleToggleToken(token),
           }),
         ]),
       ]),
@@ -314,8 +315,10 @@ export default class AddTokenScreen extends Component {
     ])
   }
 
-  componentWillMount () {
-    if (typeof global.ethereumProvider === 'undefined') return
+  UNSAFE_componentWillMount () {
+    if (typeof global.ethereumProvider === 'undefined') {
+      return
+    }
 
     this.eth = new Eth(global.ethereumProvider)
     this.contract = new EthContract(this.eth)
@@ -327,7 +330,7 @@ export default class AddTokenScreen extends Component {
     displayWarning('')
   }
 
-  componentWillUpdate (nextProps) {
+  UNSAFE_componentWillUpdate (nextProps) {
     const {
       network: oldNet,
     } = this.props

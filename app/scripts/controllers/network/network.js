@@ -15,6 +15,7 @@ const { createSwappableProxy, createEventEmitterProxy } = require('swappable-obj
 const ethNetProps = require('eth-net-props')
 const parse = require('url-parse')
 const extend = require('extend')
+
 const networks = { networkList: {} }
 const { isKnownProvider, getDPath } = require('../../../../old-ui/app/util')
 
@@ -39,6 +40,7 @@ const {
   RSK_CODE,
   RSK_TESTNET_CODE,
 } = require('./enums')
+
 const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
 const POCKET_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET, POA, DAI, GOERLI_TESTNET, POA_SOKOL]
 
@@ -65,15 +67,16 @@ const defaultNetworkConfig = {
 
 module.exports = class NetworkController extends EventEmitter {
 
-  constructor (opts = {}) {
+  constructor (opts = {}, platform) {
     super()
+    this.platform = platform
 
     // parse options
     const providerConfig = opts.provider || defaultProviderConfig
     // create stores
     this.providerStore = new ObservableStore(providerConfig)
     this.networkStore = new ObservableStore('loading')
-    this.dProviderStore = new ObservableStore({dProvider: false})
+    this.dProviderStore = new ObservableStore({ dProvider: false })
     this.networkConfig = new ObservableStore(defaultNetworkConfig)
     this.store = new ComposedStore({ provider: this.providerStore, network: this.networkStore, dProviderStore: this.dProviderStore })
     this.on('networkDidChange', this.lookupNetwork)
@@ -101,7 +104,9 @@ module.exports = class NetworkController extends EventEmitter {
 
   verifyNetwork () {
     // Check network when restoring connectivity:
-    if (this.isNetworkLoading()) this.lookupNetwork()
+    if (this.isNetworkLoading()) {
+      this.lookupNetwork()
+    }
   }
 
   getNetworkState () {
@@ -225,7 +230,7 @@ module.exports = class NetworkController extends EventEmitter {
     if (isPocket && this.dProviderStore.getState().dProvider) {
       this._configurePocketProvider(opts)
     } else if (isInfura) {
-        this._configureInfuraProvider(opts)
+      this._configureInfuraProvider(opts)
     // other type-based rpc endpoints
     } else if (type === POA) {
       this._configureStandardProvider({ rpcUrl: ethNetProps.RPCEndpoints(POA_CODE)[0], chainId, ticker, nickname })
@@ -253,10 +258,10 @@ module.exports = class NetworkController extends EventEmitter {
 
   _configureInfuraProvider ({ type }) {
     log.info('NetworkController - configureInfuraProvider', type)
-    const networkClient = createInfuraClient({ network: type })
+    const networkClient = createInfuraClient({ network: type, platform: this.platform })
     this._setNetworkClient(networkClient)
     // setup networkConfig
-    var settings = {
+    const settings = {
       ticker: 'ETH',
     }
     this.networkConfig.putState(settings)
@@ -270,13 +275,13 @@ module.exports = class NetworkController extends EventEmitter {
 
   _configureLocalhostProvider () {
     log.info('NetworkController - configureLocalhostProvider')
-    const networkClient = createLocalhostClient()
+    const networkClient = createLocalhostClient({ platform: this.platform })
     this._setNetworkClient(networkClient)
   }
 
   _configureStandardProvider ({ rpcUrl, chainId, ticker, nickname }) {
     log.info('NetworkController - configureStandardProvider', rpcUrl)
-    const networkClient = createJsonRpcClient({ rpcUrl })
+    const networkClient = createJsonRpcClient({ rpcUrl, platform: this.platform })
     // hack to add a 'rpc' network with chainId
     networks.networkList['rpc'] = {
       chainId: chainId,
@@ -285,7 +290,7 @@ module.exports = class NetworkController extends EventEmitter {
       nickname,
     }
     // setup networkConfig
-    var settings = {
+    let settings = {
       network: chainId,
     }
     settings = extend(settings, networks.networkList['rpc'])

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { withRouter, Switch, Route } from 'react-router-dom'
 import { compose } from 'recompose'
 
@@ -26,22 +25,13 @@ import WelcomeScreen from '../../../../ui/app/welcome-screen'
 class FirstTimeFlow extends Component {
 
   static propTypes = {
-    isInitialized: PropTypes.bool,
-    seedWords: PropTypes.string,
-    address: PropTypes.string,
-    noActiveNotices: PropTypes.bool,
-    goToBuyEtherView: PropTypes.func,
-    isUnlocked: PropTypes.bool,
-    history: PropTypes.object,
-    welcomeScreenSeen: PropTypes.bool,
-    isPopup: PropTypes.bool,
-  };
+  }
 
   static defaultProps = {
     isInitialized: false,
     seedWords: '',
     noActiveNotices: false,
-  };
+  }
 
   render () {
     return (

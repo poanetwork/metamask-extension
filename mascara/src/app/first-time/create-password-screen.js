@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'recompose'
 import { createNewVaultAndKeychain } from '../../../../ui/app/actions'
@@ -20,11 +20,9 @@ class CreatePasswordScreen extends Component {
   }
 
   static propTypes = {
-    isLoading: PropTypes.bool.isRequired,
     createAccount: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     isInitialized: PropTypes.bool,
-    isUnlocked: PropTypes.bool,
     isMascara: PropTypes.bool.isRequired,
   }
 
@@ -40,7 +38,7 @@ class CreatePasswordScreen extends Component {
     this.animationEventEmitter = new EventEmitter()
   }
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     const { isInitialized, history } = this.props
 
     if (isInitialized) {
@@ -72,7 +70,6 @@ class CreatePasswordScreen extends Component {
     const { password } = this.state
     const { createAccount, history } = this.props
 
-    this.setState({ isLoading: true })
     createAccount(password)
       .then(() => history.push(INITIALIZE_UNIQUE_IMAGE_ROUTE))
   }
@@ -114,15 +111,18 @@ class CreatePasswordScreen extends Component {
         <div className={classnames({
           'first-view-main': !isMascara,
           'first-view-main__mascara': isMascara,
-        })}>
-          {isMascara && <div className="mascara-info first-view-phone-invisible">
-            <div className="info">
+        })}
+        >
+          {isMascara && (
+            <div className="mascara-info first-view-phone-invisible">
+              <div className="info">
               Nifty Wallet is a secure identity vault for Ethereum.
-            </div>
-            <div className="info">
+              </div>
+              <div className="info">
               It allows you to hold ether & tokens, and interact with decentralized applications.
+              </div>
             </div>
-          </div>}
+          )}
           <form className="create-password">
             <div className="create-password__title">
               Create Password
@@ -133,7 +133,7 @@ class CreatePasswordScreen extends Component {
               type="password"
               className="first-time-flow__input"
               value={this.state.password}
-              onChange={event => this.handlePasswordChange(event.target.value)}
+              onChange={(event) => this.handlePasswordChange(event.target.value)}
               error={passwordError}
               autoFocus
               autoComplete="new-password"
@@ -147,7 +147,7 @@ class CreatePasswordScreen extends Component {
               type="password"
               className="first-time-flow__input"
               value={this.state.confirmPassword}
-              onChange={event => this.handleConfirmPasswordChange(event.target.value)}
+              onChange={(event) => this.handleConfirmPasswordChange(event.target.value)}
               error={confirmPasswordError}
               autoComplete="confirm-password"
               margin="normal"
@@ -164,7 +164,7 @@ class CreatePasswordScreen extends Component {
             <a
               href=""
               className="first-time-flow__link create-password__import-link"
-              onClick={e => {
+              onClick={(e) => {
                 e.preventDefault()
                 history.push(INITIALIZE_IMPORT_WITH_SEED_PHRASE_ROUTE)
               }}
@@ -208,8 +208,8 @@ export default compose(
   withRouter,
   connect(
     mapStateToProps,
-    dispatch => ({
-      createAccount: password => dispatch(createNewVaultAndKeychain(password)),
+    (dispatch) => ({
+      createAccount: (password) => dispatch(createNewVaultAndKeychain(password)),
     })
   )
 )(CreatePasswordScreen)

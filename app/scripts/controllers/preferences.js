@@ -49,7 +49,7 @@ class PreferencesController {
     this.showWatchAssetUi = opts.showWatchAssetUi
     this._subscribeProviderType()
   }
-// PUBLIC METHODS
+  // PUBLIC METHODS
 
   /**
    * Sets the {@code forgottenPassword} state property
@@ -157,7 +157,7 @@ class PreferencesController {
 
     const identities = addresses.reduce((ids, address, index) => {
       const oldId = oldIdentities[address] || {}
-      ids[address] = {name: `Account ${index + 1}`, address, ...oldId}
+      ids[address] = { name: `Account ${index + 1}`, address, ...oldId }
       return ids
     }, {})
     const accountTokens = addresses.reduce((tokens, address) => {
@@ -205,7 +205,9 @@ class PreferencesController {
     const accountTokens = this.store.getState().accountTokens
     addresses.forEach((address) => {
       // skip if already exists
-      if (identities[address]) return
+      if (identities[address]) {
+        return
+      }
       // add missing identity
       const identityCount = Object.keys(identities).length
 
@@ -237,7 +239,9 @@ class PreferencesController {
     if (Object.keys(newlyLost).length > 0) {
 
       // Notify our servers:
-      if (this.diagnostics) this.diagnostics.reportOrphans(newlyLost)
+      if (this.diagnostics) {
+        this.diagnostics.reportOrphans(newlyLost)
+      }
 
       // store lost accounts
       for (const key in newlyLost) {
@@ -260,7 +264,7 @@ class PreferencesController {
   }
 
   removeSuggestedTokens () {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       this.store.updateState({ suggestedTokens: {} })
       resolve({})
     })
@@ -318,7 +322,7 @@ class PreferencesController {
 
     const tokens = this.store.getState().tokens
     const assetImages = this.getAssetImages()
-    const previousEntry = tokens.find((token, index) => {
+    const previousEntry = tokens.find((token, _index) => {
       return (token.address === address && parseInt(token.network) === parseInt(network))
     })
     const previousIndex = tokens.indexOf(previousEntry)
@@ -343,7 +347,7 @@ class PreferencesController {
   removeToken (rawAddress) {
     const tokens = this.store.getState().tokens
     const assetImages = this.getAssetImages()
-    const updatedTokens = tokens.filter(token => token.address !== rawAddress)
+    const updatedTokens = tokens.filter((token) => token.address !== rawAddress)
     delete assetImages[rawAddress]
     this._updateAccountTokens(updatedTokens, assetImages)
     return Promise.resolve(updatedTokens)
@@ -366,9 +370,11 @@ class PreferencesController {
    * @return {Promise<string>}
    */
   setAccountLabel (account, label) {
-    if (!account) throw new Error('setAccountLabel requires a valid address, got ' + String(account))
+    if (!account) {
+      throw new Error('setAccountLabel requires a valid address, got ' + String(account))
+    }
     const address = normalizeAddress(account)
-    const {identities} = this.store.getState()
+    const { identities } = this.store.getState()
     identities[address] = identities[address] || {}
     identities[address].name = label
     this.store.updateState({ identities })
@@ -399,7 +405,7 @@ class PreferencesController {
    *
    */
   setCurrentAccountTab (currentAccountTab) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       this.store.updateState({ currentAccountTab })
       resolve()
     })
@@ -416,7 +422,9 @@ class PreferencesController {
    */
   addToFrequentRpcList (_url, remove = false) {
     const rpcList = this.getFrequentRpcList()
-    const index = rpcList.findIndex((element) => { return element === _url })
+    const index = rpcList.findIndex((element) => {
+      return element === _url
+    })
     if (index !== -1) {
       rpcList.splice(index, 1)
     }
@@ -445,7 +453,7 @@ class PreferencesController {
    */
   removeRpcUrl (_url) {
     const rpcList = this.getFrequentRpcList()
-    const updatedRpcList = rpcList.filter(rpcUrl => rpcUrl !== _url)
+    const updatedRpcList = rpcList.filter((rpcUrl) => rpcUrl !== _url)
     this.store.updateState({ frequentRpcList: updatedRpcList })
 
     return Promise.resolve(updatedRpcList)
@@ -556,10 +564,16 @@ class PreferencesController {
    */
   _getTokenRelatedStates (selectedAddress) {
     const accountTokens = this.store.getState().accountTokens
-    if (!selectedAddress) selectedAddress = this.store.getState().selectedAddress
+    if (!selectedAddress) {
+      selectedAddress = this.store.getState().selectedAddress
+    }
     const providerType = this.network.providerStore.getState().type
-    if (!(selectedAddress in accountTokens)) accountTokens[selectedAddress] = {}
-    if (!(providerType in accountTokens[selectedAddress])) accountTokens[selectedAddress][providerType] = []
+    if (!(selectedAddress in accountTokens)) {
+      accountTokens[selectedAddress] = {}
+    }
+    if (!(providerType in accountTokens[selectedAddress])) {
+      accountTokens[selectedAddress][providerType] = []
+    }
     const tokens = accountTokens[selectedAddress][providerType]
     return { tokens, accountTokens, providerType, selectedAddress }
   }
@@ -581,7 +595,7 @@ class PreferencesController {
     const tokenOpts = { rawAddress, decimals, symbol, image }
     this.addSuggestedERC20Asset(tokenOpts)
     return this.showWatchAssetUi().then(() => {
-      const tokenAddresses = this.getTokens().filter(token => token.address === normalizeAddress(rawAddress))
+      const tokenAddresses = this.getTokens().filter((token) => token.address === normalizeAddress(rawAddress))
       return tokenAddresses.length > 0
     })
   }
@@ -596,13 +610,19 @@ class PreferencesController {
    */
   _validateERC20AssetParams (opts) {
     const { rawAddress, symbol, decimals } = opts
-    if (!rawAddress || !symbol || !decimals) throw new Error(`Cannot suggest token without address, symbol, and decimals`)
-    if (!(symbol.length < 6)) throw new Error(`Invalid symbol ${symbol} more than five characters`)
+    if (!rawAddress || !symbol || !decimals) {
+      throw new Error(`Cannot suggest token without address, symbol, and decimals`)
+    }
+    if (!(symbol.length < 6)) {
+      throw new Error(`Invalid symbol ${symbol} more than five characters`)
+    }
     const numDecimals = parseInt(decimals, 10)
     if (isNaN(numDecimals) || numDecimals > 36 || numDecimals < 0) {
       throw new Error(`Invalid decimals ${decimals} must be at least 0, and not over 36`)
     }
-    if (!isValidAddress(rawAddress)) throw new Error(`Invalid address ${rawAddress}`)
+    if (!isValidAddress(rawAddress)) {
+      throw new Error(`Invalid address ${rawAddress}`)
+    }
   }
 }
 

@@ -1,9 +1,10 @@
 const assert = require('assert')
 const { screens, menus, NETWORKS } = require('../elements')
+
 const testSeedPhrase = 'horn among position unable audit puzzle cannon apology gun autumn plug parrot'
 
 const importGanacheSeedPhrase = async (f, account2, password) => {
-  it('logs out', async () => {
+  it('logs out', async function () {
     await f.setProvider(NETWORKS.LOCALHOST)
     const menu = await f.waitUntilShowUp(menus.sandwich.menu)
     await menu.click()
@@ -12,13 +13,13 @@ const importGanacheSeedPhrase = async (f, account2, password) => {
     await logOut.click()
   })
 
-  it('restores from seed phrase', async () => {
+  it('restores from seed phrase', async function () {
     const restoreSeedLink = await f.waitUntilShowUp(screens.lock.linkRestore)
     assert.equal(await restoreSeedLink.getText(), screens.lock.linkRestoreText)
     await restoreSeedLink.click()
   })
 
-  it('adds seed phrase', async () => {
+  it('adds seed phrase', async function () {
     const seedTextArea = await f.waitUntilShowUp(screens.restoreVault.textArea)
     await seedTextArea.sendKeys(testSeedPhrase)
 
@@ -30,18 +31,18 @@ const importGanacheSeedPhrase = async (f, account2, password) => {
     await f.click(field)
   })
 
-  it('balance renders', async () => {
+  it('balance renders', async function () {
     const balance = await f.waitUntilShowUp(screens.main.balance)
     assert.equal(await balance.getText(), '100.000', "balance isn't correct")
   })
 
-  it('sends transaction', async () => {
+  it('sends transaction', async function () {
     const sendButton = await f.waitUntilShowUp(screens.main.buttons.send)
     assert.equal(await sendButton.getText(), screens.main.buttons.sendText)
     await f.click(sendButton)
   })
 
-  it('adds recipient address and amount', async () => {
+  it('adds recipient address and amount', async function () {
     const sendTranscationScreen = await f.waitUntilShowUp(screens.sendTransaction.title)
     assert.equal(await sendTranscationScreen.getText(), screens.sendTransaction.titleText, 'Transaction screen has incorrect titlr')
     const inputAddress = await f.waitUntilShowUp(screens.sendTransaction.field.address)
@@ -53,13 +54,13 @@ const importGanacheSeedPhrase = async (f, account2, password) => {
     await f.click(button)
   })
 
-  it('confirms transaction', async () => {
+  it('confirms transaction', async function () {
     const button = await f.waitUntilShowUp(screens.confirmTransaction.button.submit)
     assert.equal(await button.getAttribute('value'), 'Submit', 'button has incorrect name')
     await f.click(button)
   })
 
-  it('finds the transaction in the transactions list', async () => {
+  it('finds the transaction in the transactions list', async function () {
     const transactionAmount = await f.waitUntilShowUp(screens.main.transactionList)
     assert.equal(await transactionAmount.getText(), '10.0')
   })

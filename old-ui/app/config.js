@@ -1,13 +1,15 @@
 const Component = require('react').Component
 const h = require('react-hyperscript')
 const connect = require('react-redux').connect
+
 import PropTypes from 'prop-types'
+
 const actions = require('../../ui/app/actions')
 const LoadingIndicator = require('./components/loading')
 const Web3 = require('web3')
 const infuraCurrencies = require('./infura-conversion.json').objects.sort((a, b) => {
-      return a.quote.name.toLocaleLowerCase().localeCompare(b.quote.name.toLocaleLowerCase())
-    })
+  return a.quote.name.toLocaleLowerCase().localeCompare(b.quote.name.toLocaleLowerCase())
+})
 const validUrl = require('valid-url')
 const exportAsFile = require('./util').exportAsFile
 const Modal = require('../../ui/app/components/modals/index').Modal
@@ -23,6 +25,7 @@ const {
   POA_SOKOL,
   GOERLI_TESTNET,
 } = require('../../app/scripts/controllers/network/enums')
+
 const POCKET_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET, POA, DAI, GOERLI_TESTNET, POA_SOKOL]
 
 class ConfigScreen extends Component {
@@ -113,7 +116,7 @@ class ConfigScreen extends Component {
 
             this.currentProviderDisplay(metamaskState),
 
-            h('div', { style: {display: 'flex'} }, [
+            h('div', { style: { display: 'flex' } }, [
               h('input#new_rpc', {
                 placeholder: 'New RPC URL',
                 style: {
@@ -157,7 +160,7 @@ class ConfigScreen extends Component {
                 style: {
                   alignSelf: 'center',
                 },
-                onClick (event) {
+                onClick () {
                   window.logStateString((err, result) => {
                     if (err) {
                       props.displayWarning('Error in retrieving state logs.')
@@ -201,13 +204,13 @@ class ConfigScreen extends Component {
             }, [
               h('div', {
                 style: {
-                display: 'table-cell',
-              }}, [
+                  display: 'table-cell',
+                } }, [
                 h('p.config-description', 'Switch to Decentralized Provider (Pocket)'),
               ]),
               h('div', { style: {
                 display: 'table-cell',
-              }}, [
+              } }, [
                 h('input', {
                   type: 'checkbox',
                   name: 'pocket-checkbox',
@@ -282,7 +285,7 @@ class ConfigScreen extends Component {
         loading: true,
       })
       const web3 = new Web3(new Web3.providers.HttpProvider(newRpc))
-      web3.eth.getBlockNumber((err, res) => {
+      web3.eth.getBlockNumber((err, _res) => {
         if (err) {
           props.displayWarning('Invalid RPC endpoint')
         } else {
@@ -317,9 +320,9 @@ class ConfigScreen extends Component {
         },
         defaultValue: currentCurrency,
       }, infuraCurrencies.map((currency) => {
-        return h('option', {key: currency.quote.code, value: currency.quote.code}, `${currency.quote.code.toUpperCase()} - ${currency.quote.name}`)
+        return h('option', { key: currency.quote.code, value: currency.quote.code }, `${currency.quote.code.toUpperCase()} - ${currency.quote.name}`)
       })
-    ),
+      ),
     ])
   }
 
@@ -358,7 +361,7 @@ function mapStateToProps (state) {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     setProviderType: (providerType) => dispatch(actions.setProviderType(providerType)),
     showDeleteRPC: (label, transitionForward) => dispatch(actions.showDeleteRPC(label, transitionForward)),

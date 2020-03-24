@@ -5,7 +5,7 @@ const { warn } = require('loglevel')
 const { MAINNET, POA } = require('./network/enums')
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
-const ERC20_ABI = [{'constant': true, 'inputs': [{'name': '_owner', 'type': 'address'}], 'name': 'balanceOf', 'outputs': [{'name': 'balance', 'type': 'uint256'}], 'payable': false, 'type': 'function'}]
+const ERC20_ABI = [{ 'constant': true, 'inputs': [{ 'name': '_owner', 'type': 'address' }], 'name': 'balanceOf', 'outputs': [{ 'name': 'balance', 'type': 'uint256' }], 'payable': false, 'type': 'function' }]
 
 /**
  * A controller that polls for token exchange
@@ -30,8 +30,12 @@ class DetectTokensController {
    */
   async detectNewTokens () {
     const isTestnet = this._network.store.getState().provider.type !== MAINNET && this._network.store.getState().provider.type !== POA
-    if (!this.isActive) { return }
-    if (isTestnet) { return }
+    if (!this.isActive) {
+      return
+    }
+    if (isTestnet) {
+      return
+    }
     this.web3.setProvider(this._network._provider)
     const contracts = this.getContracts()
     for (const contractAddress in contracts) {
@@ -43,7 +47,7 @@ class DetectTokensController {
     }
   }
 
-   /**
+  /**
    * Find if selectedAddress has tokens with contract in contractAddress.
    *
    * @param {string} contractAddress Hex address of the token contract to explore.
@@ -82,7 +86,9 @@ class DetectTokensController {
    *
    */
   restartTokenDetection () {
-    if (!(this.isActive && this.selectedAddress)) { return }
+    if (!(this.isActive && this.selectedAddress)) {
+      return
+    }
     this.detectNewTokens()
     this.interval = DEFAULT_INTERVAL
   }
@@ -92,8 +98,12 @@ class DetectTokensController {
    */
   set interval (interval) {
     this._handle && clearInterval(this._handle)
-    if (!interval) { return }
-    this._handle = setInterval(() => { this.detectNewTokens() }, interval)
+    if (!interval) {
+      return
+    }
+    this._handle = setInterval(() => {
+      this.detectNewTokens()
+    }, interval)
   }
 
   /**
@@ -101,9 +111,15 @@ class DetectTokensController {
    * @type {Object}
    */
   set preferences (preferences) {
-    if (!preferences) { return }
+    if (!preferences) {
+      return
+    }
     this._preferences = preferences
-    preferences.store.subscribe(({ tokens = [] }) => { this.tokenAddresses = tokens.map((obj) => { return obj.address }) })
+    preferences.store.subscribe(({ tokens = [] }) => {
+      this.tokenAddresses = tokens.map((obj) => {
+        return obj.address
+      })
+    })
     preferences.store.subscribe(({ selectedAddress }) => {
       if (this.selectedAddress !== selectedAddress) {
         this.selectedAddress = selectedAddress
@@ -116,7 +132,9 @@ class DetectTokensController {
    * @type {Object}
    */
   set network (network) {
-    if (!network) { return }
+    if (!network) {
+      return
+    }
     this._network = network
     this.web3 = new Web3(network._provider)
   }
@@ -126,12 +144,16 @@ class DetectTokensController {
    * @type {Object}
    */
   set keyringMemStore (keyringMemStore) {
-    if (!keyringMemStore) { return }
+    if (!keyringMemStore) {
+      return
+    }
     this._keyringMemStore = keyringMemStore
     this._keyringMemStore.subscribe(({ isUnlocked }) => {
       if (this.isUnlocked !== isUnlocked) {
         this.isUnlocked = isUnlocked
-        if (isUnlocked) { this.restartTokenDetection() }
+        if (isUnlocked) {
+          this.restartTokenDetection()
+        }
       }
     })
   }

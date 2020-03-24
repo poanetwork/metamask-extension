@@ -22,11 +22,14 @@ const {
   isKnownProvider,
 } = require('../../../../old-ui/app/util')
 const ethUtil = require('ethereumjs-util')
-let ethInWei = '1'
-for (let i = 0; i < 18; i++) { ethInWei += '0' }
 
-describe('countSignificantDecimals(val, len) function', () => {
-  it('returns correct significant decimals', () => {
+let ethInWei = '1'
+for (let i = 0; i < 18; i++) {
+  ethInWei += '0'
+}
+
+describe('countSignificantDecimals(val, len) function', function () {
+  it('returns correct significant decimals', function () {
     assert.equal(6, countSignificantDecimals(0.00001232756347, 2))
     assert.equal(4, countSignificantDecimals(0.00010000003454305430504350, 2))
     assert.equal(0, countSignificantDecimals(1.0000, 2))
@@ -39,45 +42,45 @@ const keyrings = [
   {
     'type': 'HD Key Tree',
     'accounts': [
-       '0xb55e278d3e8ff77ec95749b51b526a236502b6fe',
-       '0x99a22ce737b6a48f44cad6331432ce98693cad07',
-       '0xa37bd195eebfc4ccd02529125b3e691fb6fe3a53',
+      '0xb55e278d3e8ff77ec95749b51b526a236502b6fe',
+      '0x99a22ce737b6a48f44cad6331432ce98693cad07',
+      '0xa37bd195eebfc4ccd02529125b3e691fb6fe3a53',
     ],
   },
   {
     'type': 'Simple Address',
     'accounts': [
-       '0x2aE8025dECA9d0d0f985eC6666174FdF6546CC85',
+      '0x2aE8025dECA9d0d0f985eC6666174FdF6546CC85',
     ],
     'network': '1',
   },
 ]
 
-describe('getCurrentKeyring(address, keyrings, network, identities) function', () => {
+describe('getCurrentKeyring(address, keyrings, network, identities) function', function () {
   const address = '0xb55e278d3e8ff77ec95749b51b526a236502b6fe'
   const identities = {
-    '0x99a22ce737b6a48f44cad6331432ce98693cad07': {name: 'Account 1', address: '0x99a22ce737b6a48f44cad6331432ce98693cad07'},
-    '0xb55e278d3e8ff77ec95749b51b526a236502b6fe': {name: 'Account 2', address: '0xb55e278d3e8ff77ec95749b51b526a236502b6fe'},
-    '0xa37bd195eebfc4ccd02529125b3e691fb6fe3a53': {name: 'Account 3', address: '0xa37bd195eebfc4ccd02529125b3e691fb6fe3a53'},
+    '0x99a22ce737b6a48f44cad6331432ce98693cad07': { name: 'Account 1', address: '0x99a22ce737b6a48f44cad6331432ce98693cad07' },
+    '0xb55e278d3e8ff77ec95749b51b526a236502b6fe': { name: 'Account 2', address: '0xb55e278d3e8ff77ec95749b51b526a236502b6fe' },
+    '0xa37bd195eebfc4ccd02529125b3e691fb6fe3a53': { name: 'Account 3', address: '0xa37bd195eebfc4ccd02529125b3e691fb6fe3a53' },
   }
-  it('returns keyring matched to address', () => {
+  it('returns keyring matched to address', function () {
     assert.deepEqual({
       'type': 'HD Key Tree',
       'accounts': [
-         '0xb55e278d3e8ff77ec95749b51b526a236502b6fe',
-         '0x99a22ce737b6a48f44cad6331432ce98693cad07',
-         '0xa37bd195eebfc4ccd02529125b3e691fb6fe3a53',
+        '0xb55e278d3e8ff77ec95749b51b526a236502b6fe',
+        '0x99a22ce737b6a48f44cad6331432ce98693cad07',
+        '0xa37bd195eebfc4ccd02529125b3e691fb6fe3a53',
       ],
-   }, getCurrentKeyring(address, 1, keyrings, identities))
+    }, getCurrentKeyring(address, 1, keyrings, identities))
   })
 
-  it('doesn\'t return keyring matched to address', () => {
+  it('doesn\'t return keyring matched to address', function () {
     assert.deepEqual(null, getCurrentKeyring('0x9053a0Fe25fc45367d06B2e04528BDb4c1A03eaB', 1, keyrings, identities))
   })
 })
 
-describe('ifLooseAcc(keyring) function', () => {
-  it('Checks if keyring is looseAcc', () => {
+describe('ifLooseAcc(keyring) function', function () {
+  it('Checks if keyring is looseAcc', function () {
     assert.equal(false, ifLooseAcc(keyrings[0]))
     assert.equal(true, ifLooseAcc(keyrings[1]))
     assert.equal(null, ifLooseAcc())
@@ -85,8 +88,8 @@ describe('ifLooseAcc(keyring) function', () => {
   })
 })
 
-describe('ifContractAcc(keyring) function', () => {
-  it('Checks if keyring is contract', () => {
+describe('ifContractAcc(keyring) function', function () {
+  it('Checks if keyring is contract', function () {
     assert.equal(false, ifContractAcc(keyrings[0]))
     assert.equal(true, ifContractAcc(keyrings[1]))
     assert.equal(null, ifContractAcc())
@@ -203,14 +206,14 @@ describe('formatBalance function', function () {
     assert.equal(result, '0', 'should return "None"')
   })
 
-  it('should return eth as string followed by ETH', function () {
+  it('should return eth as string followed by ETH 1', function () {
     const input = new ethUtil.BN(ethInWei, 10).toJSON()
     console.log('input = ', input)
     const result = formatBalance(input, 4)
     assert.equal(result, '1.0000 ETH')
   })
 
-  it('should return eth as string followed by ETH', function () {
+  it('should return eth as string followed by ETH 2', function () {
     const input = new ethUtil.BN(ethInWei, 10).div(new ethUtil.BN('2', 10)).toJSON()
     console.log('input = ', input)
     const result = formatBalance(input, 3)
@@ -246,7 +249,7 @@ describe('formatBalance function', function () {
 describe('normalizing values', function () {
   describe('#normalizeToWei', function () {
     it('should convert an eth to the appropriate equivalent values', function () {
-      var valueTable = {
+      const valueTable = {
         wei: '1000000000000000000',
         kwei: '1000000000000000',
         mwei: '1000000000000',
@@ -261,11 +264,11 @@ describe('normalizing values', function () {
         // gether:'0.000000001',
         // tether:'0.000000000001',
       }
-      var oneEthBn = new ethUtil.BN(ethInWei, 10)
+      const oneEthBn = new ethUtil.BN(ethInWei, 10)
 
-      for (var currency in valueTable) {
-        var value = new ethUtil.BN(valueTable[currency], 10)
-        var output = normalizeToWei(value, currency)
+      for (const currency in valueTable) {
+        const value = new ethUtil.BN(valueTable[currency], 10)
+        const output = normalizeToWei(value, currency)
         assert.equal(output.toString(10), valueTable.wei, `value of ${output.toString(10)} ${currency} should convert to ${oneEthBn}`)
       }
     })
@@ -273,66 +276,66 @@ describe('normalizing values', function () {
 
   describe('#normalizeEthStringToWei', function () {
     it('should convert decimal eth to pure wei BN', function () {
-      var input = '1.23456789'
-      var output = normalizeEthStringToWei(input)
+      const input = '1.23456789'
+      const output = normalizeEthStringToWei(input)
       assert.equal(output.toString(10), '1234567890000000000')
     })
 
     it('should convert 1 to expected wei', function () {
-      var input = '1'
-      var output = normalizeEthStringToWei(input)
+      const input = '1'
+      const output = normalizeEthStringToWei(input)
       assert.equal(output.toString(10), ethInWei)
     })
 
     it('should account for overflow numbers gracefully by dropping extra precision.', function () {
-      var input = '1.11111111111111111111'
-      var output = normalizeEthStringToWei(input)
+      const input = '1.11111111111111111111'
+      const output = normalizeEthStringToWei(input)
       assert.equal(output.toString(10), '1111111111111111111')
     })
 
     it('should not truncate very exact wei values that do not have extra precision.', function () {
-      var input = '1.100000000000000001'
-      var output = normalizeEthStringToWei(input)
+      const input = '1.100000000000000001'
+      const output = normalizeEthStringToWei(input)
       assert.equal(output.toString(10), '1100000000000000001')
     })
   })
 
   describe('#normalizeNumberToWei', function () {
     it('should handle a simple use case', function () {
-      var input = 0.0002
-      var output = normalizeNumberToWei(input, 'ether')
-      var str = output.toString(10)
+      const input = 0.0002
+      const output = normalizeNumberToWei(input, 'ether')
+      const str = output.toString(10)
       assert.equal(str, '200000000000000')
     })
 
     it('should convert a kwei number to the appropriate equivalent wei', function () {
-      var result = normalizeNumberToWei(1.111, 'kwei')
+      const result = normalizeNumberToWei(1.111, 'kwei')
       assert.equal(result.toString(10), '1111', 'accepts decimals')
     })
 
     it('should convert a ether number to the appropriate equivalent wei', function () {
-      var result = normalizeNumberToWei(1.111, 'ether')
+      const result = normalizeNumberToWei(1.111, 'ether')
       assert.equal(result.toString(10), '1111000000000000000', 'accepts decimals')
     })
   })
   describe('#isHex', function () {
     it('should return true when given a hex string', function () {
-      var result = isHex('c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2')
+      const result = isHex('c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2')
       assert(result)
     })
 
     it('should return false when given a non-hex string', function () {
-      var result = isHex('c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714imnotreal')
+      const result = isHex('c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714imnotreal')
       assert(!result)
     })
 
     it('should return false when given a string containing a non letter/number character', function () {
-      var result = isHex('c3ab8ff13720!8ad9047dd39466b3c%8974e592c2fa383d4a396071imnotreal')
+      const result = isHex('c3ab8ff13720!8ad9047dd39466b3c%8974e592c2fa383d4a396071imnotreal')
       assert(!result)
     })
 
     it('should return true when given a hex string with hex-prefix', function () {
-      var result = isHex('0xc3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2')
+      const result = isHex('0xc3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2')
       assert(result)
     })
   })
@@ -371,11 +374,11 @@ describe('normalizing values', function () {
   const addrETHMainnet = '0xB707b030A7887a21cc595Cd139746A8c2Ed91615'
   describe('#toChecksumAddress', function () {
     it('calculates correct checksum', function () {
-      var resultMainnet = toChecksumAddress('30', addr)
+      const resultMainnet = toChecksumAddress('30', addr)
       assert.equal(resultMainnet, addrRSKMainnet)
-      var resultTestnet = toChecksumAddress('31', addr)
+      const resultTestnet = toChecksumAddress('31', addr)
       assert.equal(resultTestnet, addrRSKTestnet)
-      var resultNotRSK = toChecksumAddress('1', addr)
+      const resultNotRSK = toChecksumAddress('1', addr)
       assert.equal(resultNotRSK, addrETHMainnet)
     })
   })

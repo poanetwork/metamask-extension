@@ -9,16 +9,18 @@ startContainer(/\.container.js/, generateContainerTest).catch(console.error)
 
 async function getAllFileNames (dirName) {
   const allNames = (await promisify(fs.readdir)(dirName))
-  const fileNames = allNames.filter(name => name.match(/^.+\./))
-  const dirNames = allNames.filter(name => name.match(/^[^.]+$/))
+  const fileNames = allNames.filter((name) => name.match(/^.+\./))
+  const dirNames = allNames.filter((name) => name.match(/^[^.]+$/))
 
-  const fullPathDirNames = dirNames.map(d => `${dirName}/${d}`)
+  const fullPathDirNames = dirNames.map((d) => `${dirName}/${d}`)
   const subNameArrays = await promisify(async.map)(fullPathDirNames, getAllFileNames)
   let subNames = []
-  subNameArrays.forEach(subNameArray => { subNames = [...subNames, ...subNameArray] })
+  subNameArrays.forEach((subNameArray) => {
+    subNames = [...subNames, ...subNameArray]
+  })
 
   return [
-    ...fileNames.map(name => dirName + '/' + name),
+    ...fileNames.map((name) => dirName + '/' + name),
     ...subNames,
   ]
 }
@@ -48,11 +50,11 @@ async function start (fileRegEx, testGenerator) {
 }
 */
 
-async function startContainer (fileRegEx, testGenerator) {
+async function startContainer (fileRegEx, _testGenerator) {
   const fileNames = await getAllFileNames('./ui/app')
-  const sFiles = fileNames.filter(name => name.match(fileRegEx))
+  const sFiles = fileNames.filter((name) => name.match(fileRegEx))
 
-  async.each(sFiles, async (sFile, cb) => {
+  async.each(sFiles, async (sFile, _cb) => {
     console.log(`sFile`, sFile)
     const [, sRootPath, sPath] = sFile.match(/^(.+\/)([^/]+)$/)
 
@@ -68,7 +70,7 @@ async function startContainer (fileRegEx, testGenerator) {
           console.log(`result`, result.length)
           const returnObjectStrings = result
             .match(/return\s(\{[\s\S]+?})\n}/g)
-            .map(str => {
+            .map((str) => {
               return str
                 .slice(0, str.length - 1)
                 .slice(7)
@@ -77,25 +79,25 @@ async function startContainer (fileRegEx, testGenerator) {
 
             })
           const mapStateToPropsAssertionObject = returnObjectStrings[0]
-            .replace(/\w+:\s\w+\([\w,\s]+\),/g, str => {
+            .replace(/\w+:\s\w+\([\w,\s]+\),/g, (str) => {
               const strKey = str.match(/^\w+/)[0]
-              return strKey + ': \'mock' + str.match(/^\w+/)[0].replace(/^./, c => c.toUpperCase()) + ':mockState\',\n'
+              return strKey + ': \'mock' + str.match(/^\w+/)[0].replace(/^./, (c) => c.toUpperCase()) + ':mockState\',\n'
             })
-            .replace(/{\s\w.+/, firstLinePair => `{\n ${firstLinePair.slice(2)}`)
-            .replace(/\w+:.+,/g, s => `       ${s}`)
-            .replace(/}/g, s => `     ${s}`)
+            .replace(/{\s\w.+/, (firstLinePair) => `{\n ${firstLinePair.slice(2)}`)
+            .replace(/\w+:.+,/g, (s) => `       ${s}`)
+            .replace(/}/g, (s) => `     ${s}`)
           let mapDispatchToPropsMethodNames
           if (returnObjectStrings[1]) {
-            mapDispatchToPropsMethodNames = returnObjectStrings[1].match(/\s\w+:\s/g).map(str => str.match(/\w+/)[0])
+            mapDispatchToPropsMethodNames = returnObjectStrings[1].match(/\s\w+:\s/g).map((str) => str.match(/\w+/)[0])
           }
           const proxyquireObject = ('{\n  ' + result
             .match(/import\s{[\s\S]+?}\sfrom\s.+/g)
-            .map(s => s.replace(/\n/g, ''))
-            .map((s, i) => {
+            .map((s) => s.replace(/\n/g, ''))
+            .map((s, _i) => {
               const proxyKeys = s.match(/{.+}/)[0].match(/\w+/g)
               return '\'' + s.match(/'(.+)'/)[1] + '\': { ' + (proxyKeys.length > 1
-                  ? '\n    ' + proxyKeys.join(': () => {},\n    ') + ': () => {},\n '
-                  : proxyKeys[0] + ': () => {},') + ' }'
+                ? '\n    ' + proxyKeys.join(': () => {},\n    ') + ': () => {},\n '
+                : proxyKeys[0] + ': () => {},') + ' }'
             })
             .join(',\n  ') + '\n}')
             .replace('{ connect: () => {}, },', `{
@@ -205,7 +207,7 @@ function generateContainerTest (sPath, {
   mapDispatchToPropsMethodNames,
   proxyquireObject,
 }) {
-return `import assert from 'assert'
+  return `import assert from 'assert'
 import proxyquire from 'proxyquire'
 import sinon from 'sinon'
 

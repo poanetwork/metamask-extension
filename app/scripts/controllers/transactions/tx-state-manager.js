@@ -35,7 +35,7 @@ class TransactionStateManager extends EventEmitter {
     this.store = new ObservableStore(
       extend({
         transactions: [],
-    }, initState))
+      }, initState))
     this.txHistoryLimit = txHistoryLimit
     this.getNetwork = getNetwork
   }
@@ -88,7 +88,9 @@ class TransactionStateManager extends EventEmitter {
   */
   getPendingTransactions (address) {
     const opts = { status: 'submitted' }
-    if (address) opts.from = address
+    if (address) {
+      opts.from = address
+    }
     return this.getFilteredTxList(opts)
   }
 
@@ -99,7 +101,9 @@ class TransactionStateManager extends EventEmitter {
   */
   getConfirmedTransactions (address) {
     const opts = { status: 'confirmed' }
-    if (address) opts.from = address
+    if (address) {
+      opts.from = address
+    }
     return this.getFilteredTxList(opts)
   }
 
@@ -113,10 +117,10 @@ class TransactionStateManager extends EventEmitter {
     @returns {object} the txMeta
   */
   addTx (txMeta) {
-    this.once(`${txMeta.id}:signed`, function (txId) {
+    this.once(`${txMeta.id}:signed`, function (_txId) {
       this.removeAllListeners(`${txMeta.id}:rejected`)
     })
-    this.once(`${txMeta.id}:rejected`, function (txId) {
+    this.once(`${txMeta.id}:rejected`, function (_txId) {
       this.removeAllListeners(`${txMeta.id}:signed`)
     })
     // initialize history
@@ -182,7 +186,7 @@ class TransactionStateManager extends EventEmitter {
     // commit txMeta to state
     const txId = txMeta.id
     const txList = this.getFullTxList()
-    const index = txList.findIndex(txData => txData.id === txId)
+    const index = txList.findIndex((txData) => txData.id === txId)
     txList[index] = txMeta
     this._saveTxList(txList)
   }
@@ -210,17 +214,23 @@ class TransactionStateManager extends EventEmitter {
       // validate types
       switch (key) {
         case 'chainId':
-          if (typeof value !== 'number' && typeof value !== 'string') throw new Error(`${key} in txParams is not a Number or hex string. got: (${value})`)
+          if (typeof value !== 'number' && typeof value !== 'string') {
+            throw new Error(`${key} in txParams is not a Number or hex string. got: (${value})`)
+          }
           break
         default:
-          if (typeof value !== 'string') throw new Error(`${key} in txParams is not a string. got: (${value})`)
-          if (!ethUtil.isHexPrefixed(value)) throw new Error(`${key} in txParams is not hex prefixed. got: (${value})`)
+          if (typeof value !== 'string') {
+            throw new Error(`${key} in txParams is not a string. got: (${value})`)
+          }
+          if (!ethUtil.isHexPrefixed(value)) {
+            throw new Error(`${key} in txParams is not hex prefixed. got: (${value})`)
+          }
           break
       }
     })
   }
 
-/**
+  /**
   @param opts {object} -  an object of fields to search for eg:<br>
   let <code>thingsToLookFor = {<br>
     to: '0x0..',<br>
@@ -376,9 +386,9 @@ class TransactionStateManager extends EventEmitter {
     // Update state
     this._saveTxList(otherAccountTxs)
   }
-//
-//           PRIVATE METHODS
-//
+  //
+  //           PRIVATE METHODS
+  //
 
   // STATUS METHODS
   // statuses:

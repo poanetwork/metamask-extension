@@ -19,6 +19,7 @@ const defaultTokens = []
 
 const contractsETH = require('eth-contract-metadata')
 const contractsPOA = require('poa-contract-metadata')
+
 for (const address in contractsETH) {
   const contract = contractsETH[address]
   if (contract.erc20) {
@@ -70,14 +71,14 @@ TokenList.prototype.render = function () {
         },
         onClick: () => {
           global.platform.openWindow({
-          url: `https://ethplorer.io/address/${userAddress}`,
-        })
+            url: `https://ethplorer.io/address/${userAddress}`,
+          })
         },
       }, 'here'),
     ])
   }
 
-  const tokensFromCurrentNetwork = tokens.filter(token => (parseInt(token.network) === parseInt(network) || !token.network))
+  const tokensFromCurrentNetwork = tokens.filter((token) => (parseInt(token.network) === parseInt(network) || !token.network))
 
   const tokenViews = tokensFromCurrentNetwork.map((tokenData, ind) => {
     tokenData.userAddress = userAddress
@@ -131,7 +132,7 @@ TokenList.prototype.render = function () {
 TokenList.prototype.renderTokenStatusBar = function () {
   const { tokens } = this.state
   const { network } = this.props
-  const tokensFromCurrentNetwork = tokens.filter(token => (parseInt(token.network) === parseInt(network) || !token.network))
+  const tokensFromCurrentNetwork = tokens.filter((token) => (parseInt(token.network) === parseInt(network) || !token.network))
 
   let msg
   let noTokens = false
@@ -145,7 +146,7 @@ TokenList.prototype.renderTokenStatusBar = function () {
   }
 
   return h('div', [
-      h('div', {
+    h('div', {
       style: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -202,10 +203,12 @@ TokenList.prototype.createFreshTokenTracker = function () {
     this.tracker.removeListener('error', this.showError)
   }
 
-  if (!global.ethereumProvider) return
+  if (!global.ethereumProvider) {
+    return
+  }
   const { userAddress } = this.props
 
-  const tokensFromCurrentNetwork = this.props.tokens.filter(token => (parseInt(token.network) === parseInt(this.props.network) || !token.network))
+  const tokensFromCurrentNetwork = this.props.tokens.filter((token) => (parseInt(token.network) === parseInt(this.props.network) || !token.network))
   this.tracker = new TokenTracker({
     userAddress,
     provider: global.ethereumProvider,
@@ -223,13 +226,13 @@ TokenList.prototype.createFreshTokenTracker = function () {
   this.tracker.on('error', this.showError)
 
   this.tracker.updateBalances()
-  .then(() => {
-    this.updateBalances(this.tracker.serialize())
-  })
-  .catch((reason) => {
-    log.error(`Problem updating balances`, reason)
-    this.setState({ isLoading: false })
-  })
+    .then(() => {
+      this.updateBalances(this.tracker.serialize())
+    })
+    .catch((reason) => {
+      log.error(`Problem updating balances`, reason)
+      this.setState({ isLoading: false })
+    })
 }
 
 TokenList.prototype.componentDidUpdate = function (nextProps) {
@@ -252,7 +255,9 @@ TokenList.prototype.componentDidUpdate = function (nextProps) {
   const oldTokensLength = tokens ? tokens.length : 0
   const tokensLengthUnchanged = oldTokensLength === newTokens.length
 
-  if (tokensLengthUnchanged && shouldUpdateTokens) return
+  if (tokensLengthUnchanged && shouldUpdateTokens) {
+    return
+  }
 
   this.setState({ isLoading: true })
   this.createFreshTokenTracker()
@@ -266,7 +271,9 @@ TokenList.prototype.updateBalances = function (tokens) {
 }
 
 TokenList.prototype.componentWillUnmount = function () {
-  if (!this.tracker) return
+  if (!this.tracker) {
+    return
+  }
   this.tracker.stop()
   this.tracker.removeListener('update', this.balanceUpdater)
   this.tracker.removeListener('error', this.showError)

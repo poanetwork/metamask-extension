@@ -1,17 +1,18 @@
 const assert = require('assert')
 const { menus, screens, elements, NETWORKS } = require('../elements')
+
 const { account } = menus
 const { main: {
-        tokens: tokensEl,
-        balance: balanceEl,
-    },
-    importAccounts,
+  tokens: tokensEl,
+  balance: balanceEl,
+},
+importAccounts,
 } = screens
 const addr = '0xf4702CbA917260b2D6731Aea6385215073e8551b'
 const addrPrivKey = '76bd0ced0a47055bb5d060e1ae4a8cb3ece658d668823e250dae6e79d3ab4435'
 
 const importAccount = async (f) => {
-	it('Open import account menu', async () => {
+  it('Open import account menu', async function () {
     await f.setProvider(NETWORKS.POA)
     await f.delay(5000)
     const menu = await f.waitUntilShowUp(account.menu)
@@ -23,7 +24,7 @@ const importAccount = async (f) => {
     assert.equal(await importAccountTitle.getText(), importAccounts.textTitle)
   })
 
-  it('Imports account', async () => {
+  it('Imports account', async function () {
     const privateKeyBox = await f.waitUntilShowUp(importAccounts.fieldPrivateKey)
     await privateKeyBox.sendKeys(addrPrivKey)
     const button = await f.waitUntilShowUp(importAccounts.buttonImport)
@@ -38,7 +39,7 @@ const importAccount = async (f) => {
     await menu.click()
   })
 
-  it('Auto-detect tokens for POA ', async () => {
+  it('Auto-detect tokens for POA ', async function () {
     const tab = await f.waitUntilShowUp(tokensEl.menu)
     await tab.click()
     await f.delay(15000)
@@ -47,7 +48,7 @@ const importAccount = async (f) => {
     assert.equal(await balance.getText(), '1 DOPR', 'token isnt\' auto-detected')
   })
 
-  it.skip('Auto-detect tokens for MAIN core network ', async () => {
+  it('Auto-detect tokens for MAIN core network ', async function () {
     await f.setProvider(NETWORKS.MAINNET)
     await f.waitUntilShowUp(elements.loader, 25)
     await f.waitUntilDisappear(elements.loader, 25)
@@ -56,7 +57,7 @@ const importAccount = async (f) => {
     assert.equal(await balance.getText(), '0.001 WETH', 'token isnt\' auto-detected')
   })
 
-  it('Check Sokol balance', async () => {
+  it('Check Sokol balance', async function () {
     await f.setProvider(NETWORKS.POA)
     await f.delay(2000)
     const balanceField = await f.waitUntilShowUp(balanceEl)

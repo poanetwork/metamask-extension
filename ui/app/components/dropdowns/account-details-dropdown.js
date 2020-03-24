@@ -27,7 +27,7 @@ function mapDispatchToProps (dispatch) {
     showAccountDetailModal: () => {
       dispatch(actions.showModal({ name: 'ACCOUNT_DETAILS' }))
     },
-    viewOnEtherscan: (address, network) => {
+    viewOnEtherscan: (_address, _network) => {
       // global.platform.openWindow({ url: genAccountLink(address, network) })
     },
     showRemoveAccountConfirmationModal: (identity) => {

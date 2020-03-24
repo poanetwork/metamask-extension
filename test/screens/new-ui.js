@@ -10,6 +10,7 @@ const Ethjs = require('ethjs')
 const GIFEncoder = require('gifencoder')
 const pngFileStream = require('png-file-stream')
 const sizeOfPng = require('image-size/lib/types/png')
+
 const By = webdriver.By
 const localesIndex = require('../../app/_locales/index.json')
 const { delay, buildChromeWebDriver, getExtensionIdChrome } = require('../e2e/func')
@@ -20,25 +21,25 @@ let driver
 let screenshotCount = 0
 
 captureAllScreens()
-.then(async () => {
+  .then(async () => {
   // build screenshots into gif
-  console.log('building gif...')
-  await generateGif()
+    console.log('building gif...')
+    await generateGif()
 
-  await driver.quit()
-  process.exit()
-})
-.catch(async (err) => {
-  try {
-    console.error(err)
-    verboseReportOnFailure({ title: 'something broke' })
-  } catch (err) {
-    console.error(err)
-  }
+    await driver.quit()
+    process.exit()
+  })
+  .catch(async (err) => {
+    try {
+      console.error(err)
+      verboseReportOnFailure({ title: 'something broke' })
+    } catch (err) {
+      console.error(err)
+    }
 
-  await driver.quit()
-  process.exit(1)
-})
+    await driver.quit()
+    process.exit(1)
+  })
 
 
 async function captureAllScreens () {
@@ -131,10 +132,12 @@ async function captureAllScreens () {
 
   // enter seed phrase
   const seedPhraseButtons = await driver.findElements(By.css('.backup-phrase__confirm-seed-options > button'))
-  const seedPhraseButtonWords = await Promise.all(seedPhraseButtons.map(button => button.getText()))
+  const seedPhraseButtonWords = await Promise.all(seedPhraseButtons.map((button) => button.getText()))
   for (const targetWord of seedPhraseWords) {
     const wordIndex = seedPhraseButtonWords.indexOf(targetWord)
-    if (wordIndex === -1) throw new Error(`Captured seed phrase word "${targetWord}" not in found seed phrase button options ${seedPhraseButtonWords.join(' ')}`)
+    if (wordIndex === -1) {
+      throw new Error(`Captured seed phrase word "${targetWord}" not in found seed phrase button options ${seedPhraseButtonWords.join(' ')}`)
+    }
     await driver.findElement(By.css(`.backup-phrase__confirm-seed-options > button:nth-child(${wordIndex + 1})`)).click()
     await delay(100)
   }
@@ -190,7 +193,7 @@ async function captureAllScreens () {
 
 
 async function captureLanguageScreenShots (label) {
-  const nonEnglishLocales = localesIndex.filter(localeMeta => localeMeta.code !== 'en')
+  const nonEnglishLocales = localesIndex.filter((localeMeta) => localeMeta.code !== 'en')
   // take english shot
   await captureScreenShot(`${label} (en)`)
   for (const localeMeta of nonEnglishLocales) {

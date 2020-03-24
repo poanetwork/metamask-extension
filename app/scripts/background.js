@@ -16,8 +16,8 @@ const LocalStore = require('./lib/local-store')
 const storeTransform = require('obs-store/lib/transform')
 const asStream = require('obs-store/lib/asStream')
 const ExtensionPlatform = require('./platforms/extension')
-const Migrator = require('./lib/migrator/')
-const migrations = require('./migrations/')
+const Migrator = require('./lib/migrator')
+const migrations = require('./migrations')
 const PortStream = require('extension-port-stream')
 const createStreamSink = require('./lib/createStreamSink')
 const NotificationManager = require('./lib/notification-manager.js')
@@ -278,7 +278,9 @@ function setupController (initState, initLangCode) {
 
   // report failed transactions to Sentry
   controller.txController.on(`tx:status-update`, (txId, status) => {
-    if (status !== 'failed') return
+    if (status !== 'failed') {
+      return
+    }
     const txMeta = controller.txController.txStateManager.getTx(txId)
     try {
       reportFailedTxToSentry({ raven, txMeta })
@@ -417,12 +419,12 @@ function setupController (initState, initLangCode) {
    * The number reflects the current number of pending transactions or message signatures needing user approval.
    */
   function updateBadge () {
-    var label = ''
-    var unapprovedTxCount = controller.txController.getUnapprovedTxCount()
-    var unapprovedMsgCount = controller.messageManager.unapprovedMsgCount
-    var unapprovedPersonalMsgs = controller.personalMessageManager.unapprovedPersonalMsgCount
-    var unapprovedTypedMsgs = controller.typedMessageManager.unapprovedTypedMessagesCount
-    var count = unapprovedTxCount + unapprovedMsgCount + unapprovedPersonalMsgs + unapprovedTypedMsgs
+    let label = ''
+    const unapprovedTxCount = controller.txController.getUnapprovedTxCount()
+    const unapprovedMsgCount = controller.messageManager.unapprovedMsgCount
+    const unapprovedPersonalMsgs = controller.personalMessageManager.unapprovedPersonalMsgCount
+    const unapprovedTypedMsgs = controller.typedMessageManager.unapprovedTypedMessagesCount
+    const count = unapprovedTxCount + unapprovedMsgCount + unapprovedPersonalMsgs + unapprovedTypedMsgs
     if (count) {
       label = String(count)
     }
@@ -441,8 +443,8 @@ function setupController (initState, initLangCode) {
  * Opens the browser popup for user confirmation
  */
 function triggerUi () {
-  extension.tabs.query({ active: true }, tabs => {
-    const currentlyActiveMetamaskTab = Boolean(tabs.find(tab => openMetamaskTabsIDs[tab.id]))
+  extension.tabs.query({ active: true }, (tabs) => {
+    const currentlyActiveMetamaskTab = Boolean(tabs.find((tab) => openMetamaskTabsIDs[tab.id]))
     /**
      * https://github.com/poanetwork/metamask-extension/issues/19
      * !notificationIsOpen was removed from the check, because notification can be opened, but it can be behind the DApp
@@ -463,7 +465,7 @@ function showWatchAssetUi () {
   triggerUi()
   return new Promise(
     (resolve) => {
-      var interval = setInterval(() => {
+      const interval = setInterval(() => {
         if (!notificationIsOpen) {
           clearInterval(interval)
           resolve()

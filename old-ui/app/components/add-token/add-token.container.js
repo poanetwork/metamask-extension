@@ -14,9 +14,9 @@ const mapStateToProps = ({ metamask }) => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    setPendingTokens: tokens => dispatch(setPendingTokens(tokens)),
+    setPendingTokens: (tokens) => dispatch(setPendingTokens(tokens)),
     showConfirmAddTokensPage: () => dispatch(showConfirmAddTokensPage()),
     clearPendingTokens: () => dispatch(clearPendingTokens()),
     displayWarning: (warn) => dispatch(displayWarning(warn)),

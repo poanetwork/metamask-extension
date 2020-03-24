@@ -2,31 +2,31 @@ const assert = require('assert')
 const { screens } = require('../elements')
 
 const login = async (f, password) => {
-  it('title is \'Nifty Wallet\'', async () => {
+  it('title is \'Nifty Wallet\'', async function () {
     const title = await f.driver.getTitle()
     assert.equal(title, 'Nifty Wallet', 'title is incorrect')
   })
 
-  it('screen \'Terms of Use\' has not empty agreement', async () => {
+  it('screen \'Terms of Use\' has not empty agreement', async function () {
     await f.delay(5000)
     const terms = await f.waitUntilShowUp(screens.TOU.agreement, 900)
     const text = await terms.getText()
     assert.equal(text.length > 100, true, 'agreement is too short')
   })
 
-  it('screen \'Terms of Use\' has correct title', async () => {
+  it('screen \'Terms of Use\' has correct title', async function () {
     const terms = await f.waitUntilShowUp(screens.TOU.title)
     assert.equal(await terms.getText(), screens.TOU.titleText, 'title is incorrect')
   })
 
-  it('checks if the TOU contains link \'Terms of service\'', async () => {
+  it('checks if the TOU contains link \'Terms of service\'', async function () {
     const element = await f.waitUntilShowUp(screens.TOU.linkTerms)
     await f.scrollTo(screens.TOU.linkTerms)
     assert.notEqual(element, null, ' link \'Terms of service\' isn\'t present')
     assert.equal(await element.getText(), screens.TOU.linkTermsText, 'incorrect name of link \'Terms of service\'')
   })
 
-  it('checks if the button \'Accept\' is present and enabled', async () => {
+  it('checks if the button \'Accept\' is present and enabled', async function () {
     const button = await f.waitUntilShowUp(screens.TOU.button)
     assert.notEqual(button, false, 'button isn\'t present')
     assert.equal(await button.isEnabled(), true, 'button isn\'t enabled')
@@ -34,7 +34,7 @@ const login = async (f, password) => {
     await f.click(button)
   })
 
-  it('accepts password with length of eight', async () => {
+  it('accepts password with length of eight', async function () {
     const passwordBox = await f.waitUntilShowUp(screens.create.fieldPassword)
     const passwordBoxConfirm = await f.waitUntilShowUp(screens.create.fieldPasswordConfirm)
     const button = await f.waitUntilShowUp(screens.create.button)
@@ -44,7 +44,7 @@ const login = async (f, password) => {
     await f.click(button)
   })
 
-  it('shows vault was created and seed phrase', async () => {
+  it('shows vault was created and seed phrase', async function () {
     await f.delay(300)
     const element = await f.waitUntilShowUp(screens.seedPhrase.fieldPhrase)
     const seedPhrase = await element.getText()

@@ -12,11 +12,13 @@ module.exports = launchMetamaskUi
 log.setLevel(global.METAMASK_DEBUG ? 'debug' : 'warn')
 
 function launchMetamaskUi (opts, cb) {
-  var accountManager = opts.accountManager
+  const accountManager = opts.accountManager
   actions._setBackgroundConnection(accountManager)
   // check if we are unlocked first
   accountManager.getState(function (err, metamaskState) {
-    if (err) return cb(err)
+    if (err) {
+      return cb(err)
+    }
     startApp(metamaskState, accountManager, opts)
       .then((store) => {
         cb(null, store)
@@ -26,7 +28,9 @@ function launchMetamaskUi (opts, cb) {
 
 async function startApp (metamaskState, accountManager, opts) {
   // parse opts
-  if (!metamaskState.featureFlags) metamaskState.featureFlags = {}
+  if (!metamaskState.featureFlags) {
+    metamaskState.featureFlags = {}
+  }
 
   const currentLocaleMessages = metamaskState.currentLocale
     ? await fetchLocale(metamaskState.currentLocale)
@@ -80,7 +84,7 @@ async function startApp (metamaskState, accountManager, opts) {
       // inject initial state
       store: store,
     }
-  ), opts.container)
+    ), opts.container)
 
   return store
 }

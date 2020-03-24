@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import classnames from 'classnames'
 import LoadingScreen from './loading-screen'
-import {importNewAccount, hideWarning} from '../../../../ui/app/actions'
+import { importNewAccount, hideWarning } from '../../../../ui/app/actions'
 
 class Input extends Component {
 
@@ -15,30 +15,30 @@ class Input extends Component {
     onChange: PropTypes.func.isRequired,
   }
 
-render () {
-  const {label, type, placeholder, errorMessage, onChange} = this.props
-  return (
-  <div className="import-account__input-wrapper">
-    <div className="import-account__input-label">{label}</div>
-    <input
-      type={type}
-      placeholder={placeholder}
-      className={classnames('first-time-flow__input import-account__input', {
-        'first-time-flow__input--error': errorMessage,
-      })}
-      onChange={onChange}
-    />
-    <div className="import-account__input-error-message">{errorMessage}</div>
-  </div>
-)
+  render () {
+    const { label, type, placeholder, errorMessage, onChange } = this.props
+    return (
+      <div className="import-account__input-wrapper">
+        <div className="import-account__input-label">{label}</div>
+        <input
+          type={type}
+          placeholder={placeholder}
+          className={classnames('first-time-flow__input import-account__input', {
+            'first-time-flow__input--error': errorMessage,
+          })}
+          onChange={onChange}
+        />
+        <div className="import-account__input-error-message">{errorMessage}</div>
+      </div>
+    )
+  }
 }
-    }
 
 class ImportAccountScreen extends Component {
   static OPTIONS = {
     PRIVATE_KEY: 'private_key',
     JSON_FILE: 'json_file',
-  };
+  }
 
   static propTypes = {
     warning: PropTypes.string,
@@ -47,7 +47,7 @@ class ImportAccountScreen extends Component {
     importNewAccount: PropTypes.func.isRequired,
     hideWarning: PropTypes.func.isRequired,
     isLoading: PropTypes.bool.isRequired,
-  };
+  }
 
   state = {
     selectedOption: ImportAccountScreen.OPTIONS.PRIVATE_KEY,
@@ -92,7 +92,7 @@ class ImportAccountScreen extends Component {
     return Input({
       label: 'Add Private Key String',
       placeholder: 'Enter private key',
-      onChange: e => this.setState({ privateKey: e.target.value }),
+      onChange: (e) => this.setState({ privateKey: e.target.value }),
       errorMessage: this.props.warning && 'Something went wrong. Please make sure your private key is correct.',
     })
   }
@@ -110,7 +110,7 @@ class ImportAccountScreen extends Component {
               type="file"
               id="file"
               className="import-account__file-input"
-              onChange={e => this.setState({ jsonFile: e.target.files[0] })}
+              onChange={(e) => this.setState({ jsonFile: e.target.files[0] })}
             />
             <label
               htmlFor="file"
@@ -130,7 +130,7 @@ class ImportAccountScreen extends Component {
           label: 'Enter Password',
           placeholder: 'Enter Password',
           type: 'password',
-          onChange: e => this.setState({ password: e.target.value }),
+          onChange: (e) => this.setState({ password: e.target.value }),
           errorMessage: warning && 'Please make sure your password is correct.',
         })}
       </div>
@@ -159,7 +159,7 @@ class ImportAccountScreen extends Component {
         <div className="import-account">
           <a
             className="import-account__back-button"
-            onClick={e => {
+            onClick={(e) => {
               e.preventDefault()
               this.props.back()
             }}
@@ -176,7 +176,7 @@ class ImportAccountScreen extends Component {
           <select
             className="import-account__dropdown"
             value={selectedOption}
-            onChange={e => {
+            onChange={(e) => {
               this.setState({ selectedOption: e.target.value })
               this.props.hideWarning()
             }}
@@ -207,7 +207,7 @@ class ImportAccountScreen extends Component {
 
 export default connect(
   ({ appState: { isLoading, warning } }) => ({ isLoading, warning }),
-  dispatch => ({
+  (dispatch) => ({
     importNewAccount: (strategy, args) => dispatch(importNewAccount(strategy, args)),
     hideWarning: () => dispatch(hideWarning()),
   })

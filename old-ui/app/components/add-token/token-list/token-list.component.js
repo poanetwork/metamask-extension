@@ -36,15 +36,16 @@ export default class InfoBox extends Component {
                   const title = `${name} (${symbol})`
                   const isLongTitle = title.length > 28
 
-                  const tokenRow = (key) => (<div
-                    className={classnames('token-list__token', {
-                      'token-list__token--selected': selectedTokens[address],
-                      'token-list__token--disabled': tokenAlreadyAdded,
-                    })}
-                    onClick={() => !tokenAlreadyAdded && onToggleToken(results[i])}
-                    key={key || 'tokenRow'}
-                    data-tip=""
-                    data-for={`addToken{key}`}
+                  const tokenRow = (key) => (
+                    <div
+                      className={classnames('token-list__token', {
+                        'token-list__token--selected': selectedTokens[address],
+                        'token-list__token--disabled': tokenAlreadyAdded,
+                      })}
+                      onClick={() => !tokenAlreadyAdded && onToggleToken(results[i])}
+                      key={key || 'tokenRow'}
+                      data-tip=""
+                      data-for={`addToken{key}`}
                     >
                       <div
                         className="token-list__token-icon"
@@ -56,17 +57,20 @@ export default class InfoBox extends Component {
                       <div className="token-list__token-data">
                         <span className="token-list__token-name">{title}</span>
                       </div>
-                    </div>)
+                    </div>
+                  )
 
                   return Boolean(logo || symbol || name) && (
-                    isLongTitle ? <Tooltip
-                      position="top"
-                      title={title}
-                      key={i}
-                      id={`addToken{i}`}
-                    >
-                      {tokenRow(i)}
-                    </Tooltip> : tokenRow(i)
+                    isLongTitle ? (
+                      <Tooltip
+                        position="top"
+                        title={title}
+                        key={i}
+                        id={`addToken{i}`}
+                      >
+                        {tokenRow(i)}
+                      </Tooltip>
+                    ) : tokenRow(i)
                   )
                 })
             }

@@ -7,7 +7,7 @@ const POLLING_INTERVAL = 3000
 
 class ShapeshiftController {
 
-    /**
+  /**
      * Controller responsible for managing the list of shapeshift transactions. On construction, it initiates a poll
      * that queries a shapeshift.io API for updates to any pending shapeshift transactions
      *
@@ -61,7 +61,7 @@ class ShapeshiftController {
    */
   getPendingTxs () {
     const txs = this.getShapeShiftTxList()
-    const pending = txs.filter(tx => tx.response && tx.response.status !== 'complete')
+    const pending = txs.filter((tx) => tx.response && tx.response.status !== 'complete')
     return pending
   }
 
@@ -84,13 +84,13 @@ class ShapeshiftController {
     Promise.all(pendingTxs.map((tx) => {
       return this.updateTx(tx)
     }))
-    .then((results) => {
-      results.forEach(tx => this.saveTx(tx))
-      this.timeout = setTimeout(this.pollForUpdates.bind(this), POLLING_INTERVAL)
-    })
+      .then((results) => {
+        results.forEach((tx) => this.saveTx(tx))
+        this.timeout = setTimeout(this.pollForUpdates.bind(this), POLLING_INTERVAL)
+      })
   }
 
-    /**
+  /**
      * Attempts to update a ShapeShiftTx with data from a shapeshift.io API. Both the response and time properties
      * can be updated. The response property is updated with every call, but the time property is only updated when
      * the response status updates to 'complete'. This will occur once the user makes a deposit as the ShapeShiftTx
@@ -138,7 +138,7 @@ class ShapeshiftController {
    */
   removeShapeShiftTx (tx) {
     const { shapeShiftTxList } = this.store.getState()
-    const index = shapeShiftTxList.indexOf(index)
+    const index = shapeShiftTxList.indexOf(tx)
     if (index !== -1) {
       shapeShiftTxList.splice(index, 1)
     }
@@ -157,7 +157,7 @@ class ShapeshiftController {
     const state = this.store.getState()
     let { shapeShiftTxList } = state
 
-    var shapeShiftTx = {
+    const shapeShiftTx = {
       depositAddress,
       depositType,
       key: 'shapeshift',

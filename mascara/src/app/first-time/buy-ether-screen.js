@@ -1,19 +1,19 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
-import {connect} from 'react-redux'
-import {qrcode} from 'qrcode-npm'
+import { connect } from 'react-redux'
+import { qrcode } from 'qrcode-npm'
 import copyToClipboard from 'copy-to-clipboard'
-import ShapeShiftForm from '../shapeshift-form'
+import * as ShapeShiftForm from '../shapeshift-form'
 import Identicon from '../../../../ui/app/components/identicon'
-import {buyEth, showAccountDetail} from '../../../../ui/app/actions'
+import { buyEth, showAccountDetail } from '../../../../ui/app/actions'
 
 class BuyEtherScreen extends Component {
   static OPTION_VALUES = {
     COINBASE: 'coinbase',
     SHAPESHIFT: 'shapeshift',
     QR_CODE: 'qr_code',
-  };
+  }
 
   static OPTIONS = [
     {
@@ -28,7 +28,7 @@ class BuyEtherScreen extends Component {
       name: 'Buy with Cryptos',
       value: BuyEtherScreen.OPTION_VALUES.SHAPESHIFT,
     },
-  ];
+  ]
 
   static propTypes = {
     address: PropTypes.string,
@@ -50,7 +50,7 @@ class BuyEtherScreen extends Component {
   }
 
   renderSkip () {
-    const {showAccountDetail, address} = this.props
+    const { showAccountDetail, address } = this.props
 
     return (
       <div
@@ -82,7 +82,7 @@ class BuyEtherScreen extends Component {
   }
 
   renderCoinbaseForm () {
-    const {goToCoinbase, address} = this.props
+    const { goToCoinbase, address } = this.props
 
     return (
       <div className="buy-ether__action-content-wrapper">
@@ -121,7 +121,7 @@ class BuyEtherScreen extends Component {
             </div>
             <ShapeShiftForm btnClass="first-time-flow__button" />
           </div>
-          )
+        )
       case OPTION_VALUES.QR_CODE:
         return (
           <div className="buy-ether__action-content-wrapper">
@@ -193,8 +193,8 @@ export default connect(
   ({ metamask: { selectedAddress } }) => ({
     address: selectedAddress,
   }),
-  dispatch => ({
-    goToCoinbase: address => dispatch(buyEth({ network: '1', address, amount: 0 })),
-    showAccountDetail: address => dispatch(showAccountDetail(address)),
+  (dispatch) => ({
+    goToCoinbase: (address) => dispatch(buyEth({ network: '1', address, amount: 0 })),
+    showAccountDetail: (address) => dispatch(showAccountDetail(address)),
   })
 )(BuyEtherScreen)

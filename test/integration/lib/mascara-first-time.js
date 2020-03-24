@@ -5,7 +5,7 @@ const {
   queryAsync,
 } = require('../../lib/util')
 
-async function runFirstTimeUsageTest (assert, done) {
+async function runFirstTimeUsageTest (assert, _done) {
   await timeout(4000)
 
   const app = await queryAsync($, '#app-content')
@@ -40,10 +40,10 @@ async function runFirstTimeUsageTest (assert, done) {
   const confBox = (await findAsync(app, '#confirm-password'))[0]
 
   await nativeInputValueSetter.call(pwBox, PASSWORD)
-  await pwBox.dispatchEvent(new Event('input', { bubbles: true}))
+  await pwBox.dispatchEvent(new Event('input', { bubbles: true }))
 
   await nativeInputValueSetter.call(confBox, PASSWORD)
-  await confBox.dispatchEvent(new Event('input', { bubbles: true}))
+  await confBox.dispatchEvent(new Event('input', { bubbles: true }))
 
   // Create Password
   const createButton = (await findAsync(app, 'button.first-time-flow__button'))[0]
@@ -67,20 +67,20 @@ async function runFirstTimeUsageTest (assert, done) {
   ;(await findAsync(app, '.first-time-flow__button')).click()
 
   await timeout()
-  const selectPhrase = text => {
+  const selectPhrase = (text) => {
     const option = $('.backup-phrase__confirm-seed-option')
-      .filter((i, d) => d.textContent === text)[0]
+      .filter((_i, d) => d.textContent === text)[0]
     $(option).click()
   }
 
-  seedPhrase.forEach(sp => selectPhrase(sp))
+  seedPhrase.forEach((sp) => selectPhrase(sp))
   ;(await findAsync(app, '.first-time-flow__button')).click()
 
   // Deposit Ether Screen
 
- // const depositEthTitle = (await findAsync($, '.page-container__title'))[0]
+  // const depositEthTitle = (await findAsync($, '.page-container__title'))[0]
 
- // assert.equal(depositEthTitle.textContent, 'Deposit Ether', 'deposit ether screen')
+  // assert.equal(depositEthTitle.textContent, 'Deposit Ether', 'deposit ether screen')
   ;(await findAsync(app, '.page-container__header-close')).click()
   const menu = (await findAsync(app, '.account-menu__icon'))[0]
   await menu.click()
@@ -96,7 +96,7 @@ async function runFirstTimeUsageTest (assert, done) {
   await timeout(1000)
 
   await nativeInputValueSetter.call(pwBox2, PASSWORD)
-  await pwBox2.dispatchEvent(new Event('input', { bubbles: true}))
+  await pwBox2.dispatchEvent(new Event('input', { bubbles: true }))
 
   const createButton2 = (await findAsync(app, '.MuiButtonBase-root-91.MuiButton-root-75.MuiButton-raised-81.MuiButton-sizeLarge-89.MuiButton-fullWidth-90'))
   await createButton2[0].click()
@@ -119,7 +119,6 @@ async function runFirstTimeUsageTest (assert, done) {
 
   const networkMenu2 = (await findAsync(app, '.network-indicator'))[0]
   const children2 = networkMenu2.children
-  children2.length[3]
   assert.ok(children2, 'All network options present')
 }
 

@@ -4,16 +4,16 @@ const createBlockRefRewriteMiddleware = require('eth-json-rpc-middleware/block-r
 const createBlockTrackerInspectorMiddleware = require('eth-json-rpc-middleware/block-tracker-inspector')
 const createAsyncMiddleware = require('json-rpc-engine/src/createAsyncMiddleware')
 const providerFromMiddleware = require('eth-json-rpc-middleware/providerFromMiddleware')
-const BlockTracker = require('eth-block-tracker')
+const createBlockTracker = require('./createBlockTracker')
 
 const inTest = process.env.IN_TEST === 'true'
 
 module.exports = createLocalhostClient
 
-function createLocalhostClient () {
+function createLocalhostClient ({ platform }) {
   const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'http://localhost:8545/' })
   const blockProvider = providerFromMiddleware(fetchMiddleware)
-  const blockTracker = new BlockTracker({ provider: blockProvider, pollingInterval: 1000 })
+  const blockTracker = createBlockTracker({ provider: blockProvider, pollingInterval: 1000 }, platform)
 
   const networkMiddleware = mergeMiddleware([
     createEstimateGasMiddleware(),
@@ -25,7 +25,7 @@ function createLocalhostClient () {
 }
 
 function delay (time) {
-  return new Promise(resolve => setTimeout(resolve, time))
+  return new Promise((resolve) => setTimeout(resolve, time))
 }
 
 

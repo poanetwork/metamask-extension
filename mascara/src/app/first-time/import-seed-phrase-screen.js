@@ -1,7 +1,7 @@
-import {validateMnemonic} from 'bip39'
+import { validateMnemonic } from 'bip39'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import {
   createNewVaultAndRestore,
   unMarkPasswordForgotten,
@@ -15,12 +15,11 @@ class ImportSeedPhraseScreen extends Component {
   }
 
   static propTypes = {
-    warning: PropTypes.string,
     createNewVaultAndRestore: PropTypes.func.isRequired,
     leaveImportSeedScreenState: PropTypes.func,
     history: PropTypes.object,
     isLoading: PropTypes.bool,
-  };
+  }
 
   state = {
     seedPhrase: '',
@@ -115,7 +114,7 @@ class ImportSeedPhraseScreen extends Component {
           <div className="import-account">
             <a
               className="import-account__back-button"
-              onClick={e => {
+              onClick={(e) => {
                 e.preventDefault()
                 this.props.history.goBack()
               }}
@@ -133,7 +132,7 @@ class ImportSeedPhraseScreen extends Component {
               <label className="import-account__input-label">Wallet Seed</label>
               <textarea
                 className="import-account__secret-phrase"
-                onChange={e => this.handleSeedPhraseChange(e.target.value)}
+                onChange={(e) => this.handleSeedPhraseChange(e.target.value)}
                 value={this.state.seedPhrase}
                 placeholder="Separate each word with a single space"
               />
@@ -147,7 +146,7 @@ class ImportSeedPhraseScreen extends Component {
               type="password"
               className="first-time-flow__input"
               value={this.state.password}
-              onChange={event => this.handlePasswordChange(event.target.value)}
+              onChange={(event) => this.handlePasswordChange(event.target.value)}
               error={passwordError}
               autoComplete="new-password"
               margin="normal"
@@ -159,7 +158,7 @@ class ImportSeedPhraseScreen extends Component {
               type="password"
               className="first-time-flow__input"
               value={this.state.confirmPassword}
-              onChange={event => this.handleConfirmPasswordChange(event.target.value)}
+              onChange={(event) => this.handleConfirmPasswordChange(event.target.value)}
               error={confirmPasswordError}
               autoComplete="confirm-password"
               margin="normal"
@@ -181,7 +180,7 @@ class ImportSeedPhraseScreen extends Component {
 
 export default connect(
   ({ appState: { warning, isLoading } }) => ({ warning, isLoading }),
-  dispatch => ({
+  (dispatch) => ({
     leaveImportSeedScreenState: () => {
       dispatch(unMarkPasswordForgotten())
     },

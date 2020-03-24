@@ -9,6 +9,7 @@ const prependFile = pify(require('prepend-file'))
 const webdriver = require('selenium-webdriver')
 const Command = require('selenium-webdriver/lib/command').Command
 const assert = require('assert')
+
 const { By, Key } = webdriver
 const { screens, elements, NETWORKS } = require('./elements')
 
@@ -18,7 +19,7 @@ class Functions {
   }
 
   async delay (time) {
-    return new Promise(resolve => setTimeout(resolve, time))
+    return new Promise((resolve) => setTimeout(resolve, time))
   }
 
   async createModifiedTestBuild ({ browser, srcPath }) {
@@ -180,37 +181,51 @@ class Functions {
 
   async clearField (field, number) {
     await this.click(field)
-    if (number === undefined) number = 40
+    if (number === undefined) {
+      number = 40
+    }
     for (let i = 0; i < number; i++) {
       await field.sendKeys(Key.BACK_SPACE)
     }
   }
 
   async waitUntilDisappear (by, Twait) {
-    if (Twait === undefined) Twait = 10
+    if (Twait === undefined) {
+      Twait = 10
+    }
     do {
-      if (!await this.isElementDisplayed(by)) return true
+      if (!await this.isElementDisplayed(by)) {
+        return true
+      }
 
     } while (Twait-- > 0)
     return false
   }
 
   async waitUntilShowUp (by, Twait) {
-    if (Twait === undefined) Twait = 200
+    if (Twait === undefined) {
+      Twait = 200
+    }
     do {
       await this.delay(100)
-      if (await this.isElementDisplayed(by)) return await this.driver.findElement(by)
+      if (await this.isElementDisplayed(by)) {
+        return await this.driver.findElement(by)
+      }
     } while (Twait-- > 0)
     return false
   }
 
   async waitUntilHasValue (element, Twait) {
-    if (Twait === undefined) Twait = 200
+    if (Twait === undefined) {
+      Twait = 200
+    }
     let text
     do {
       await this.delay(100)
       text = await element.getAttribute('value')
-      if (text !== '') return text
+      if (text !== '') {
+        return text
+      }
     } while (Twait-- > 0)
     return false
   }
@@ -230,7 +245,9 @@ class Functions {
       assert.notEqual(await this.waitUntilShowUp(screens.main.tokens.amount), false, 'App is frozen')
       // Check tokens title
       let locator = screens.main.tokens.counter
-      if (process.env.SELENIUM_BROWSER === 'firefox') locator = screens.main.tokens.counterFF
+      if (process.env.SELENIUM_BROWSER === 'firefox') {
+        locator = screens.main.tokens.counterFF
+      }
       const tokensCounter = await this.waitUntilShowUp(locator)
       assert.notEqual(tokensCounter, false, '\'Token\'s counter isn\'t displayed ')
       assert.equal(await tokensCounter.getText(), screens.main.tokens.textNoTokens, 'Unexpected token presents')
@@ -311,10 +328,10 @@ class Functions {
       'This means that you are running a slower development build of Redux.',
     ]
     const browserLogs = await driver.manage().logs().get('browser')
-    const errorEntries = browserLogs.filter(entry => !ignoredLogTypes.includes(entry.level.toString()))
-    const errorObjects = errorEntries.map(entry => entry.toJSON())
+    const errorEntries = browserLogs.filter((entry) => !ignoredLogTypes.includes(entry.level.toString()))
+    const errorObjects = errorEntries.map((entry) => entry.toJSON())
     // ignore all errors that contain a message in `ignoredErrorMessages`
-    const matchedErrorObjects = errorObjects.filter(entry => !ignoredErrorMessages.some(message => entry.message.includes(message)))
+    const matchedErrorObjects = errorObjects.filter((entry) => !ignoredErrorMessages.some((message) => entry.message.includes(message)))
     return matchedErrorObjects
   }
 
@@ -325,7 +342,9 @@ class Functions {
       let counter = 100
       do {
         await this.delay(500)
-        if (await this.driver.getCurrentUrl() !== '') return true
+        if (await this.driver.getCurrentUrl() !== '') {
+          return true
+        }
       }
       while (counter-- > 0)
       return true
@@ -342,7 +361,9 @@ class Functions {
       let counter = 100
       do {
         await this.delay(500)
-        if (await this.driver.getCurrentUrl() !== '') return true
+        if (await this.driver.getCurrentUrl() !== '') {
+          return true
+        }
       }
       while (counter-- > 0)
       return true
@@ -359,7 +380,9 @@ class Functions {
         await this.delay(500)
         title = await this.driver.getCurrentUrl()
       } while ((title === '') && (counter-- > 0))
-      if (counter < 1) return false
+      if (counter < 1) {
+        return false
+      }
       return title
     } catch (err) {
       console.log(err)
@@ -656,14 +679,16 @@ class Functions {
 
     const tokenContract = web3.eth.contract(abi)
     const params = {
-      data: bin, from: owner, gas: 4500000, function (err, tokenContract) {
+      data: bin, from: owner, gas: 4500000, function (err, _tokenContract) {
         if (err) {
           console.log('Error of token creation: ' + err)
         }
       },
     }
     const contractInstance = await tokenContract.new(supply, name, decimals, ticker, params)
-    if (isDelayed) await this.delay(10000)
+    if (isDelayed) {
+      await this.delay(10000)
+    }
     return contractInstance.address
   }
 

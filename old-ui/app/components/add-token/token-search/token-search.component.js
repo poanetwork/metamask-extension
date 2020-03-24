@@ -39,14 +39,14 @@ export default class TokenSearch extends Component {
   handleSearch (searchQuery) {
     this.setState({ searchQuery })
     const fuseSearchResult = fuse.search(searchQuery)
-    const addressSearchResult = contractList.filter(token => {
+    const addressSearchResult = contractList.filter((token) => {
       return token.address.toLowerCase() === searchQuery.toLowerCase()
     })
     const results = [...addressSearchResult, ...fuseSearchResult]
     this.props.onSearch({ searchQuery, results })
   }
 
-  componentWillUpdate (nextProps) {
+  UNSAFE_componentWillUpdate (nextProps) {
     const {
       network: oldNet,
     } = this.props
@@ -66,7 +66,7 @@ export default class TokenSearch extends Component {
     const contractMap = newNetworkID === 1 ? contractMapETH : contractMapPOA
     contractList = Object.entries(contractMap)
       .map(([ _, tokenData]) => tokenData)
-      .filter(tokenData => Boolean(tokenData.erc20))
+      .filter((tokenData) => Boolean(tokenData.erc20))
 
     fuse = new Fuse(contractList, {
       shouldSort: true,
@@ -100,10 +100,10 @@ export default class TokenSearch extends Component {
     return (
       <TextField
         id="search-tokens"
-        placeholder={'Search Tokens' /* this.context.t('searchTokens')*/}
+        placeholder="Search Tokens"
         type="text"
         value={searchQuery}
-        onChange={e => this.handleSearch(e.target.value)}
+        onChange={(e) => this.handleSearch(e.target.value)}
         error={error}
         fullWidth
         startAdornment={this.renderAdornment()}

@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
-import {qrcode} from 'qrcode-npm'
-import {connect} from 'react-redux'
-import {shapeShiftSubview, pairUpdate, buyWithShapeShift} from '../../../../ui/app/actions'
-import {isValidAddress} from '../../../../ui/app/util'
+import { qrcode } from 'qrcode-npm'
+import { connect } from 'react-redux'
+import { shapeShiftSubview, pairUpdate, buyWithShapeShift } from '../../../../ui/app/actions'
+import { isValidAddress } from '../../../../ui/app/util'
 
 export class ShapeShiftForm extends Component {
   static propTypes = {
@@ -15,7 +15,7 @@ export class ShapeShiftForm extends Component {
     shapeShiftSubview: PropTypes.func.isRequired,
     pairUpdate: PropTypes.func.isRequired,
     buyWithShapeShift: PropTypes.func.isRequired,
-  };
+  }
 
   state = {
     depositCoin: 'btc',
@@ -24,13 +24,13 @@ export class ShapeShiftForm extends Component {
     depositAddress: '',
     errorMessage: '',
     isLoading: false,
-  };
+  }
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     this.props.shapeShiftSubview()
   }
 
-  onCoinChange = e => {
+  onCoinChange = (e) => {
     const coin = e.target.value
     this.setState({
       depositCoin: coin,
@@ -64,7 +64,7 @@ export class ShapeShiftForm extends Component {
 
     if (isValidAddress(withdrawal)) {
       buyWithShapeShift(data)
-        .then(d => this.setState({
+        .then((d) => this.setState({
           showQrCode: true,
           depositAddress: d.deposit,
           isLoading: false,
@@ -161,7 +161,7 @@ export class ShapeShiftForm extends Component {
             </div>
             <div
               className="icon shapeshift-form__caret"
-              style={{ backgroundImage: 'url(images/caret-right.svg)'}}
+              style={{ backgroundImage: 'url(images/caret-right.svg)' }}
             />
             <div className="shapeshift-form__selector">
               <div className="shapeshift-form__selector-label">
@@ -183,7 +183,7 @@ export class ShapeShiftForm extends Component {
             <input
               type="text"
               className="shapeshift-form__address-input"
-              onChange={e => this.setState({
+              onChange={(e) => this.setState({
                 refundAddress: e.target.value,
                 errorMessage: '',
               })}
@@ -210,9 +210,9 @@ export default connect(
   ({ metamask: { coinOptions, tokenExchangeRates, selectedAddress } }) => ({
     coinOptions, tokenExchangeRates, selectedAddress,
   }),
-  dispatch => ({
+  (dispatch) => ({
     shapeShiftSubview: () => dispatch(shapeShiftSubview()),
-    pairUpdate: coin => dispatch(pairUpdate(coin)),
-    buyWithShapeShift: data => dispatch(buyWithShapeShift(data)),
+    pairUpdate: (coin) => dispatch(pairUpdate(coin)),
+    buyWithShapeShift: (data) => dispatch(buyWithShapeShift(data)),
   })
 )(ShapeShiftForm)

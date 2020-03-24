@@ -32,7 +32,7 @@ export default class ConfirmAddToken extends Component {
       : `${name} (${symbol})`
   }
 
-  componentWillUpdate (nextProps) {
+  UNSAFE_componentWillUpdate (nextProps) {
     const { clearPendingTokens, showAddTokenPage } = this.props
     const {
       network: oldNet,
@@ -56,7 +56,7 @@ export default class ConfirmAddToken extends Component {
       <div className="page-container">
         <div className="page-container__header">
           <h2 className="page-subtitle">
-            { 'Add Tokens' /* this.context.t('addTokens')*/ }
+            Add Tokens
           </h2>
           <p className="confirm-label">
             { likeToAddTokensText /* this.context.t('likeToAddTokens')*/ }
@@ -66,10 +66,10 @@ export default class ConfirmAddToken extends Component {
           <div className="confirm-add-token">
             <div className="confirm-add-token__header">
               <div className="confirm-add-token__token">
-                { 'Token' /* this.context.t('token')*/ }
+                Token
               </div>
               <div className="confirm-add-token__balance">
-                { 'Balance' /* this.context.t('balance')*/ }
+                Balance
               </div>
             </div>
             <div className="confirm-add-token__token-list">
@@ -99,7 +99,7 @@ export default class ConfirmAddToken extends Component {
                         </div>
                       </div>
                     )
-                })
+                  })
               }
             </div>
           </div>
@@ -111,7 +111,7 @@ export default class ConfirmAddToken extends Component {
               className="btn-violet"
               onClick={() => showAddTokenPage()}
             >
-              { 'Back' /* this.context.t('back')*/ }
+              Back
             </Button>
             <Button
               type="primary"
@@ -123,7 +123,7 @@ export default class ConfirmAddToken extends Component {
                   })
               }}
             >
-              { 'Add Tokens' /* this.context.t('addTokens')*/ }
+              Add Tokens
             </Button>
           </div>
         </div>
