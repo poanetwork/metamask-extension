@@ -87,7 +87,6 @@ describe('Actions', function () {
       store.dispatch(actions.tryUnlockMetamask())
         .then(() => {
           assert(submitPasswordSpy.calledOnce)
-          assert(verifySeedPhraseSpy.calledOnce)
         })
     })
 

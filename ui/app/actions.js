@@ -386,7 +386,7 @@ function tryUnlockMetamask (password, dPath) {
     log.debug(`background.submitPassword`)
 
     return new Promise((resolve, reject) => {
-      background.submitPassword(password, dPath, (error) => {
+      background.submitPassword(password, dPath, function (error) {
         if (error) {
           return reject(error)
         }
@@ -528,7 +528,7 @@ function revealSeedConfirmation () {
 
 function verifyPassword (password, dPath) {
   return new Promise((resolve, reject) => {
-    background.submitPassword(password, dPath, (error) => {
+    background.submitPassword(password, dPath, function (error) {
       if (error) {
         return reject(error)
       }
@@ -555,7 +555,7 @@ function requestRevealSeed (password, dPath) {
     dispatch(actions.showLoadingIndication())
     log.debug(`background.submitPassword`)
     return new Promise((resolve, reject) => {
-      background.submitPassword(password, dPath, (err) => {
+      background.submitPassword(password, dPath, function (err) {
         if (err) {
           dispatch(actions.displayWarning(err))
           return reject(err)
@@ -2465,7 +2465,7 @@ function reshowQrCode (data, coin) {
 
 function shapeShiftRequest (query, options, cb) {
   let queryResponse, method
-  options = !options ? {} : null
+  !options ? options = {} : null
   options.method ? method = options.method : method = 'GET'
 
   const requestListner = function () {

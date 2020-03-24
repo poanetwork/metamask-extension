@@ -594,7 +594,7 @@ PendingTx.prototype.miniAccountPanelForRecipient = function (isToken, tokensTran
   }
 }
 
-PendingTx.prototype.componentWillMount = function () {
+PendingTx.prototype.UNSAFE_componentWillMount = function () {
   const txMeta = this.gatherTxMeta()
   const txParams = txMeta.txParams || {}
   if (this.props.isToken) {

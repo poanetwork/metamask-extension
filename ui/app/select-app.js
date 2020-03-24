@@ -34,7 +34,7 @@ function SelectedApp () {
   Component.call(this)
 }
 
-SelectedApp.prototype.componentWillReceiveProps = function (nextProps) {
+SelectedApp.prototype.UNSAFE_componentWillReceiveProps = function (nextProps) {
   // Code commented out until we begin auto adding users to NewUI
   const {
     // isUnlocked,

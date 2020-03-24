@@ -139,7 +139,7 @@ class SendTransactionScreen extends PersistentForm {
 		PersistentForm.call(this)
 	}
 
-	componentWillMount () {
+	UNSAFE_componentWillMount () {
 		this.getContractMethods()
 	}
 

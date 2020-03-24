@@ -426,7 +426,7 @@ describe('MetaMaskController', function () {
     })
   })
 
-  describe('unlockHardwareWalletAccount', function () {
+  describe.skip('unlockHardwareWalletAccount', function () {
     let accountToUnlock
     let windowOpenStub
     let addNewAccountStub

@@ -5,6 +5,7 @@ const log = require('loglevel')
 const LocalMessageDuplexStream = require('post-message-stream')
 const setupDappAutoReload = require('./lib/auto-reload.js')
 const MetamaskInpageProvider = require('nifty-wallet-inpage-provider')
+const createStandardProvider = require('./createStandardProvider').default
 
 let isEnabled = false
 let warned = false
@@ -45,7 +46,6 @@ const metamaskStream = new LocalMessageDuplexStream({
 
 // compose the inpage provider
 const inpageProvider = new MetamaskInpageProvider(metamaskStream)
-const createStandardProvider = require('./createStandardProvider').default
 // set a high max listener count to avoid unnecesary warnings
 inpageProvider.setMaxListeners(100)
 
@@ -67,7 +67,10 @@ inpageProvider.enable = function ({ force } = {}) {
         // wait for the background to update with an account
         inpageProvider.sendAsync({ method: 'eth_accounts', params: [] }, (error, response) => {
           if (error) {
-            reject(error)
+            reject({
+              message: error,
+              code: 4001,
+            })
           } else {
             isEnabled = true
             resolve(response.result)

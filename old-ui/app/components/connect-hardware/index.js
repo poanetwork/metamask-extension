@@ -25,7 +25,7 @@ class ConnectHardwareForm extends Component {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  UNSAFE_componentWillReceiveProps (nextProps) {
     const { accounts, network } = nextProps
     const newAccounts = this.state.accounts.map(a => {
       const normalizedAddress = a.address.toLowerCase()
