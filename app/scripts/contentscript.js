@@ -1,15 +1,16 @@
+import pump from 'pump'
+import querystring from 'querystring'
+import LocalMessageDuplexStream from 'post-message-stream'
+import ObjectMultiplex from 'obj-multiplex'
+import extension from 'extensionizer'
+import PortStream from 'extension-port-stream'
+
+// These require calls need to use require to be statically recognized by browserify
 const fs = require('fs')
 const path = require('path')
-const pump = require('pump')
-const querystring = require('querystring')
-const LocalMessageDuplexStream = require('post-message-stream')
-const PongStream = require('ping-pong-stream/pong')
-const ObjectMultiplex = require('obj-multiplex')
-const extension = require('extensionizer')
-const PortStream = require('extension-port-stream')
 
-const inpageContent = fs.readFileSync(path.join(__dirname, '..', '..', 'dist', 'chrome', 'inpage.js'), 'utf8').toString()
-const inpageSuffix = '//# sourceURL=' + extension.extension.getURL('inpage.js') + '\n'
+const inpageContent = fs.readFileSync(path.join(__dirname, '..', '..', 'dist', 'chrome', 'inpage.js'), 'utf8')
+const inpageSuffix = '//# sourceURL=' + extension.runtime.getURL('inpage.js') + '\n'
 const inpageBundle = inpageContent + inpageSuffix
 
 // Eventually this streaming injection could be replaced with:
@@ -19,92 +20,97 @@ const inpageBundle = inpageContent + inpageSuffix
 // If we create a FireFox-only code path using that API,
 // MetaMask will be much faster loading and performant on Firefox.
 
-if (shouldInjectWeb3()) {
-  setupInjection()
-  setupStreams()
+if (shouldInjectProvider()) {
+  injectScript(inpageBundle)
+  start()
 }
 
 /**
- * Creates a script tag that injects inpage.js
+ * Injects a script tag into the current document
+ *
+ * @param {string} content - Code to be executed in the current document
  */
-function setupInjection () {
+function injectScript (content) {
   try {
-    // inject in-page script
-    const scriptTag = document.createElement('script')
-    scriptTag.textContent = inpageBundle
-    scriptTag.onload = function () {
-      this.parentNode.removeChild(this)
-    }
     const container = document.head || document.documentElement
-    // append as first child
+    const scriptTag = document.createElement('script')
+    scriptTag.setAttribute('async', 'false')
+    scriptTag.textContent = content
     container.insertBefore(scriptTag, container.children[0])
+    container.removeChild(scriptTag)
   } catch (e) {
-    console.error('Nifty Wallet injection failed.', e)
+    console.error('MetaMask provider injection failed.', e)
   }
 }
 
 /**
- * Sets up two-way communication streams between the
- * browser extension and local per-page browser context
+ * Sets up the stream communication and submits site metadata
+ *
  */
-function setupStreams () {
-  // setup communication to page and plugin
-  const pageStream = new LocalMessageDuplexStream({
-    name: 'nifty-contentscript',
-    target: 'nifty-inpage',
-  })
-  const pluginPort = extension.runtime.connect({ name: 'contentscript' })
-  const pluginStream = new PortStream(pluginPort)
-
-  // forward communication plugin->inpage
-  pump(
-    pageStream,
-    pluginStream,
-    pageStream,
-    (err) => logStreamDisconnectWarning('Nifty Wallet Contentscript Forwarding', err)
-  )
-
-  // setup local multistream channels
-  const mux = new ObjectMultiplex()
-  mux.setMaxListeners(25)
-
-  pump(
-    mux,
-    pageStream,
-    mux,
-    (err) => logStreamDisconnectWarning('Nifty Wallet Inpage', err)
-  )
-  pump(
-    mux,
-    pluginStream,
-    mux,
-    (err) => logStreamDisconnectWarning('Nifty Wallet Background', err)
-  )
-
-  // connect ping stream
-  const pongStream = new PongStream({ objectMode: true })
-  pump(
-    mux,
-    pongStream,
-    mux,
-    (err) => logStreamDisconnectWarning('Nifty Wallet PingPongStream', err)
-  )
-
-  // connect phishing warning stream
-  const phishingStream = mux.createStream('phishing')
-  phishingStream.once('data', redirectToPhishingWarning)
-
-  // ignore unused channels (handled by background, inpage)
-  mux.ignoreStream('provider')
-  mux.ignoreStream('publicConfig')
+async function start () {
+  await setupStreams()
+  await domIsReady()
 }
 
+/**
+ * Sets up two-way communication streams between the
+ * browser extension and local per-page browser context.
+ *
+ */
+async function setupStreams () {
+  // the transport-specific streams for communication between inpage and background
+  const pageStream = new LocalMessageDuplexStream({
+    name: 'contentscript',
+    target: 'inpage',
+  })
+  const extensionPort = extension.runtime.connect({ name: 'contentscript' })
+  const extensionStream = new PortStream(extensionPort)
+
+  // create and connect channel muxers
+  // so we can handle the channels individually
+  const pageMux = new ObjectMultiplex()
+  pageMux.setMaxListeners(25)
+  const extensionMux = new ObjectMultiplex()
+  extensionMux.setMaxListeners(25)
+
+  pump(
+    pageMux,
+    pageStream,
+    pageMux,
+    (err) => logStreamDisconnectWarning('MetaMask Inpage Multiplex', err)
+  )
+  pump(
+    extensionMux,
+    extensionStream,
+    extensionMux,
+    (err) => logStreamDisconnectWarning('MetaMask Background Multiplex', err)
+  )
+
+  // forward communication across inpage-background for these channels only
+  forwardTrafficBetweenMuxers('provider', pageMux, extensionMux)
+  forwardTrafficBetweenMuxers('publicConfig', pageMux, extensionMux)
+
+  // connect "phishing" channel to warning system
+  const phishingStream = extensionMux.createStream('phishing')
+  phishingStream.once('data', redirectToPhishingWarning)
+}
+
+function forwardTrafficBetweenMuxers (channelName, muxA, muxB) {
+  const channelA = muxA.createStream(channelName)
+  const channelB = muxB.createStream(channelName)
+  pump(
+    channelA,
+    channelB,
+    channelA,
+    (err) => logStreamDisconnectWarning(`MetaMask muxed traffic for channel "${channelName}" failed.`, err)
+  )
+}
 
 /**
- * Error handler for page to plugin stream disconnections
+ * Error handler for page to extension stream disconnections
  *
- * @param {string} remoteLabel Remote stream name
- * @param {Error} err Stream connection error
+ * @param {string} remoteLabel - Remote stream name
+ * @param {Error} err - Stream connection error
  */
 function logStreamDisconnectWarning (remoteLabel, err) {
   let warningMsg = `MetamaskContentscript - lost connection to ${remoteLabel}`
@@ -115,11 +121,11 @@ function logStreamDisconnectWarning (remoteLabel, err) {
 }
 
 /**
- * Determines if Web3 should be injected
+ * Determines if the provider should be injected
  *
- * @returns {boolean} {@code true} if Web3 should be injected
+ * @returns {boolean} {@code true} - if the provider should be injected
  */
-function shouldInjectWeb3 () {
+function shouldInjectProvider () {
   return doctypeCheck() && suffixCheck() &&
     documentElementCheck() && !blacklistedDomainCheck()
 }
@@ -127,7 +133,7 @@ function shouldInjectWeb3 () {
 /**
  * Checks the doctype of the current document if it exists
  *
- * @returns {boolean} {@code true} if the doctype is html or if none exists
+ * @returns {boolean} {@code true} - if the doctype is html or if none exists
  */
 function doctypeCheck () {
   const doctype = window.document.doctype
@@ -142,10 +148,10 @@ function doctypeCheck () {
  * Returns whether or not the extension (suffix) of the current document is prohibited
  *
  * This checks {@code window.location.pathname} against a set of file extensions
- * that should not have web3 injected into them. This check is indifferent of query parameters
- * in the location.
+ * that we should not inject the provider into. This check is indifferent of
+ * query parameters in the location.
  *
- * @returns {boolean} whether or not the extension of the current document is prohibited
+ * @returns {boolean} - whether or not the extension of the current document is prohibited
  */
 function suffixCheck () {
   const prohibitedTypes = [
@@ -164,7 +170,7 @@ function suffixCheck () {
 /**
  * Checks the documentElement of the current document
  *
- * @returns {boolean} {@code true} if the documentElement is an html node or if none exists
+ * @returns {boolean} {@code true} - if the documentElement is an html node or if none exists
  */
 function documentElementCheck () {
   const documentElement = document.documentElement.nodeName
@@ -177,7 +183,7 @@ function documentElementCheck () {
 /**
  * Checks if the current domain is blacklisted
  *
- * @returns {boolean} {@code true} if the current domain is blacklisted
+ * @returns {boolean} {@code true} - if the current domain is blacklisted
  */
 function blacklistedDomainCheck () {
   const blacklistedDomains = [
@@ -190,6 +196,7 @@ function blacklistedDomainCheck () {
     'harbourair.com',
     'ani.gamer.com.tw',
     'blueskybooking.com',
+    'sharefile.com',
   ]
   const currentUrl = window.location.href
   let currentRegex
@@ -207,10 +214,22 @@ function blacklistedDomainCheck () {
  * Redirects the current page to a phishing information page
  */
 function redirectToPhishingWarning () {
-  console.log('Nifty Wallet - routing to Phishing Warning component')
+  console.log('MetaMask - routing to Phishing Warning component')
   const extensionURL = extension.runtime.getURL('phishing.html')
   window.location.href = `${extensionURL}#${querystring.stringify({
     hostname: window.location.hostname,
     href: window.location.href,
   })}`
+}
+
+/**
+ * Returns a promise that resolves when the DOM is loaded (does not wait for images to load)
+ */
+async function domIsReady () {
+  // already loaded
+  if (['interactive', 'complete'].includes(document.readyState)) {
+    return
+  }
+  // wait for load
+  return new Promise((resolve) => window.addEventListener('DOMContentLoaded', resolve, { once: true }))
 }

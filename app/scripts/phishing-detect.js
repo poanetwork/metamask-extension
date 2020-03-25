@@ -7,7 +7,9 @@ window.onload = function () {
 
 const querystring = require('querystring')
 const dnode = require('dnode')
-const { EventEmitter } = require('events')
+
+import EventEmitter from 'safe-event-emitter'
+
 const PortStream = require('extension-port-stream')
 const extension = require('extensionizer')
 const setupMultiplex = require('./lib/stream-utils.js').setupMultiplex

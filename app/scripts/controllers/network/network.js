@@ -1,20 +1,19 @@
-const assert = require('assert')
-const EventEmitter = require('events')
-const ObservableStore = require('obs-store')
-const ComposedStore = require('obs-store/lib/composed')
-const EthQuery = require('eth-query')
-const JsonRpcEngine = require('json-rpc-engine')
-const providerFromEngine = require('eth-json-rpc-middleware/providerFromEngine')
-const log = require('loglevel')
-const createMetamaskMiddleware = require('./createMetamaskMiddleware')
-const createInfuraClient = require('./createInfuraClient')
-const createJsonRpcClient = require('./createJsonRpcClient')
-const createLocalhostClient = require('./createLocalhostClient')
+import assert from 'assert'
+import EventEmitter from 'events'
+import ObservableStore from 'obs-store'
+import ComposedStore from 'obs-store/lib/composed'
+import EthQuery from 'eth-query'
+import JsonRpcEngine from 'json-rpc-engine'
+import providerFromEngine from 'eth-json-rpc-middleware/providerFromEngine'
+import log from 'loglevel'
+import createMetamaskMiddleware from './createMetamaskMiddleware'
+import createInfuraClient from './createInfuraClient'
+import createJsonRpcClient from './createJsonRpcClient'
+import createLocalhostClient from './createLocalhostClient'
 const createPocketClient = require('./createPocketClient')
-const { createSwappableProxy, createEventEmitterProxy } = require('swappable-obj-proxy')
 const ethNetProps = require('eth-net-props')
 const parse = require('url-parse')
-const extend = require('extend')
+import { createSwappableProxy, createEventEmitterProxy } from 'swappable-obj-proxy'
 
 const networks = { networkList: {} }
 const { isKnownProvider, getDPath } = require('../../../../old-ui/app/util')
@@ -65,11 +64,10 @@ const defaultNetworkConfig = {
   ticker: 'POA',
 }
 
-module.exports = class NetworkController extends EventEmitter {
+export default class NetworkController extends EventEmitter {
 
-  constructor (opts = {}, platform) {
+  constructor (opts = {}) {
     super()
-    this.platform = platform
 
     // parse options
     const providerConfig = opts.provider || defaultProviderConfig
@@ -78,7 +76,7 @@ module.exports = class NetworkController extends EventEmitter {
     this.networkStore = new ObservableStore('loading')
     this.dProviderStore = new ObservableStore({ dProvider: false })
     this.networkConfig = new ObservableStore(defaultNetworkConfig)
-    this.store = new ComposedStore({ provider: this.providerStore, network: this.networkStore, dProviderStore: this.dProviderStore })
+    this.store = new ComposedStore({ provider: this.providerStore, network: this.networkStore, dProviderStore: this.dProviderStore, settings: this.networkConfig })
     this.on('networkDidChange', this.lookupNetwork)
     // provider and block tracker
     this._provider = null
@@ -275,13 +273,13 @@ module.exports = class NetworkController extends EventEmitter {
 
   _configureLocalhostProvider () {
     log.info('NetworkController - configureLocalhostProvider')
-    const networkClient = createLocalhostClient({ platform: this.platform })
+    const networkClient = createLocalhostClient()
     this._setNetworkClient(networkClient)
   }
 
   _configureStandardProvider ({ rpcUrl, chainId, ticker, nickname }) {
     log.info('NetworkController - configureStandardProvider', rpcUrl)
-    const networkClient = createJsonRpcClient({ rpcUrl, platform: this.platform })
+    const networkClient = createJsonRpcClient({ rpcUrl })
     // hack to add a 'rpc' network with chainId
     networks.networkList['rpc'] = {
       chainId: chainId,
@@ -293,7 +291,7 @@ module.exports = class NetworkController extends EventEmitter {
     let settings = {
       network: chainId,
     }
-    settings = extend(settings, networks.networkList['rpc'])
+    settings = Object.assign(settings, networks.networkList['rpc'])
     this.networkConfig.putState(settings)
     this._setNetworkClient(networkClient)
   }

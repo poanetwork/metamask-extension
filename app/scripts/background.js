@@ -5,30 +5,28 @@
 // this needs to run before anything else
 require('./lib/setupFetchDebugging')()
 
-const urlUtil = require('url')
-const endOfStream = require('end-of-stream')
-const pump = require('pump')
-const debounce = require('debounce-stream')
-const log = require('loglevel')
-const extension = require('extensionizer')
+import endOfStream from 'end-of-stream'
+import pump from 'pump'
+import debounce from 'debounce-stream'
+import log from 'loglevel'
+import extension from 'extensionizer'
 const LocalStorageStore = require('obs-store/lib/localStorage')
-const LocalStore = require('./lib/local-store')
-const storeTransform = require('obs-store/lib/transform')
-const asStream = require('obs-store/lib/asStream')
-const ExtensionPlatform = require('./platforms/extension')
-const Migrator = require('./lib/migrator')
-const migrations = require('./migrations')
-const PortStream = require('extension-port-stream')
-const createStreamSink = require('./lib/createStreamSink')
-const NotificationManager = require('./lib/notification-manager.js')
-const MetamaskController = require('./metamask-controller')
-const rawFirstTimeState = require('./first-time-state')
+import LocalStore from './lib/local-store'
+import storeTransform from 'obs-store/lib/transform'
+import asStream from 'obs-store/lib/asStream'
+import ExtensionPlatform from './platforms/extension'
+import Migrator from './lib/migrator'
+import migrations from './migrations'
+import PortStream from 'extension-port-stream'
+import createStreamSink from './lib/createStreamSink'
+import NotificationManager from './lib/notification-manager.js'
+import MetamaskController from './metamask-controller'
+import rawFirstTimeState from './first-time-state'
 const setupRaven = require('./lib/setupRaven')
 const reportFailedTxToSentry = require('./lib/reportFailedTxToSentry')
 const setupMetamaskMeshMetrics = require('./lib/setupMetamaskMeshMetrics')
-const EdgeEncryptor = require('./edge-encryptor')
-const getFirstPreferredLangCode = require('./lib/get-first-preferred-lang-code')
-const getObjStructure = require('./lib/getObjStructure')
+import getFirstPreferredLangCode from './lib/get-first-preferred-lang-code'
+import getObjStructure from './lib/getObjStructure'
 const ipfsContent = require('./lib/ipfsContent.js')
 
 const {
@@ -53,16 +51,11 @@ global.METAMASK_NOTIFIER = notificationManager
 const release = platform.getVersion()
 const raven = setupRaven({ release })
 
-// browser check if it is Edge - https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
-// Internet Explorer 6-11
-const isIE = !!document.documentMode
-// Edge 20+
-const isEdge = !isIE && !!window.StyleMedia
-
 let ipfsHandle
 let popupIsOpen = false
 let notificationIsOpen = false
 const openMetamaskTabsIDs = {}
+const requestAccountTabIds = {}
 
 // state persistence
 const diskStore = new LocalStorageStore({ storageKey: STORAGE_KEY })
@@ -258,18 +251,22 @@ function setupController (initState, initLangCode) {
   const controller = new MetamaskController({
     // User confirmation callbacks:
     showUnconfirmedMessage: triggerUi,
-    unlockAccountMessage: triggerUi,
     showUnapprovedTx: triggerUi,
-    showWatchAssetUi: showWatchAssetUi,
+    openPopup: openPopup,
+    closePopup: notificationManager.closePopup.bind(notificationManager),
     // initial state
     initState,
     // initial locale code
     initLangCode,
     // platform specific api
     platform,
-    encryptor: isEdge ? new EdgeEncryptor() : undefined,
+    getRequestAccountTabIds: () => {
+      return requestAccountTabIds
+    },
+    getOpenMetamaskTabsIds: () => {
+      return openMetamaskTabsIDs
+    },
   })
-  global.metamaskController = controller
 
   controller.networkController.on('networkDidChange', () => {
     ipfsHandle && ipfsHandle.remove()
@@ -339,6 +336,10 @@ function setupController (initState, initLangCode) {
     [ENVIRONMENT_TYPE_FULLSCREEN]: true,
   }
 
+  const metamaskBlacklistedPorts = [
+    'trezor-connect',
+  ]
+
   const isClientOpenStatus = () => {
     return popupIsOpen || Boolean(Object.keys(openMetamaskTabsIDs).length) || notificationIsOpen
   }
@@ -359,11 +360,15 @@ function setupController (initState, initLangCode) {
     const processName = remotePort.name
     const isMetaMaskInternalProcess = metamaskInternalProcessHash[processName]
 
+    if (metamaskBlacklistedPorts.includes(remotePort.name)) {
+      return false
+    }
+
     if (isMetaMaskInternalProcess) {
       const portStream = new PortStream(remotePort)
       // communication with popup
       controller.isClientOpen = true
-      controller.setupTrustedCommunication(portStream, 'MetaMask')
+      controller.setupTrustedCommunication(portStream, remotePort.sender)
 
       if (processName === ENVIRONMENT_TYPE_POPUP) {
         popupIsOpen = true
@@ -393,15 +398,25 @@ function setupController (initState, initLangCode) {
         })
       }
     } else {
+      if (remotePort.sender && remotePort.sender.tab && remotePort.sender.url) {
+        const tabId = remotePort.sender.tab.id
+        const url = new URL(remotePort.sender.url)
+        const origin = url.hostname
+
+        remotePort.onMessage.addListener((msg) => {
+          if (msg.data && msg.data.method === 'eth_requestAccounts') {
+            requestAccountTabIds[origin] = tabId
+          }
+        })
+      }
       connectExternal(remotePort)
     }
   }
 
   // communication with page or other extension
   function connectExternal (remotePort) {
-    const originDomain = urlUtil.parse(remotePort.sender.url).hostname
     const portStream = new PortStream(remotePort)
-    controller.setupUntrustedCommunication(portStream, originDomain)
+    controller.setupUntrustedCommunication(portStream, remotePort.sender)
   }
 
   //
@@ -412,7 +427,10 @@ function setupController (initState, initLangCode) {
   controller.txController.on('update:badge', updateBadge)
   controller.messageManager.on('updateBadge', updateBadge)
   controller.personalMessageManager.on('updateBadge', updateBadge)
+  controller.decryptMessageManager.on('updateBadge', updateBadge)
+  controller.encryptionPublicKeyManager.on('updateBadge', updateBadge)
   controller.typedMessageManager.on('updateBadge', updateBadge)
+  controller.permissionsController.permissions.subscribe(updateBadge)
 
   /**
    * Updates the Web Extension's "badge" number, on the little fox in the toolbar.
@@ -422,9 +440,13 @@ function setupController (initState, initLangCode) {
     let label = ''
     const unapprovedTxCount = controller.txController.getUnapprovedTxCount()
     const unapprovedMsgCount = controller.messageManager.unapprovedMsgCount
-    const unapprovedPersonalMsgs = controller.personalMessageManager.unapprovedPersonalMsgCount
-    const unapprovedTypedMsgs = controller.typedMessageManager.unapprovedTypedMessagesCount
-    const count = unapprovedTxCount + unapprovedMsgCount + unapprovedPersonalMsgs + unapprovedTypedMsgs
+    const unapprovedPersonalMsgCount = controller.personalMessageManager.unapprovedPersonalMsgCount
+    const unapprovedDecryptMsgCount = controller.decryptMessageManager.unapprovedDecryptMsgCount
+    const unapprovedEncryptionPublicKeyMsgCount = controller.encryptionPublicKeyManager.unapprovedEncryptionPublicKeyMsgCount
+    const unapprovedTypedMessagesCount = controller.typedMessageManager.unapprovedTypedMessagesCount
+    const pendingPermissionRequests = Object.keys(controller.permissionsController.permissions.state.permissionsRequests).length
+    const count = unapprovedTxCount + unapprovedMsgCount + unapprovedPersonalMsgCount + unapprovedDecryptMsgCount + unapprovedEncryptionPublicKeyMsgCount +
+                 unapprovedTypedMessagesCount + pendingPermissionRequests
     if (count) {
       label = String(count)
     }
@@ -461,7 +483,7 @@ function triggerUi () {
  * Opens the browser popup for user confirmation of watchAsset
  * then it waits until user interact with the UI
  */
-function showWatchAssetUi () {
+function openPopup () {
   triggerUi()
   return new Promise(
     (resolve) => {
@@ -474,3 +496,10 @@ function showWatchAssetUi () {
     }
   )
 }
+
+// On first install, open a new tab with MetaMask
+extension.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason === 'install' && !(process.env.METAMASK_DEBUG || process.env.IN_TEST)) {
+    platform.openExtensionInBrowser()
+  }
+})

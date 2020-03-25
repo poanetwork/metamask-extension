@@ -1,5 +1,7 @@
 const inherits = require('util').inherits
-const EventEmitter = require('events').EventEmitter
+
+import EventEmitter from 'safe-event-emitter'
+
 const Component = require('react').Component
 const connect = require('react-redux').connect
 const h = require('react-hyperscript')

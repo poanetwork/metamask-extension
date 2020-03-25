@@ -4,7 +4,9 @@ const h = require('react-hyperscript')
 const connect = require('react-redux').connect
 const actions = require('../../ui/app/actions')
 const log = require('loglevel')
-const EventEmitter = require('events').EventEmitter
+
+import EventEmitter from 'safe-event-emitter'
+
 const { getDPath } = require('./util')
 
 module.exports = connect(mapStateToProps)(UnlockScreen)

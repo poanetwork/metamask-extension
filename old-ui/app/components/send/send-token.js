@@ -10,7 +10,7 @@ import {
 import EnsInput from '../ens-input'
 import ethUtil from 'ethereumjs-util'
 import { tokenInfoGetter, calcTokenAmountWithDec } from '../../../../ui/app/token-util'
-import TokenTracker from 'eth-token-watcher'
+import TokenTracker from 'eth-token-tracker'
 import Loading from '../loading'
 import BigNumber from 'bignumber.js'
 BigNumber.config({ ERRORS: false })

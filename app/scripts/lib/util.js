@@ -139,6 +139,10 @@ function removeListeners (listeners, emitter) {
   })
 }
 
+function getRandomArrayItem (array) {
+  return array[Math.floor((Math.random() * array.length))]
+}
+
 /**
  * Capitalizes first letter in the first word of the message
  * @param {string} msg The input message
@@ -162,5 +166,6 @@ module.exports = {
   hexToBn,
   bnToHex,
   BnMultiplyByFraction,
+  getRandomArrayItem,
   capitalizeFirstLetter,
 }

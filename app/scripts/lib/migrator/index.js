@@ -1,4 +1,4 @@
-const EventEmitter = require('events')
+import EventEmitter from 'safe-event-emitter'
 
 /**
  * @typedef {object} Migration

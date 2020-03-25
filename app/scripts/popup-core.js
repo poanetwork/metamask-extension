@@ -1,4 +1,5 @@
-const EventEmitter = require('events').EventEmitter
+import EventEmitter from 'safe-event-emitter'
+
 const async = require('async')
 const Dnode = require('dnode')
 const Eth = require('ethjs')

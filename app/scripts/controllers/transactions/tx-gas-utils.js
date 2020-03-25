@@ -1,10 +1,6 @@
-const EthQuery = require('ethjs-query')
-const {
-  hexToBn,
-  BnMultiplyByFraction,
-  bnToHex,
-} = require('../../lib/util')
-const { addHexPrefix } = require('ethereumjs-util')
+import EthQuery from 'ethjs-query'
+import { hexToBn, BnMultiplyByFraction, bnToHex } from '../../lib/util'
+import { addHexPrefix } from 'ethereumjs-util'
 
 const SIMPLE_GAS_COST = '0x5208' // Hex for 21000, cost of a simple send.
 
@@ -129,4 +125,4 @@ class TxGasUtil {
   }
 }
 
-module.exports = TxGasUtil
+export default TxGasUtil

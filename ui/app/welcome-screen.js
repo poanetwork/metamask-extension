@@ -1,4 +1,4 @@
-import EventEmitter from 'events'
+import EventEmitter from 'safe-event-emitter'
 import h from 'react-hyperscript'
 import { Component } from 'react'
 import PropTypes from 'prop-types'

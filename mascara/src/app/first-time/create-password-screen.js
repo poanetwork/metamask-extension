@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'recompose'
 import { createNewVaultAndKeychain } from '../../../../ui/app/actions'
 import Breadcrumbs from './breadcrumbs'
-import EventEmitter from 'events'
+import EventEmitter from 'safe-event-emitter'
 import classnames from 'classnames'
 import {
   INITIALIZE_UNIQUE_IMAGE_ROUTE,
