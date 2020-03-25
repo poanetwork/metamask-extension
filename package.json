@@ -82,16 +82,7 @@
       "brfs"
     ]
   },
-  "resolutions": {
-    "**/gonzales-pe/minimist": "^1.2.5",
-    "**/knex/minimist": "^1.2.5",
-    "**/mkdirp/minimist": "^1.2.5",
-    "**/optimist/minimist": "^1.2.5",
-    "**/socketcluster/minimist": "^1.2.5",
-    "3box/ipfs/ipld-zcash/zcash-bitcore-lib/lodash": "^4.17.15"
-  },
   "dependencies": {
-    "3box": "^1.10.2",
     "@babel/runtime": "^7.5.5",
     "@material-ui/core": "^4.1.1",
     "@zxing/library": "^0.8.0",
@@ -181,6 +172,7 @@
     "promise-to-callback": "^1.0.0",
     "prop-types": "^15.7.2",
     "pump": "^3.0.0",
+    "punycode": "^2.1.1",
     "qrcode-npm": "0.0.3",
     "ramda": "^0.24.1",
     "raven-js": "^3.24.2",

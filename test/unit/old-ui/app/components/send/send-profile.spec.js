@@ -33,7 +33,7 @@ describe('SendProfile component', function () {
       wrapper = mount(
         <Provider store={store}>
           <SendProfile />
-        </Provider>
+        </Provider>,
       )
     })
     it('shows identity name', function () {

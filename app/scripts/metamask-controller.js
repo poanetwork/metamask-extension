@@ -25,15 +25,17 @@ import createOnboardingMiddleware from './lib/createOnboardingMiddleware'
 import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
 import { setupMultiplex } from './lib/stream-utils.js'
 import KeyringController from 'eth-keychain-controller'
-import EnsController from './controllers/ens'
+// import EnsController from './controllers/ens'
 import NetworkController from './controllers/network'
 import PreferencesController from './controllers/preferences'
+const CurrencyController = require('./controllers/currency')
+const NoticeController = require('./notice-controller')
+const ShapeShiftController = require('./controllers/shapeshift')
 const AddressBookController = require('./controllers/address-book')
 import AppStateController from './controllers/app-state'
 import InfuraController from './controllers/infura'
 import CachedBalancesController from './controllers/cached-balances'
 import OnboardingController from './controllers/onboarding'
-// import ThreeBoxController from './controllers/threebox'
 import RecentBlocksController from './controllers/recent-blocks'
 import IncomingTransactionsController from './controllers/incoming-transactions'
 import MessageManager from './lib/message-manager'
@@ -42,8 +44,9 @@ import EncryptionPublicKeyManager from './lib/encryption-public-key-manager'
 import PersonalMessageManager from './lib/personal-message-manager'
 import TypedMessageManager from './lib/typed-message-manager'
 import TransactionController from './controllers/transactions'
-import TokenRatesController from './controllers/token-rates'
-import DetectTokensController from './controllers/detect-tokens'
+const BalancesController = require('./controllers/computed-balances')
+const TokenRatesController = require('./controllers/token-rates')
+const DetectTokensController = require('./controllers/detect-tokens')
 import ABTestController from './controllers/ab-test'
 import { PermissionsController } from './controllers/permissions'
 import getRestrictedMethods from './controllers/permissions/restrictedMethods'
@@ -66,8 +69,6 @@ import nanoid from 'nanoid'
 import contractMap from 'eth-contract-metadata'
 
 import {
-  // AddressBookController,
-  CurrencyRateController,
   PhishingController,
 } from 'gaba'
 
@@ -127,8 +128,14 @@ export default class MetamaskController extends EventEmitter {
       initState: initState.AppStateController,
     })
 
-    this.currencyRateController = new CurrencyRateController(undefined, initState.CurrencyController)
+    // currency controller
+    this.currencyController = new CurrencyController({
+      initState: initState.CurrencyController,
+    })
+    this.currencyController.updateConversionRate()
+    this.currencyController.scheduleConversionInterval()
 
+    // infura controller
     this.infuraController = new InfuraController({
       initState: initState.InfuraController,
     })
@@ -143,7 +150,6 @@ export default class MetamaskController extends EventEmitter {
 
     // token exchange rate tracker
     this.tokenRatesController = new TokenRatesController({
-      currency: this.currencyRateController,
       preferences: this.preferencesController.store,
     })
 
@@ -153,10 +159,10 @@ export default class MetamaskController extends EventEmitter {
       networkController: this.networkController,
     })
 
-    this.ensController = new EnsController({
-      provider: this.provider,
-      networkStore: this.networkController.networkStore,
-    })
+    // this.ensController = new EnsController({
+    //   provider: this.provider,
+    //   networkStore: this.networkController.networkStore,
+    // })
 
     this.incomingTransactionsController = new IncomingTransactionsController({
       blockTracker: this.blockTracker,
@@ -197,6 +203,7 @@ export default class MetamaskController extends EventEmitter {
     // ensure accountTracker updates balances after network change
     this.networkController.on('networkDidChange', () => {
       this.accountTracker._updateAccounts()
+      this.detectTokensController.restartTokenDetection()
     })
 
     const additionalKeyrings = [TrezorKeyring, LedgerBridgeKeyring]
@@ -231,15 +238,6 @@ export default class MetamaskController extends EventEmitter {
       initState: initState.AddressBookController,
       preferencesStore: this.preferencesController.store,
     })
-
-    // this.threeBoxController = new ThreeBoxController({
-    //   preferencesController: this.preferencesController,
-    //   addressBookController: this.addressBookController,
-    //   keyringController: this.keyringController,
-    //   initState: initState.ThreeBoxController,
-    //   getKeyringControllerState: this.keyringController.memStore.getState.bind(this.keyringController.memStore),
-    //   version,
-    // })
 
     this.txController = new TransactionController({
       initState: initState.TransactionController || initState.TransactionManager,
@@ -278,8 +276,26 @@ export default class MetamaskController extends EventEmitter {
       }
     })
 
+    // computed balances (accounting for pending transactions)
+    this.balancesController = new BalancesController({
+      accountTracker: this.accountTracker,
+      txController: this.txController,
+      blockTracker: this.blockTracker,
+    })
     this.networkController.on('networkDidChange', () => {
-      this.setCurrentCurrency(this.currencyRateController.state.currentCurrency, function () {})
+      this.balancesController.updateAllBalances()
+    })
+    this.balancesController.updateAllBalances()
+
+    // notices
+    this.noticeController = new NoticeController({
+      initState: initState.NoticeController,
+      version,
+      firstVersion: initState.firstTimeInfo.version,
+    })
+
+    this.shapeshiftController = new ShapeShiftController({
+      initState: initState.ShapeShiftController,
     })
 
     this.networkController.lookupNetwork()
@@ -300,7 +316,9 @@ export default class MetamaskController extends EventEmitter {
       KeyringController: this.keyringController.store,
       PreferencesController: this.preferencesController.store,
       AddressBookController: this.addressBookController.store,
-      CurrencyController: this.currencyRateController,
+      CurrencyController: this.currencyController.store,
+      NoticeController: this.noticeController.store,
+      ShapeShiftController: this.shapeshiftController.store,
       NetworkController: this.networkController.store,
       InfuraController: this.infuraController.store,
       CachedBalancesController: this.cachedBalancesController.store,
@@ -309,7 +327,6 @@ export default class MetamaskController extends EventEmitter {
       ABTestController: this.abTestController.store,
       PermissionsController: this.permissionsController.permissions,
       PermissionsMetadata: this.permissionsController.store,
-      // ThreeBoxController: this.threeBoxController.store,
     })
 
     this.memStore = new ComposableObservableStore(null, {
@@ -317,6 +334,7 @@ export default class MetamaskController extends EventEmitter {
       NetworkController: this.networkController.store,
       AccountTracker: this.accountTracker.store,
       TxController: this.txController.memStore,
+      BalancesController: this.balancesController.store,
       CachedBalancesController: this.cachedBalancesController.store,
       TokenRatesController: this.tokenRatesController.store,
       MessageManager: this.messageManager.memStore,
@@ -328,16 +346,15 @@ export default class MetamaskController extends EventEmitter {
       PreferencesController: this.preferencesController.store,
       RecentBlocksController: this.recentBlocksController.store,
       AddressBookController: this.addressBookController.store,
-      CurrencyController: this.currencyRateController,
+      CurrencyController: this.currencyController.store,
+      NoticeController: this.noticeController.memStore,
+      ShapeshiftController: this.shapeshiftController.store,
       InfuraController: this.infuraController.store,
       OnboardingController: this.onboardingController.store,
       IncomingTransactionsController: this.incomingTransactionsController.store,
       PermissionsController: this.permissionsController.permissions,
       PermissionsMetadata: this.permissionsController.store,
-      // ThreeBoxController: this.threeBoxController.store,
       ABTestController: this.abTestController.store,
-      // ENS Controller
-      EnsController: this.ensController.store,
     })
     this.memStore.subscribe(this.sendUpdate.bind(this))
   }
@@ -444,14 +461,15 @@ export default class MetamaskController extends EventEmitter {
     const permissionsController = this.permissionsController
     const preferencesController = this.preferencesController
     const addressBookController = this.addressBookController
-    // const threeBoxController = this.threeBoxController
     const abTestController = this.abTestController
     const txController = this.txController
+    const noticeController = this.noticeController
 
     return {
       // etc
       getState: (cb) => cb(null, this.getState()),
       setCurrentCurrency: this.setCurrentCurrency.bind(this),
+      setCurrentCoin: this.setCurrentCoin.bind(this),
       setUseBlockie: this.setUseBlockie.bind(this),
       setUseNonceField: this.setUseNonceField.bind(this),
       setUsePhishDetect: this.setUsePhishDetect.bind(this),
@@ -517,7 +535,7 @@ export default class MetamaskController extends EventEmitter {
       setMkrMigrationReminderTimestamp: nodeify(this.appStateController.setMkrMigrationReminderTimestamp, this.appStateController),
 
       // EnsController
-      tryReverseResolveAddress: nodeify(this.ensController.reverseResolveAddress, this.ensController),
+      // tryReverseResolveAddress: nodeify(this.ensController.reverseResolveAddress, this.ensController),
 
       // KeyringController
       setLocked: nodeify(this.setLocked, this),
@@ -551,6 +569,10 @@ export default class MetamaskController extends EventEmitter {
       signTypedMessage: nodeify(this.signTypedMessage, this),
       cancelTypedMessage: this.cancelTypedMessage.bind(this),
 
+      // notices
+      checkNotices: noticeController.updateNoticesList.bind(noticeController),
+      markNoticeRead: noticeController.markNoticeRead.bind(noticeController),
+
       // decryptMessageManager
       decryptMessage: nodeify(this.decryptMessage, this),
       decryptMessageInline: nodeify(this.decryptMessageInline, this),
@@ -562,14 +584,6 @@ export default class MetamaskController extends EventEmitter {
 
       // onboarding controller
       setSeedPhraseBackedUp: nodeify(onboardingController.setSeedPhraseBackedUp, onboardingController),
-
-      // // 3Box
-      // setThreeBoxSyncingPermission: nodeify(threeBoxController.setThreeBoxSyncingPermission, threeBoxController),
-      // restoreFromThreeBox: nodeify(threeBoxController.restoreFromThreeBox, threeBoxController),
-      // setShowRestorePromptToFalse: nodeify(threeBoxController.setShowRestorePromptToFalse, threeBoxController),
-      // getThreeBoxLastUpdated: nodeify(threeBoxController.getLastUpdated, threeBoxController),
-      // turnThreeBoxSyncingOn: nodeify(threeBoxController.turnThreeBoxSyncingOn, threeBoxController),
-      // initializeThreeBox: nodeify(this.initializeThreeBox, this),
 
       // a/b test controller
       getAssignedABTestGroupName: nodeify(abTestController.getAssignedABTestGroupName, abTestController),
@@ -728,7 +742,7 @@ export default class MetamaskController extends EventEmitter {
             const tokenAddress = ethUtil.toChecksumAddress(address)
             return contractMap[tokenAddress] ? contractMap[tokenAddress].erc20 : true
           })
-        )
+        ),
       )
     })
 
@@ -778,32 +792,19 @@ export default class MetamaskController extends EventEmitter {
    * @param {string} password - The user's password
    * @returns {Promise<object>} - The keyringController update.
    */
-  async submitPassword (password) {
-    await this.keyringController.submitPassword(password)
+  async submitPassword (password, dPath) {
+    await this.keyringController.submitPassword(password, dPath)
     const accounts = await this.keyringController.getAccounts()
 
     // verify keyrings
-    const nonSimpleKeyrings = this.keyringController.keyrings.filter((keyring) => keyring.type !== 'Simple Key Pair')
+    const nonSimpleKeyrings = this.keyringController.keyrings.filter(keyring => keyring.type !== 'Simple Key Pair' && keyring.type !== 'Simple Address')
     if (nonSimpleKeyrings.length > 1 && this.diagnostics) {
       await this.diagnostics.reportMultipleKeyrings(nonSimpleKeyrings)
     }
 
     await this.preferencesController.syncAddresses(accounts)
+    await this.balancesController.updateAllBalances()
     await this.txController.pendingTxTracker.updatePendingTxs()
-
-    // try {
-    //   const threeBoxSyncingAllowed = this.threeBoxController.getThreeBoxSyncingState()
-    //   if (threeBoxSyncingAllowed && !this.threeBoxController.box) {
-    //     // 'await' intentionally omitted to avoid waiting for initialization
-    //     this.threeBoxController.init()
-    //     this.threeBoxController.turnThreeBoxSyncingOn()
-    //   } else if (threeBoxSyncingAllowed && this.threeBoxController.box) {
-    //     this.threeBoxController.turnThreeBoxSyncingOn()
-    //   }
-    // } catch (error) {
-    //   log.error(error)
-    // }
-
     return this.keyringController.fullUpdate()
   }
 
@@ -1586,7 +1587,7 @@ export default class MetamaskController extends EventEmitter {
         if (err) {
           log.error(err)
         }
-      }
+      },
     )
     dnode.on('remote', (remote) => {
       // push updates to popup
@@ -1638,7 +1639,7 @@ export default class MetamaskController extends EventEmitter {
         if (err) {
           log.error(err)
         }
-      }
+      },
     )
   }
 
@@ -1710,7 +1711,7 @@ export default class MetamaskController extends EventEmitter {
         if (err) {
           log.error(err)
         }
-      }
+      },
     )
   }
 
@@ -1923,15 +1924,36 @@ export default class MetamaskController extends EventEmitter {
    * @param {Function} cb - A callback function returning currency info.
    */
   setCurrentCurrency (currencyCode, cb) {
-    const { ticker } = this.networkController.getNetworkConfig()
     try {
-      const currencyState = {
-        nativeCurrency: ticker,
-        currentCurrency: currencyCode,
+      this.currencyController.setCurrentCurrency(currencyCode)
+      this.currencyController.updateConversionRate()
+      const data = {
+        conversionRate: this.currencyController.getConversionRate(),
+        currentCurrency: this.currencyController.getCurrentCurrency(),
+        conversionDate: this.currencyController.getConversionDate(),
       }
-      this.currencyRateController.update(currencyState)
-      this.currencyRateController.configure(currencyState)
-      cb(null, this.currencyRateController.state)
+      cb(null, data)
+    } catch (err) {
+      cb(err)
+    }
+  }
+
+  /**
+   * A method for setting the network coin.
+   * @param {string} coinCode - The code of the coin.
+   * @param {Function} cb - A callback function returning currency info.
+   */
+  async setCurrentCoin (coinCode, cb) {
+    try {
+      this.currencyController.setCurrentCoin(coinCode)
+      await this.currencyController.updateConversionRate()
+      const data = {
+        conversionRate: this.currencyController.getConversionRate(),
+        currentCoin: this.currencyController.getCurrentCoin(),
+        currentCurrency: this.currencyController.getCurrentCurrency(),
+        conversionDate: this.currencyController.getConversionDate(),
+      }
+      cb(null, data)
     } catch (err) {
       cb(err)
     }
@@ -1953,6 +1975,15 @@ export default class MetamaskController extends EventEmitter {
     if (url) {
       this.platform.openWindow({ url })
     }
+  }
+
+  /**
+   * A method for triggering a shapeshift currency transfer.
+   * @param {string} depositAddress - The address to deposit to.
+   * @property {string} depositType - An abbreviation of the type of crypto currency to be deposited.
+   */
+  createShapeShiftTx (depositAddress, depositType) {
+    this.shapeshiftController.createShapeShiftTx(depositAddress, depositType)
   }
 
   // network
@@ -2000,10 +2031,6 @@ export default class MetamaskController extends EventEmitter {
   async delCustomRpc (rpcTarget) {
     await this.preferencesController.removeFromFrequentRpcList(rpcTarget)
   }
-
-  // async initializeThreeBox () {
-  //   await this.threeBoxController.init()
-  // }
 
   /**
    * Sets whether or not to use the blockie identicon format.

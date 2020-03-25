@@ -74,12 +74,12 @@ export class PermissionsController {
       storeKey: METADATA_STORE_KEY,
       getAccounts: this.getAccounts.bind(this, origin),
       requestAccountsPermission: this._requestPermissions.bind(
-        this, origin, { eth_accounts: {} }
+        this, origin, { eth_accounts: {} },
       ),
     }))
 
     engine.push(this.permissions.providerMiddlewareFunction.bind(
-      this.permissions, { origin }
+      this.permissions, { origin },
     ))
 
     return asMiddleware(engine)
@@ -98,7 +98,7 @@ export class PermissionsController {
       const req = { method: 'eth_accounts' }
       const res = {}
       this.permissions.providerMiddlewareFunction(
-        { origin }, req, res, () => {}, _end
+        { origin }, req, res, () => {}, _end,
       )
 
       function _end () {
@@ -125,7 +125,7 @@ export class PermissionsController {
       const req = { method: 'wallet_requestPermissions', params: [permissions] }
       const res = {}
       this.permissions.providerMiddlewareFunction(
-        { origin }, req, res, () => {}, _end
+        { origin }, req, res, () => {}, _end,
       )
 
       function _end (_err) {
@@ -170,7 +170,7 @@ export class PermissionsController {
         // attempt to finalize the request and resolve it,
         // settings caveats as necessary
         approved.permissions = await this.finalizePermissionsRequest(
-          approved.permissions, accounts
+          approved.permissions, accounts,
         )
         approval.resolve(approved.permissions)
       }
@@ -223,19 +223,19 @@ export class PermissionsController {
 
     if (existingAccounts.length > 0) {
       throw new Error(
-        'May not call legacyExposeAccounts on origin with exposed accounts.'
+        'May not call legacyExposeAccounts on origin with exposed accounts.',
       )
     }
 
     const permissions = await this.finalizePermissionsRequest(
-      { eth_accounts: {} }, accounts
+      { eth_accounts: {} }, accounts,
     )
 
     try {
 
       await new Promise((resolve, reject) => {
         this.permissions.grantNewPermissions(
-          origin, permissions, {}, _end
+          origin, permissions, {}, _end,
         )
 
         function _end (err) {
@@ -281,7 +281,7 @@ export class PermissionsController {
     await this.validatePermittedAccounts(accounts)
 
     this.permissions.updateCaveatFor(
-      origin, 'eth_accounts', CAVEAT_NAMES.exposedAccounts, accounts
+      origin, 'eth_accounts', CAVEAT_NAMES.exposedAccounts, accounts,
     )
 
     this.notifyDomain(origin, {
@@ -363,7 +363,7 @@ export class PermissionsController {
       Array.isArray(payload.result)
     ) {
       this.permissionsLog.updateAccountsHistory(
-        origin, payload.result
+        origin, payload.result,
       )
     }
 
@@ -394,12 +394,12 @@ export class PermissionsController {
           if (methodName === 'eth_accounts') {
             this.notifyDomain(
               origin,
-              { method: NOTIFICATION_NAMES.accountsChanged, result: [] }
+              { method: NOTIFICATION_NAMES.accountsChanged, result: [] },
             )
           }
 
           return { parentCapability: methodName }
-        })
+        }),
       )
     })
   }
@@ -435,7 +435,7 @@ export class PermissionsController {
     }
 
     const newPermittedAccounts = [account].concat(
-      permittedAccounts.filter((_account) => _account !== account)
+      permittedAccounts.filter((_account) => _account !== account),
     )
 
     // update permitted accounts to ensure that accounts are returned
@@ -468,7 +468,7 @@ export class PermissionsController {
       this.pendingApprovals.has(id)
     ) {
       throw new Error(
-        `Pending approval with id ${id} or origin ${origin} already exists.`
+        `Pending approval with id ${id} or origin ${origin} already exists.`,
       )
     }
 
@@ -521,7 +521,7 @@ export class PermissionsController {
 
         if (this.pendingApprovalOrigins.has(origin)) {
           throw ethErrors.rpc.resourceUnavailable(
-            'Permissions request already pending; please wait.'
+            'Permissions request already pending; please wait.',
           )
         }
 

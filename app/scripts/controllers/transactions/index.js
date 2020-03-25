@@ -3,6 +3,8 @@ import ObservableStore from 'obs-store'
 import ethUtil from 'ethereumjs-util'
 import Transaction from 'ethereumjs-tx'
 import EthQuery from 'ethjs-query'
+import { ethErrors } from 'eth-json-rpc-errors'
+import abiDecoder from 'abi-decoder'
 import TransactionStateManager from './tx-state-manager'
 import TxGasUtil from './tx-gas-utils'
 import PendingTransactionTracker from './pending-tx-tracker'
@@ -17,6 +19,14 @@ import {
   TRANSACTION_TYPE_STANDARD,
   TRANSACTION_STATUS_APPROVED,
 } from './enums'
+import {
+  TOKEN_METHOD_APPROVE,
+  TOKEN_METHOD_TRANSFER,
+  TOKEN_METHOD_TRANSFER_FROM,
+  SEND_ETHER_ACTION_KEY,
+  DEPLOY_CONTRACT_ACTION_KEY,
+  CONTRACT_INTERACTION_KEY,
+} from '../../../../ui/app/constants/transactions'
 
 import { hexToBn, bnToHex, BnMultiplyByFraction } from '../../lib/util'
 

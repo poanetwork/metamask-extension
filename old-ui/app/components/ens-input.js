@@ -1,25 +1,19 @@
-const Component = require('react').Component
+import { Component } from 'react'
 const h = require('react-hyperscript')
-const inherits = require('util').inherits
-const debounce = require('debounce')
-const copyToClipboard = require('copy-to-clipboard')
-const ENS = require('ethjs-ens')
-const networkMap = require('ethjs-ens/lib/network-map.json')
+import { debounce } from 'lodash'
+import copyToClipboard from 'copy-to-clipboard/index'
+import ENS from 'ethjs-ens'
+import networkMap from 'ethereum-ens-network-map'
+import log from 'loglevel'
+import { connect } from 'react-redux'
 
 const ensRE = /.+\..+$/
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
-const log = require('loglevel')
 const { isValidENSAddress } = require('../util')
 
+class EnsInput extends Component {
 
-module.exports = EnsInput
-
-inherits(EnsInput, Component)
-function EnsInput () {
-  Component.call(this)
-}
-
-EnsInput.prototype.render = function () {
+render () {
   const props = this.props
 
   function onInputChange () {
@@ -45,6 +39,13 @@ EnsInput.prototype.render = function () {
     this.checkName()
   }
 
+  // todo: temp
+  const arr = []
+  Object.keys(props.addressBook).forEach(function (key) {
+    console.table('Key : ' + key + ', Value : ' + props.addressBook[key])
+    arr.push(props.addressBook[key])
+  })
+
   return (
     h('div', {
       style: { width: '100%' },
@@ -68,7 +69,8 @@ EnsInput.prototype.render = function () {
             })
           }),
           // Corresponds to previously sent-to addresses.
-          props.addressBook.map((identity) => {
+
+          arr.map((identity) => {
             return h('option', {
               value: identity.address,
               label: identity.name,
@@ -81,7 +83,7 @@ EnsInput.prototype.render = function () {
   )
 }
 
-EnsInput.prototype.componentDidMount = function () {
+componentDidMount () {
   const network = this.props.network
   const networkHasEnsSupport = getNetworkEnsSupport(network)
   this.setState({ ensResolution: ZERO_ADDRESS })
@@ -93,7 +95,7 @@ EnsInput.prototype.componentDidMount = function () {
   }
 }
 
-EnsInput.prototype.lookupEnsName = function () {
+lookupEnsName () {
   const recipient = document.querySelector('input[name="address"]').value
   const { ensResolution } = this.state
 
@@ -134,7 +136,7 @@ EnsInput.prototype.lookupEnsName = function () {
     })
 }
 
-EnsInput.prototype.componentDidUpdate = function (_prevProps, prevState) {
+componentDidUpdate (_prevProps, prevState) {
   const state = this.state || {}
   const ensResolution = state.ensResolution
   // If an address is sent without a nickname, meaning not from ENS or from
@@ -146,7 +148,7 @@ EnsInput.prototype.componentDidUpdate = function (_prevProps, prevState) {
   }
 }
 
-EnsInput.prototype.ensIcon = function (recipient) {
+ensIcon (recipient) {
   const { hoverText } = this.state || {}
   return h('span', {
     title: hoverText,
@@ -159,7 +161,7 @@ EnsInput.prototype.ensIcon = function (recipient) {
   }, this.ensIconContents(recipient))
 }
 
-EnsInput.prototype.ensIconContents = function () {
+ensIconContents () {
   const { loadingEns, ensFailure, ensResolution, toError } = this.state || { ensResolution: ZERO_ADDRESS }
 
   if (toError) {
@@ -202,6 +204,20 @@ EnsInput.prototype.ensIconContents = function () {
   }
 }
 
+}
+
 function getNetworkEnsSupport (network) {
   return Boolean(networkMap[network])
 }
+
+const mapStateToProps = (state) => {
+  const result = {
+    network: state.metamask.network,
+    addressBook: state.metamask.addressBook,
+    identities: state.metamask.identities,
+  }
+
+  return result
+}
+
+module.exports = connect(mapStateToProps)(EnsInput)

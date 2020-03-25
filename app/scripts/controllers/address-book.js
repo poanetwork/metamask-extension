@@ -62,8 +62,23 @@ class AddressBookController {
     const addressBook = this._getAddressBook()
     const { identities } = this._preferencesStore.getState()
 
-    const addressBookIndex = addressBook.findIndex((element) => {
-      return element.address.toLowerCase() === address.toLowerCase() || element.name === name
+    // todo: temp
+    const arr = []
+    Object.keys(addressBook).forEach(function (key) {
+      console.table('Key : ' + key + ', Value : ' + addressBook[key])
+      arr.push(addressBook[key])
+    })
+
+    console.log('WTF')
+    console.log(arr)
+
+    const addressBookIndex = arr.findIndex((element) => {
+      console.log('WTF')
+      console.log(element)
+      const obj = element[Object.keys(element)[0]]
+      console.log('WTF')
+      console.log(obj)
+      return obj.address.toLowerCase() === address.toLowerCase() || obj.name === name
     })
     const identitiesIndex = Object.keys(identities).findIndex((element) => {
       return element.toLowerCase() === address.toLowerCase()

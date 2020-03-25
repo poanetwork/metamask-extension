@@ -24,7 +24,7 @@ describe('SendHeader component', function () {
           <SendHeader
             title="Execute Method"
           />
-        </Provider>
+        </Provider>,
       )
       assert.equal(wrapper.find('.send-header').text(), 'Execute Method')
     })

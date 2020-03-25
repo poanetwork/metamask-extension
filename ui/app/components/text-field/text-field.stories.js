@@ -8,14 +8,14 @@ storiesOf('TextField', module)
       label="Text"
       type="text"
     />
-  )
+  ),
   )
   .add('password', () => (
     <TextField
       label="Password"
       type="password"
     />
-  )
+  ),
   )
   .add('error', () => (
     <TextField
@@ -23,7 +23,7 @@ storiesOf('TextField', module)
       label="Name"
       error="Invalid value"
     />
-  )
+  ),
   )
   .add('Mascara text', () => (
     <TextField
@@ -31,7 +31,7 @@ storiesOf('TextField', module)
       type="text"
       largeLabel
     />
-  )
+  ),
   )
   .add('Material text', () => (
     <TextField
@@ -39,7 +39,7 @@ storiesOf('TextField', module)
       type="text"
       material
     />
-  )
+  ),
   )
   .add('Material password', () => (
     <TextField
@@ -47,7 +47,7 @@ storiesOf('TextField', module)
       type="password"
       material
     />
-  )
+  ),
   )
   .add('Material error', () => (
     <TextField
@@ -56,5 +56,5 @@ storiesOf('TextField', module)
       error="Invalid value"
       material
     />
-  )
+  ),
   )

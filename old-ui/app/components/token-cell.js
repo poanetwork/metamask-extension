@@ -67,7 +67,7 @@ TokenCell.prototype.render = function () {
             })
           },
         },
-        this.renderTokenOptions(menuToTop, ind)
+        this.renderTokenOptions(menuToTop, ind),
       ),
 
       /*
@@ -148,7 +148,7 @@ TokenCell.prototype.renderTokenOptions = function (menuToTop, ind) {
         },
         'Remove',
       ),
-    ]
+    ],
   )
 }
 

@@ -1,7 +1,8 @@
-const ethUtil = require('ethereumjs-util')
-const assert = require('assert')
-const BN = require('bn.js')
-const {
+import extension from 'extensionizer'
+import ethUtil from 'ethereumjs-util'
+import assert from 'assert'
+import BN from 'bn.js'
+import {
   ENVIRONMENT_TYPE_POPUP,
   ENVIRONMENT_TYPE_NOTIFICATION,
   ENVIRONMENT_TYPE_FULLSCREEN,
@@ -10,7 +11,7 @@ const {
   PLATFORM_CHROME,
   PLATFORM_EDGE,
   PLATFORM_BRAVE,
-} = require('./enums')
+} from './enums'
 
 /**
  * Generates an example stack trace
@@ -33,9 +34,10 @@ function getStack () {
  *
  */
 const getEnvironmentType = (url = window.location.href) => {
-  if (url.match(/popup.html(?:#.*)*$/)) {
+  const parsedUrl = new URL(url)
+  if (parsedUrl.pathname === '/popup.html') {
     return ENVIRONMENT_TYPE_POPUP
-  } else if (url.match(/home.html(?:\?.+)*$/) || url.match(/home.html(?:#.*)*$/)) {
+  } else if (['/home.html', '/phishing.html'].includes(parsedUrl.pathname)) {
     return ENVIRONMENT_TYPE_FULLSCREEN
   } else {
     return ENVIRONMENT_TYPE_NOTIFICATION
@@ -45,7 +47,7 @@ const getEnvironmentType = (url = window.location.href) => {
 /**
  * Returns the platform (browser) where the extension is running.
  *
- * @returns {string} the platform ENUM
+ * @returns {string} - the platform ENUM
  *
  */
 const getPlatform = (_) => {
@@ -156,7 +158,25 @@ function capitalizeFirstLetter (msg) {
   return msg.charAt(0).toUpperCase() + msg.slice(1)
 }
 
-module.exports = {
+/**
+ * Returns an Error if extension.runtime.lastError is present
+ * this is a workaround for the non-standard error object thats used
+ * @returns {Error}
+ */
+function checkForError () {
+  const lastError = extension.runtime.lastError
+  if (!lastError) {
+    return
+  }
+  // if it quacks like an Error, its an Error
+  if (lastError.stack && lastError.message) {
+    return lastError
+  }
+  // repair incomplete error object (eg chromium v77)
+  return new Error(lastError.message)
+}
+
+export {
   removeListeners,
   applyListeners,
   getPlatform,
@@ -168,4 +188,5 @@ module.exports = {
   BnMultiplyByFraction,
   getRandomArrayItem,
   capitalizeFirstLetter,
+  checkForError,
 }

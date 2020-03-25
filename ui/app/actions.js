@@ -1867,7 +1867,7 @@ function addTokens (tokens) {
           .entries(tokens)
           .map(([_, { address, symbol, decimals, image, network }]) => (
             dispatch(addToken(address, symbol, decimals, image, network))
-          ))
+          )),
       )
     }
   }
@@ -2028,7 +2028,7 @@ function setProviderType (type) {
             'rbtc' : 'eth'
     background.setCurrentCoin(newCoin, (err, data) => {
       if (err) {
-        log.error(err.stack)
+        log.error(err)
         return dispatch(actions.displayWarning(err.message))
       }
       dispatch({

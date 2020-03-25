@@ -11,7 +11,7 @@ describe('Dropdown Menu Components', function () {
 
     it('adds prop className to menu', function () {
       wrapper = shallow(
-        <Menu className="Test Class" isShowing />
+        <Menu className="Test Class" isShowing />,
       )
       assert.equal(wrapper.find('.menu').prop('className'), 'menu Test Class')
     })
@@ -30,7 +30,7 @@ describe('Dropdown Menu Components', function () {
           text="test text"
           className="test className"
           onClick={onClickSpy}
-        />
+        />,
       )
     })
 

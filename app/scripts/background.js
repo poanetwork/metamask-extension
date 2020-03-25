@@ -294,7 +294,7 @@ function setupController (initState, initLangCode) {
     createStreamSink(persistData),
     (error) => {
       log.error('Nifty Wallet - Persistence pipeline failed', error)
-    }
+    },
   )
 
   /**
@@ -493,7 +493,7 @@ function openPopup () {
           resolve()
         }
       }, 1000)
-    }
+    },
   )
 }
 

@@ -216,7 +216,7 @@ export default class PermissionsLogController {
       !Array.isArray(accounts) || accounts.length === 0
     ) {
       throw new Error(
-        'Must provide non-empty string origin and array of accounts.'
+        'Must provide non-empty string origin and array of accounts.',
       )
     }
 
@@ -225,7 +225,7 @@ export default class PermissionsLogController {
       origin,
       accounts,
       Date.now(),
-      true
+      true,
     )
   }
 
@@ -240,7 +240,7 @@ export default class PermissionsLogController {
    */
   logPermissionsHistory (
     requestedMethods, origin, result,
-    time, isEthRequestAccounts
+    time, isEthRequestAccounts,
   ) {
 
     let accounts, newEntries
@@ -405,6 +405,6 @@ export default class PermissionsLogController {
  */
 function getAccountToTimeMap (accounts, time) {
   return accounts.reduce(
-    (acc, account) => ({ ...acc, [account]: time }), {}
+    (acc, account) => ({ ...acc, [account]: time }), {},
   )
 }

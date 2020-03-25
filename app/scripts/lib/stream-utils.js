@@ -46,7 +46,7 @@ function setupMultiplex (connectionStream) {
       if (err) {
         console.error(err)
       }
-    }
+    },
   )
   return mux
 }

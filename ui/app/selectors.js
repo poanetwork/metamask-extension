@@ -166,7 +166,7 @@ function getSelectedTokenToFiatRate (state) {
   const tokenToFiatRate = multiplyCurrencies(
     conversionRate,
     selectedTokenExchangeRate,
-    { toNumericBase: 'dec' }
+    { toNumericBase: 'dec' },
   )
 
   return tokenToFiatRate

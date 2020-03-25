@@ -1,22 +1,23 @@
 const inherits = require('util').inherits
-const PersistentForm = require('../../../lib/persistent-form')
+import PersistentForm from '../../../lib/persistent-form'
 const h = require('react-hyperscript')
-const connect = require('react-redux').connect
-const actions = require('../../../../ui/app/actions')
-const {
+import { connect } from 'react-redux'
+import actions from '../../../../ui/app/actions'
+import {
   numericBalance,
   isHex,
   normalizeEthStringToWei,
   isInvalidChecksumAddress,
   isValidAddress,
-} = require('../../util')
+} from '../../util'
 const EnsInput = require('../ens-input')
-const ethUtil = require('ethereumjs-util')
+import ethUtil from 'ethereumjs-util'
 import SendProfile from './send-profile'
 import SendHeader from './send-header'
 import ErrorComponent from '../error'
 import { getMetaMaskAccounts } from '../../../../ui/app/selectors'
 import ToastComponent from '../toast'
+
 module.exports = connect(mapStateToProps)(SendTransactionScreen)
 
 function mapStateToProps (state) {

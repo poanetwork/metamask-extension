@@ -13,7 +13,7 @@ export default function getRestrictedMethods (permissionsController) {
             (err) => {
               res.error = err
               end(err)
-            }
+            },
           )
       },
     },

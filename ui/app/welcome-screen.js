@@ -70,6 +70,6 @@ export default compose(
     mapStateToProps,
     (dispatch) => ({
       closeWelcomeScreen: () => dispatch(closeWelcomeScreen()),
-    })
-  )
+    }),
+  ),
 )(WelcomeScreen)

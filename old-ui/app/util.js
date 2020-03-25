@@ -1,5 +1,7 @@
-const ethUtil = require('ethereumjs-util')
-const ethNetProps = require('eth-net-props')
+import ethUtil from 'ethereumjs-util'
+import punycode from 'punycode'
+import ethNetProps from 'eth-net-props'
+
 const {
   ROPSTEN,
   ROPSTEN_CODE,
@@ -60,46 +62,48 @@ for (const currency in valueTable) {
   bnTable[currency] = new ethUtil.BN(valueTable[currency], 10)
 }
 
-module.exports = {
-  valuesFor,
-  addressSummary,
-  accountSummary,
-  isAllOneCase,
-  isValidAddress,
-  isValidENSAddress,
-  numericBalance,
-  parseBalance,
-  formatBalance,
-  generateBalanceObject,
-  dataSize,
-  readableDate,
-  normalizeToWei,
-  normalizeEthStringToWei,
-  normalizeNumberToWei,
-  valueTable,
-  bnTable,
-  isHex,
-  exportAsFile,
-  isInvalidChecksumAddress,
-  countSignificantDecimals,
-  getCurrentKeyring,
-  ifLooseAcc,
-  ifContractAcc,
-  ifHardwareAcc,
-  getAllKeyRingsAccounts,
-  ifRSK,
-  ifRSKByProviderType,
-  ifPOA,
-  toChecksumAddress,
-  isValidChecksumAddress,
-  isInfuraProvider,
-  isKnownProvider,
-  getNetworkID,
-  getDPath,
-  setDPath,
-}
+// export {
+//   valuesFor,
+//   addressSummary,
+//   accountSummary,
+//   isAllOneCase,
+//   isValidAddress,
+//   isValidENSAddress,
+//   numericBalance,
+//   parseBalance,
+//   formatBalance,
+//   generateBalanceObject,
+//   dataSize,
+//   readableDate,
+//   normalizeToWei,
+//   normalizeEthStringToWei,
+//   normalizeNumberToWei,
+//   valueTable,
+//   bnTable,
+//   isHex,
+//   exportAsFile,
+//   isInvalidChecksumAddress,
+//   countSignificantDecimals,
+//   getCurrentKeyring,
+//   ifLooseAcc,
+//   ifContractAcc,
+//   ifHardwareAcc,
+//   getAllKeyRingsAccounts,
+//   ifRSK,
+//   ifRSKByProviderType,
+//   ifPOA,
+//   toChecksumAddress,
+//   isValidChecksumAddress,
+//   isValidDomainName,
+//   isValidAddressHead,
+//   isInfuraProvider,
+//   isKnownProvider,
+//   getNetworkID,
+//   getDPath,
+//   setDPath,
+// }
 
-function valuesFor (obj) {
+export function valuesFor (obj) {
   if (!obj) {
     return []
   }
@@ -109,7 +113,7 @@ function valuesFor (obj) {
     })
 }
 
-function addressSummary (network, address, firstSegLength = 10, lastSegLength = 4, includeHex = true) {
+export function addressSummary (network, address, firstSegLength = 10, lastSegLength = 4, includeHex = true) {
   if (!address) {
     return ''
   }
@@ -120,7 +124,7 @@ function addressSummary (network, address, firstSegLength = 10, lastSegLength = 
   return checked ? checked.slice(0, firstSegLength) + '...' + checked.slice(checked.length - lastSegLength) : '...'
 }
 
-function accountSummary (acc, firstSegLength = 6, lastSegLength = 4) {
+export function accountSummary (acc, firstSegLength = 6, lastSegLength = 4) {
   if (!acc) {
     return ''
   }
@@ -134,7 +138,7 @@ function accountSummary (acc, firstSegLength = 6, lastSegLength = 4) {
   return acc.slice(0, firstSegLength) + '...' + acc.slice(posOfLastPart)
 }
 
-function isValidAddress (address, network) {
+export function isValidAddress (address, network) {
   const prefixed = ethUtil.addHexPrefix(address)
   if (ifRSK(network)) {
     if (address === '0x0000000000000000000000000000000000000000') {
@@ -149,11 +153,21 @@ function isValidAddress (address, network) {
   }
 }
 
-function isValidENSAddress (address) {
+export function isValidDomainName (address) {
+  const match = punycode.toASCII(address)
+    .toLowerCase()
+    // Checks that the domain consists of at least one valid domain pieces separated by periods, followed by a tld
+    // Each piece of domain name has only the characters a-z, 0-9, and a hyphen (but not at the start or end of chunk)
+    // A chunk has minimum length of 1, but minimum tld is set to 2 for now (no 1-character tlds exist yet)
+    .match(/^(?:[a-z0-9](?:[-a-z0-9]*[a-z0-9])?\.)+[a-z0-9][-a-z0-9]*[a-z0-9]$/)
+  return match !== null
+}
+
+export function isValidENSAddress (address) {
   return address.match(/^.{7,}\.(eth|test)$/)
 }
 
-function isInvalidChecksumAddress (address, network) {
+export function isInvalidChecksumAddress (address, network) {
   const prefixed = ethUtil.addHexPrefix(address)
   if (address === '0x0000000000000000000000000000000000000000') {
     return false
@@ -161,7 +175,7 @@ function isInvalidChecksumAddress (address, network) {
   return !isAllOneCase(prefixed) && !isValidChecksumAddress(network, prefixed)
 }
 
-function isAllOneCase (address) {
+export function isAllOneCase (address) {
   if (!address) {
     return true
   }
@@ -171,7 +185,7 @@ function isAllOneCase (address) {
 }
 
 // Takes wei Hex, returns wei BN, even if input is null
-function numericBalance (balance) {
+export function numericBalance (balance) {
   if (!balance) {
     return new ethUtil.BN(0, 16)
   }
@@ -180,7 +194,7 @@ function numericBalance (balance) {
 }
 
 // Takes  hex, returns [beforeDecimal, afterDecimal]
-function parseBalance (balance) {
+export function parseBalance (balance) {
   let afterDecimal
   const wei = numericBalance(balance)
   const weiString = wei.toString()
@@ -196,7 +210,7 @@ function parseBalance (balance) {
 
 // Takes wei hex, returns an object with three properties.
 // Its "formatted" property is what we generally use to render values.
-function formatBalance (balance, decimalsToKeep, needsParse = true, network, isToken, tokenSymbol) {
+export function formatBalance (balance, decimalsToKeep, needsParse = true, network, isToken, tokenSymbol) {
   const coinName = ethNetProps.props.getNetworkCoinName(network)
   const assetName = isToken ? tokenSymbol : coinName
   const parsed = needsParse ? parseBalance(balance) : balance.split('.')
@@ -223,7 +237,7 @@ function formatBalance (balance, decimalsToKeep, needsParse = true, network, isT
 }
 
 
-function generateBalanceObject (formattedBalance, decimalsToKeep = 1) {
+export function generateBalanceObject (formattedBalance, decimalsToKeep = 1) {
   let balance = formattedBalance.split(' ')[0]
   const label = formattedBalance.split(' ')[1]
   const beforeDecimal = balance.split('.')[0]
@@ -244,7 +258,7 @@ function generateBalanceObject (formattedBalance, decimalsToKeep = 1) {
   return { balance, label, shortBalance }
 }
 
-function shortenBalance (balance, decimalsToKeep = 1) {
+export function shortenBalance (balance, decimalsToKeep = 1) {
   let truncatedValue
   const convertedBalance = parseFloat(balance)
   if (convertedBalance > 1000000) {
@@ -269,21 +283,21 @@ function shortenBalance (balance, decimalsToKeep = 1) {
   }
 }
 
-function dataSize (data) {
+export function dataSize (data) {
   const size = data ? ethUtil.stripHexPrefix(data).length : 0
   return size + ' bytes'
 }
 
 // Takes a BN and an ethereum currency name,
 // returns a BN in wei
-function normalizeToWei (amount, currency) {
+export function normalizeToWei (amount, currency) {
   try {
     return amount.mul(bnTable.wei).div(bnTable[currency])
   } catch (e) {}
   return amount
 }
 
-function normalizeEthStringToWei (str) {
+export function normalizeEthStringToWei (str) {
   const parts = str.split('.')
   let eth = new ethUtil.BN(parts[0], 10).mul(bnTable.wei)
   if (parts[1]) {
@@ -301,13 +315,13 @@ function normalizeEthStringToWei (str) {
 }
 
 const multiple = new ethUtil.BN('10000', 10)
-function normalizeNumberToWei (n, currency) {
+export function normalizeNumberToWei (n, currency) {
   const enlarged = n * 10000
   const amount = new ethUtil.BN(String(enlarged), 10)
   return normalizeToWei(amount, currency).div(multiple)
 }
 
-function readableDate (ms) {
+export function readableDate (ms) {
   const date = new Date(ms)
   const month = date.getMonth()
   const day = date.getDate()
@@ -321,11 +335,11 @@ function readableDate (ms) {
   return `${dateStr} ${time}`
 }
 
-function isHex (str) {
+export function isHex (str) {
   return Boolean(str.match(/^(0x)?[0-9a-fA-F]+$/))
 }
 
-function exportAsFile (filename, data) {
+export function exportAsFile (filename, data) {
   // source: https://stackoverflow.com/a/33542499 by Ludovic Feltz
   const blob = new Blob([data], { type: 'text/csv' })
   if (window.navigator.msSaveOrOpenBlob) {
@@ -349,7 +363,7 @@ function exportAsFile (filename, data) {
  *
  * returns {number} The length of truncated significant decimals
 **/
-function countSignificantDecimals (val, len) {
+export function countSignificantDecimals (val, len) {
   if (Math.floor(val) === val) {
     return 0
   }
@@ -378,7 +392,7 @@ function countSignificantDecimals (val, len) {
  *
  * returns {object} keyring object corresponding to unlocked address
 **/
-function getCurrentKeyring (address, network, keyrings, identities) {
+export function getCurrentKeyring (address, network, keyrings, identities) {
   const identity = identities[address]
   const simpleAddress = identity && identity.address.substring(2).toLowerCase()
   const keyring = keyrings && keyrings.find((kr) => {
@@ -400,7 +414,7 @@ function getCurrentKeyring (address, network, keyrings, identities) {
  *
  * returns {boolean} true, if keyring is importec and false, if it is not
 **/
-function ifLooseAcc (keyring) {
+export function ifLooseAcc (keyring) {
   try { // Sometimes keyrings aren't loaded yet:
     const type = keyring.type
     const isLoose = type !== 'HD Key Tree'
@@ -418,7 +432,7 @@ function ifLooseAcc (keyring) {
  *
  * returns {boolean} true, if keyring is contract and false, if it is not
 **/
-function ifContractAcc (keyring) {
+export function ifContractAcc (keyring) {
   try { // Sometimes keyrings aren't loaded yet:
     const type = keyring.type
     const isContract = type === 'Simple Address'
@@ -435,7 +449,7 @@ function ifContractAcc (keyring) {
  *
  * returns {boolean} true, if keyring is of hardware type and false, if it is not
 **/
-function ifHardwareAcc (keyring) {
+export function ifHardwareAcc (keyring) {
   if (keyring && keyring.type.search('Hardware') !== -1) {
     return true
   }
@@ -443,7 +457,7 @@ function ifHardwareAcc (keyring) {
 }
 
 
-function getAllKeyRingsAccounts (keyrings, network) {
+export function getAllKeyRingsAccounts (keyrings, network) {
   const accountOrder = keyrings.reduce((list, keyring) => {
     if (ifContractAcc(keyring) && keyring.network === network) {
       list = list.concat(keyring.accounts)
@@ -455,7 +469,7 @@ function getAllKeyRingsAccounts (keyrings, network) {
   return accountOrder
 }
 
-function ifRSK (network) {
+export function ifRSK (network) {
   if (!network) {
     return false
   }
@@ -463,14 +477,14 @@ function ifRSK (network) {
   return numericNet === RSK_CODE || numericNet === RSK_TESTNET_CODE
 }
 
-function ifRSKByProviderType (type) {
+export function ifRSKByProviderType (type) {
   if (!type) {
     return false
   }
   return type === RSK || type === RSK_TESTNET
 }
 
-function ifPOA (network) {
+export function ifPOA (network) {
   if (!network) {
     return false
   }
@@ -478,7 +492,7 @@ function ifPOA (network) {
   return numericNet === POA_SOKOL_CODE || numericNet === POA_CODE || numericNet === DAI_CODE
 }
 
-function toChecksumAddressRSK (address, chainId = null) {
+export function toChecksumAddressRSK (address, chainId = null) {
   const zeroX = '0x'
   const stripAddress = ethUtil.stripHexPrefix(address).toLowerCase()
   const prefix = chainId !== null ? (chainId.toString() + zeroX) : ''
@@ -494,7 +508,7 @@ function toChecksumAddressRSK (address, chainId = null) {
   return output
 }
 
-function toChecksumAddress (network, address, chainId = null) {
+export function toChecksumAddress (network, address, chainId = null) {
   if (ifRSK(network)) {
     return toChecksumAddressRSK(address, parseInt(network))
   } else {
@@ -502,16 +516,23 @@ function toChecksumAddress (network, address, chainId = null) {
   }
 }
 
-function isValidChecksumAddress (network, address) {
+export function isValidChecksumAddress (network, address) {
   return isValidAddress(address, network) && toChecksumAddress(network, address) === address
 }
 
-function isInfuraProvider (type) {
+export function isValidAddressHead (address) {
+  const addressLengthIsLessThanFull = address.length < 42
+  const addressIsHex = isHex(address)
+
+  return addressLengthIsLessThanFull && addressIsHex
+}
+
+export function isInfuraProvider (type) {
   const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
   return INFURA_PROVIDER_TYPES.includes(type)
 }
 
-function isKnownProvider (type) {
+export function isKnownProvider (type) {
   const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
   return INFURA_PROVIDER_TYPES.includes(type) ||
   type === LOCALHOST ||
@@ -524,7 +545,7 @@ function isKnownProvider (type) {
   type === RSK_TESTNET
 }
 
-function getNetworkID ({ network }) {
+export function getNetworkID ({ network }) {
   let chainId
   let netId
   let ticker
@@ -592,11 +613,11 @@ function getNetworkID ({ network }) {
   }
 }
 
-function getDPath (network) {
+export function getDPath (network) {
   return customDPaths[network] || `m/44'/60'/0'/0`
 }
 
-function setDPath (keyring, network) {
+export function setDPath (keyring, network) {
   const dPath = getDPath(network)
   if (dPath && keyring.setHdPath) {
     keyring.setHdPath(dPath)

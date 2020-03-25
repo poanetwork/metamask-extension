@@ -96,7 +96,7 @@ ExportAccountView.prototype.render = function () {
           } },
           [
             h('div.error', this.props.warning.split('-')),
-          ]
+          ],
           )
         ),
       ])
@@ -138,7 +138,7 @@ ExportAccountView.prototype.render = function () {
           },
         }, h(CopyButton, {
           value: accountDetail.privateKey,
-        })
+        }),
         ),
       ]),
       h('div', {

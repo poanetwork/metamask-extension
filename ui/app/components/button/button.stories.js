@@ -12,7 +12,7 @@ storiesOf('Button', module)
     >
       {text('text', 'Click me')}
     </Button>
-  )
+  ),
   )
   .add('secondary', () => (
     <Button
@@ -21,7 +21,7 @@ storiesOf('Button', module)
     >
       {text('text', 'Click me')}
     </Button>
-  )
+  ),
   )
   .add('default', () => (
     <Button

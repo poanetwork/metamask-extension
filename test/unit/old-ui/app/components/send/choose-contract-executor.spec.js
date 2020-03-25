@@ -49,7 +49,7 @@ describe('ChooseContractExecutor component', function () {
             inputValues={[]}
             txParams={{}}
           />
-        </Provider>
+        </Provider>,
       )
     })
 

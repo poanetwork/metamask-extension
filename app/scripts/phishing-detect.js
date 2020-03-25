@@ -10,11 +10,11 @@ const dnode = require('dnode')
 
 import EventEmitter from 'safe-event-emitter'
 
-const PortStream = require('extension-port-stream')
-const extension = require('extensionizer')
-const setupMultiplex = require('./lib/stream-utils.js').setupMultiplex
+import PortStream from 'extension-port-stream'
+import extension from 'extensionizer'
+import { setupMultiplex } from './lib/stream-utils.js'
 const { getEnvironmentType } = require('./lib/util')
-const ExtensionPlatform = require('./platforms/extension')
+import ExtensionPlatform from './platforms/extension'
 
 document.addEventListener('DOMContentLoaded', start)
 

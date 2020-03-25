@@ -22,7 +22,7 @@ describe('ErrorComponent', function () {
       wrapper = mount(
         <Provider store={store}>
           <ErrorComponent error="Error!" />
-        </Provider>
+        </Provider>,
       )
       assert.equal(wrapper.find('.error').text(), 'Error!')
     })
@@ -33,7 +33,7 @@ describe('ErrorComponent', function () {
       wrapper = mount(
         <Provider store={store}>
           <ErrorComponent />
-        </Provider>
+        </Provider>,
       )
       assert.equal(wrapper.find('.error').isEmpty(), true)
     })

@@ -45,7 +45,7 @@ export default function createMethodMiddleware ({
           // this should never happen, because it should be caught in the
           // above catch clause
           res.error = ethErrors.rpc.internal(
-            'Accounts unexpectedly unavailable. Please report this bug.'
+            'Accounts unexpectedly unavailable. Please report this bug.',
           )
         }
 

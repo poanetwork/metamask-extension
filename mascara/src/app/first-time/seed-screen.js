@@ -172,6 +172,6 @@ export default compose(
       seedWords,
       isLoading,
       address: selectedAddress,
-    })
-  )
+    }),
+  ),
 )(BackupPhraseScreen)

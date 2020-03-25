@@ -3,7 +3,7 @@ global.window = global
 const SwGlobalListener = require('sw-stream/lib/sw-global-listener.js')
 
 const connectionListener = new SwGlobalListener(global)
-const setupMultiplex = require('../../app/scripts/lib/stream-utils.js').setupMultiplex
+import { setupMultiplex } from '../../app/scripts/lib/stream-utils.js'
 
 const DbController = require('idb-global')
 

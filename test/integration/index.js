@@ -25,5 +25,5 @@ pump(
     }
     console.log(`Integration test build completed: "${bundlePath}"`)
     process.exit(0)
-  }
+  },
 )

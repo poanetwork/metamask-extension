@@ -85,5 +85,5 @@ const mapStateToProps = ({ metamask }) => {
 
 export default compose(
   withRouter,
-  connect(mapStateToProps)
+  connect(mapStateToProps),
 )(FirstTimeFlow)
