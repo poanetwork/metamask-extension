@@ -62,21 +62,6 @@ const inpageProvider = new MetamaskInpageProvider(metamaskStream)
 inpageProvider.setMaxListeners(100)
 
 // Augment the provider with its enable method
-inpageProvider.enable = function (options = {}) {
-  return new Promise((resolve, reject) => {
-    if (options.mockRejection) {
-      reject('User rejected account access')
-    } else {
-      inpageProvider.sendAsync({ method: 'eth_accounts', params: [] }, (error, response) => {
-        if (error) {
-          reject(error)
-        } else {
-          resolve(response.result)
-        }
-      })
-    }
-  })
-}
 
 // Work around for web3@1.0 deleting the bound `sendAsync` but not the unbound
 // `sendAsync` method on the prototype, causing `this` reference issues
@@ -100,12 +85,9 @@ log.debug('Nifty Wallet - injected web3')
 
 proxiedInpageProvider._web3Ref = web3.eth
 
-setupDappAutoReload(web3, inpageProvider.publicConfigStore)
+setupDappAutoReload(web3, inpageProvider._publicConfigStore)
 
 // set web3 defaultAccount
-inpageProvider.publicConfigStore.subscribe(function (state) {
-  web3.eth.defaultAccount = state.selectedAddress
-})
 //
 // end deprecate:Q1-2020
 //

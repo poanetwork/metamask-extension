@@ -6,7 +6,7 @@ const { getEnvironmentType } = require('./lib/util')
 const { ENVIRONMENT_TYPE_NOTIFICATION } = require('./lib/enums')
 import extension from 'extensionizer'
 const ExtensionPlatform = require('./platforms/extension')
-const NotificationManager = require('./lib/notification-manager')
+import NotificationManager from './lib/notification-manager'
 const notificationManager = new NotificationManager()
 const setupRaven = require('./lib/setupRaven')
 const log = require('loglevel')

@@ -5,7 +5,7 @@ const Eth = require('ethjs')
 const EthQuery = require('eth-query')
 const launchMetamaskUi = require('../../ui')
 const StreamProvider = require('web3-stream-provider')
-const setupMultiplex = require('./lib/stream-utils.js').setupMultiplex
+import { setupMultiplex } from './lib/stream-utils.js'
 
 module.exports = initializePopup
 

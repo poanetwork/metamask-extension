@@ -1,5 +1,4 @@
-const ObservableStore = require('obs-store')
-
+import ObservableStore from 'obs-store'
 import log from 'loglevel'
 import { normalize as normalizeAddress } from 'eth-sig-util'
 import ethUtil from 'ethereumjs-util'
@@ -88,4 +87,4 @@ class TokenRatesController {
   }
 }
 
-module.exports = TokenRatesController
+export default TokenRatesController

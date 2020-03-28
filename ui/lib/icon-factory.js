@@ -1,6 +1,6 @@
 var iconFactory
 const isValidAddress = require('ethereumjs-util').isValidAddress
-const { checksumAddress } = require('../app/util')
+import { checksumAddress } from '../app/util'
 const contractMap = require('eth-contract-metadata')
 const colors = require('../../colors')
 

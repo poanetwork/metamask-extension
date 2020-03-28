@@ -11,7 +11,7 @@ function reduceMetamask (state, action) {
   let newState
 
   // clone + defaults
-  var metamaskState = extend({
+  const metamaskState = extend({
     isInitialized: false,
     isUnlocked: false,
     isAccountMenuOpen: false,

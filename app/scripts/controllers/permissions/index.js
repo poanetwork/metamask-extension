@@ -101,23 +101,23 @@ export class PermissionsController {
    * @param {string} origin - The origin string.
    */
   getAccounts (origin) {
-    // return new Promise((resolve, _) => {
+    return new Promise(async (resolve, _) => {
+      const accounts = await this.getKeyringAccounts()
+      resolve(accounts)
+      // const req = { method: 'eth_accounts' }
+      // const res = {}
+      // this.permissions.providerMiddlewareFunction(
+      //   { origin }, req, res, () => {}, _end
+      // )
 
-    //   const req = { method: 'eth_accounts' }
-    //   const res = {}
-    //   this.permissions.providerMiddlewareFunction(
-    //     { origin }, req, res, () => {}, _end
-    //   )
-
-    //   function _end () {
-    //     if (res.error || !Array.isArray(res.result)) {
-    //       resolve([])
-    //     } else {
-    //       resolve(res.result)
-    //     }
-    //   }
-    // })
-    return this.getKeyringAccounts()
+      // function _end () {
+      //   if (res.error || !Array.isArray(res.result)) {
+      //     resolve([])
+      //   } else {
+      //     resolve(res.result)
+      //   }
+      // }
+    })
   }
 
   /**
@@ -300,9 +300,9 @@ export class PermissionsController {
 
     await this.validatePermittedAccounts(accounts)
 
-    this.permissions.updateCaveatFor(
-      origin, 'eth_accounts', CAVEAT_NAMES.exposedAccounts, accounts,
-    )
+    // this.permissions.updateCaveatFor(
+    //   origin, 'eth_accounts', CAVEAT_NAMES.exposedAccounts, accounts,
+    // )
 
     this.notifyDomain(origin, {
       method: NOTIFICATION_NAMES.accountsChanged,

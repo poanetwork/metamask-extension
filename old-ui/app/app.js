@@ -69,7 +69,7 @@ function mapStateToProps (state) {
     seedWords,
     featureFlags,
   } = state.metamask
-  const selected = address || Object.keys(accounts)[0]
+  const selected = address || (accounts && Object.keys(accounts)[0])
 
   return {
     // state from plugin

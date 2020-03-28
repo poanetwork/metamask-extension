@@ -1,5 +1,5 @@
 import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
-import { ethErrors } from 'eth-json-rpc-errors'
+// import { ethErrors } from 'eth-json-rpc-errors'
 
 /**
  * Create middleware for handling certain methods and preprocessing permissions requests.
@@ -13,7 +13,7 @@ export default function createMethodMiddleware ({
   storeKey,
 }) {
 
-  const isProcessingRequestAccounts = false
+  // const isProcessingRequestAccounts = false
 
   return createAsyncMiddleware(async (req, res, next) => {
 
@@ -29,12 +29,12 @@ export default function createMethodMiddleware ({
 
       case 'eth_requestAccounts':
 
-        if (isProcessingRequestAccounts) {
-          res.error = ethErrors.rpc.resourceUnavailable(
-            'Already processing eth_requestAccounts. Please wait.',
-          )
-          return
-        }
+        // if (isProcessingRequestAccounts) {
+        //   res.error = ethErrors.rpc.resourceUnavailable(
+        //     'Already processing eth_requestAccounts. Please wait.',
+        //   )
+        //   return
+        // }
 
         // if (hasPermission('eth_accounts')) {
         //   isProcessingRequestAccounts = true
@@ -58,17 +58,19 @@ export default function createMethodMiddleware ({
         // }
 
         // get the accounts again
+        // /* istanbul ignore else: too hard to induce, see below comment */
+        // if (accounts.length > 0) {
+        //   res.result = accounts
+        // } else {
+        //   // this should never happen, because it should be caught in the
+        //   // above catch clause
+        //   res.error = ethErrors.rpc.internal(
+        //     'Accounts unexpectedly unavailable. Please report this bug.',
+        //   )
+        // }
         const accounts = await getAccounts()
-        /* istanbul ignore else: too hard to induce, see below comment */
-        if (accounts.length > 0) {
-          res.result = accounts
-        } else {
-          // this should never happen, because it should be caught in the
-          // above catch clause
-          res.error = ethErrors.rpc.internal(
-            'Accounts unexpectedly unavailable. Please report this bug.',
-          )
-        }
+
+        res.result = accounts
 
         return
 

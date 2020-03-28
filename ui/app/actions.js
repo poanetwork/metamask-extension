@@ -30,6 +30,8 @@ var actions = {
   MODAL_CLOSE: 'UI_MODAL_CLOSE',
   showModal: showModal,
   hideModal: hideModal,
+  closeCurrentNotificationWindow: closeCurrentNotificationWindow,
+  closeNotifacationWindow: closeNotifacationWindow,
   // sidebar state
   SIDEBAR_OPEN: 'UI_SIDEBAR_OPEN',
   SIDEBAR_CLOSE: 'UI_SIDEBAR_CLOSE',
@@ -176,8 +178,13 @@ var actions = {
   PREVIOUS_TX: 'PREV_TX',
   EDIT_TX: 'EDIT_TX',
   signMsg: signMsg,
+  cancelDecryptMsg,
+  cancelEncryptionPublicKeyMsg,
   cancelMsg: cancelMsg,
   signPersonalMsg,
+  decryptMsgInline,
+  decryptMsg,
+  encryptionPublicKeyMsg,
   cancelPersonalMsg,
   signTypedMsg,
   cancelTypedMsg,
@@ -364,6 +371,13 @@ var actions = {
   confirmChangePassword,
 
   createCancelTransaction,
+
+  // permissions
+  approvePermissionsRequest,
+  rejectPermissionsRequest,
+  legacyExposeAccounts,
+  removePermissionsFor,
+  clearPermissions,
 }
 
 module.exports = actions
@@ -929,10 +943,7 @@ function signMsg (msgData) {
         }
 
         dispatch(actions.completedTx(msgData.metamaskId))
-
-        if (!hasUnconfirmedTransactions(getState())) {
-          return global.platform.closeNotificationWindow()
-        }
+        dispatch(closeCurrentNotificationWindow())
 
         return resolve(msgData)
       })
@@ -959,10 +970,81 @@ function signPersonalMsg (msgData) {
         }
 
         dispatch(actions.completedTx(msgData.metamaskId))
+        dispatch(actions.closeCurrentNotificationWindow())
 
-        if (!hasUnconfirmedTransactions(getState())) {
-          return global.platform.closeNotificationWindow()
+        return resolve(msgData)
+      })
+    })
+  }
+}
+
+function decryptMsgInline (decryptedMsgData) {
+  log.debug('action - decryptMsgInline')
+  return (dispatch) => {
+    return new Promise((resolve, reject) => {
+      log.debug(`actions calling background.decryptMessageInline`)
+      background.decryptMessageInline(decryptedMsgData, (err, newState) => {
+        log.debug('decryptMsgInline called back')
+        dispatch(actions.updateMetamaskState(newState))
+
+        if (err) {
+          log.error(err)
+          dispatch(actions.displayWarning(err.message))
+          return reject(err)
         }
+
+        decryptedMsgData = newState.unapprovedDecryptMsgs[decryptedMsgData.metamaskId]
+        return resolve(decryptedMsgData)
+      })
+    })
+  }
+}
+
+function decryptMsg (decryptedMsgData) {
+  log.debug('action - decryptMsg')
+  return (dispatch) => {
+    dispatch(showLoadingIndication())
+    return new Promise((resolve, reject) => {
+      log.debug(`actions calling background.decryptMessage`)
+      background.decryptMessage(decryptedMsgData, (err, newState) => {
+        log.debug('decryptMsg called back')
+        dispatch(actions.updateMetamaskState(newState))
+        dispatch(actions.hideLoadingIndication())
+
+        if (err) {
+          log.error(err)
+          dispatch(actions.displayWarning(err.message))
+          return reject(err)
+        }
+
+        dispatch(actions.completedTx(decryptedMsgData.metamaskId))
+        dispatch(actions.closeCurrentNotificationWindow())
+        console.log(decryptedMsgData)
+        return resolve(decryptedMsgData)
+      })
+    })
+  }
+}
+
+function encryptionPublicKeyMsg (msgData) {
+  log.debug('action - encryptionPublicKeyMsg')
+  return (dispatch) => {
+    dispatch(actions.showLoadingIndication())
+    return new Promise((resolve, reject) => {
+      log.debug(`actions calling background.encryptionPublicKey`)
+      background.encryptionPublicKey(msgData, (err, newState) => {
+        log.debug('encryptionPublicKeyMsg called back')
+        dispatch(actions.updateMetamaskState(newState))
+        dispatch(actions.hideLoadingIndication())
+
+        if (err) {
+          log.error(err)
+          dispatch(actions.displayWarning(err.message))
+          return reject(err)
+        }
+
+        dispatch(actions.completedTx(msgData.metamaskId))
+        dispatch(actions.closeCurrentNotificationWindow())
 
         return resolve(msgData)
       })
@@ -989,10 +1071,7 @@ function signTypedMsg (msgData) {
         }
 
         dispatch(actions.completedTx(msgData.metamaskId))
-
-        if (!hasUnconfirmedTransactions(getState())) {
-          return global.platform.closeNotificationWindow()
-        }
+        dispatch(actions.closeCurrentNotificationWindow())
 
         return resolve(msgData)
       })
@@ -1288,10 +1367,8 @@ function updateAndApproveTx (txData) {
         dispatch(actions.completedTx(txData.id))
         dispatch(actions.hideLoadingIndication())
         dispatch(actions.setCurrentAccountTab('history'))
-
-        if (!hasUnconfirmedTransactions(getState())) {
-          return global.platform.closeNotificationWindow()
-        }
+        dispatch(actions.updateCustomNonce(''))
+        dispatch(actions.closeCurrentNotificationWindow())
 
         return txData
       })
@@ -1324,6 +1401,50 @@ function txError (err) {
   }
 }
 
+function cancelDecryptMsg (msgData) {
+  return (dispatch) => {
+    dispatch(actions.showLoadingIndication())
+    return new Promise((resolve, reject) => {
+      const id = msgData.id
+      background.cancelDecryptMessage(id, (err, newState) => {
+        dispatch(actions.updateMetamaskState(newState))
+        dispatch(actions.hideLoadingIndication())
+
+        if (err) {
+          return reject(err)
+        }
+
+        dispatch(actions.completedTx(id))
+        dispatch(actions.closeCurrentNotificationWindow())
+
+        return resolve(msgData)
+      })
+    })
+  }
+}
+
+function cancelEncryptionPublicKeyMsg (msgData) {
+  return (dispatch) => {
+    dispatch(actions.showLoadingIndication())
+    return new Promise((resolve, reject) => {
+      const id = msgData.id
+      background.cancelEncryptionPublicKey(id, (err, newState) => {
+        dispatch(actions.updateMetamaskState(newState))
+        dispatch(actions.hideLoadingIndication())
+
+        if (err) {
+          return reject(err)
+        }
+
+        dispatch(actions.completedTx(id))
+        dispatch(actions.closeCurrentNotificationWindow())
+
+        return resolve(msgData)
+      })
+    })
+  }
+}
+
 function cancelMsg (msgData) {
   return (dispatch, getState) => {
     dispatch(actions.showLoadingIndication())
@@ -1339,10 +1460,7 @@ function cancelMsg (msgData) {
         }
 
         dispatch(actions.completedTx(msgData.id))
-
-        if (!hasUnconfirmedTransactions(getState())) {
-          return global.platform.closeNotificationWindow()
-        }
+        dispatch(actions.closeCurrentNotificationWindow())
 
         return resolve(msgData)
       })
@@ -1365,10 +1483,7 @@ function cancelPersonalMsg (msgData) {
         }
 
         dispatch(actions.completedTx(id))
-
-        if (!hasUnconfirmedTransactions(getState())) {
-          return global.platform.closeNotificationWindow()
-        }
+        dispatch(actions.closeCurrentNotificationWindow())
 
         return resolve(msgData)
       })
@@ -1391,10 +1506,7 @@ function cancelTypedMsg (msgData) {
         }
 
         dispatch(actions.completedTx(id))
-
-        if (!hasUnconfirmedTransactions(getState())) {
-          return global.platform.closeNotificationWindow()
-        }
+        dispatch(actions.closeCurrentNotificationWindow())
 
         return resolve(msgData)
       })
@@ -1422,10 +1534,7 @@ function cancelTx (txData) {
         dispatch(actions.clearSend())
         dispatch(actions.completedTx(txData.id))
         dispatch(actions.hideLoadingIndication())
-
-        if (!hasUnconfirmedTransactions(getState())) {
-          return global.platform.closeNotificationWindow()
-        }
+        dispatch(actions.closeCurrentNotificationWindow())
 
         return txData
       })
@@ -1723,6 +1832,7 @@ function showAccountDetail (address) {
       if (err) {
         return dispatch(actions.displayWarning(err.message))
       }
+      background.handleNewAccountSelected(origin, address)
       dispatch(updateTokens(tokens))
       dispatch({
         type: actions.SHOW_ACCOUNT_DETAIL,
@@ -2121,6 +2231,23 @@ function hideModal (payload) {
   return {
     type: actions.MODAL_CLOSE,
     payload,
+  }
+}
+
+function closeCurrentNotificationWindow () {
+  return (dispatch, getState) => {
+    if (global.METAMASK_UI_TYPE === ENVIRONMENT_TYPE_NOTIFICATION &&
+      !hasUnconfirmedTransactions(getState())) {
+      global.platform.closeCurrentWindow()
+
+      dispatch(actions.closeNotifacationWindow())
+    }
+  }
+}
+
+function closeNotifacationWindow () {
+  return {
+    type: actions.CLOSE_NOTIFICATION_WINDOW,
   }
 }
 
@@ -2718,6 +2845,58 @@ function setPendingTokens (pendingTokens) {
   return {
     type: actions.SET_PENDING_TOKENS,
     payload: tokens,
+  }
+}
+
+
+// Permissions
+
+/**
+ * Approves the permissions request.
+ * @param {Object} request - The permissions request to approve
+ * @param {string[]} accounts - The accounts to expose, if any.
+ */
+function approvePermissionsRequest (request, accounts) {
+  return () => {
+    background.approvePermissionsRequest(request, accounts)
+  }
+}
+
+/**
+ * Rejects the permissions request with the given ID.
+ * @param {string} requestId - The id of the request to be rejected
+ */
+function rejectPermissionsRequest (requestId) {
+  return () => {
+    background.rejectPermissionsRequest(requestId)
+  }
+}
+
+/**
+ * Exposes the given account(s) to the given origin.
+ * Call ONLY as a result of direct user action.
+ */
+function legacyExposeAccounts (origin, accounts) {
+  return () => {
+    return background.legacyExposeAccounts(origin, accounts)
+  }
+}
+
+/**
+ * Clears the given permissions for the given origin.
+ */
+function removePermissionsFor (domains) {
+  return () => {
+    background.removePermissionsFor(domains)
+  }
+}
+
+/**
+ * Clears all permissions for all domains.
+ */
+function clearPermissions () {
+  return () => {
+    background.clearPermissions()
   }
 }
 

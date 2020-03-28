@@ -1,11 +1,11 @@
-const assert = require('assert')
-const EventEmitter = require('events')
-const ethUtil = require('ethereumjs-util')
-const EthTx = require('ethereumjs-tx')
-const ObservableStore = require('obs-store')
-const sinon = require('sinon')
+import assert from 'assert'
+import EventEmitter from 'events'
+import ethUtil from 'ethereumjs-util'
+import EthTx from 'ethereumjs-tx'
+import ObservableStore from 'obs-store'
+import sinon from 'sinon'
 const TransactionController = require('../../../../../app/scripts/controllers/transactions')
-const { createTestProviderTools, getTestAccounts } = require('../../../../stub/provider')
+import { createTestProviderTools, getTestAccounts } from '../../../../stub/provider'
 
 const noop = () => true
 const currentNetworkId = 42
@@ -38,6 +38,7 @@ describe('Transaction Controller', function () {
         ethTx.sign(fromAccount.key)
         resolve()
       }),
+      getPermittedAccounts: () => {},
     })
     txController.nonceTracker.getNonceLock = () => Promise.resolve({ nextNonce: 0, releaseLock: noop })
   })
@@ -115,19 +116,19 @@ describe('Transaction Controller', function () {
         id: 1,
         metamaskNetworkId: currentNetworkId,
         txParams,
-        history: [],
+        history: [{}],
       }
       txController.txStateManager._saveTxList([txMeta])
       stub = sinon.stub(txController, 'addUnapprovedTransaction').callsFake(() => {
         txController.emit('newUnapprovedTx', txMeta)
         return Promise.resolve(txController.txStateManager.addTx(txMeta))
+      })
     })
 
     afterEach(function () {
       txController.txStateManager._saveTxList([])
       stub.restore()
     })
-  })
 
     it('should resolve when finished and status is submitted and resolve with the hash', function (done) {
       txController.once('newUnapprovedTx', (txMetaFromEmit) => {
@@ -138,11 +139,11 @@ describe('Transaction Controller', function () {
       })
 
       txController.newUnapprovedTransaction(txParams)
-      .then((hash) => {
-        assert(hash, 'newUnapprovedTransaction needs to return the hash')
-        done()
-      })
-      .catch(done)
+        .then((hash) => {
+          assert(hash, 'newUnapprovedTransaction needs to return the hash')
+          done()
+        })
+        .catch(done)
     })
 
     it('should reject when finished and status is rejected', function (done) {
@@ -153,38 +154,43 @@ describe('Transaction Controller', function () {
       })
 
       txController.newUnapprovedTransaction(txParams)
-      .catch((err) => {
-        if (err.message === 'Nifty Wallet Tx Signature: User denied transaction signature.') done()
-        else done(err)
-      })
+        .catch((err) => {
+          if (err.message === 'MetaMask Tx Signature: User denied transaction signature.') {
+            done()
+          } else {
+            done(err)
+          }
+        })
     })
   })
 
   describe('#addUnapprovedTransaction', function () {
     const selectedAddress = '0x1678a085c290ebd122dc42cba69373b5953b831d'
 
-    let getSelectedAddress
+    let getSelectedAddress, getPermittedAccounts
     beforeEach(function () {
       getSelectedAddress = sinon.stub(txController, 'getSelectedAddress').returns(selectedAddress)
+      getPermittedAccounts = sinon.stub(txController, 'getPermittedAccounts').returns([selectedAddress])
     })
 
     afterEach(function () {
       getSelectedAddress.restore()
+      getPermittedAccounts.restore()
     })
 
     it('should add an unapproved transaction and return a valid txMeta', function (done) {
       txController.addUnapprovedTransaction({ from: selectedAddress })
-      .then((txMeta) => {
-        assert(('id' in txMeta), 'should have a id')
-        assert(('time' in txMeta), 'should have a time stamp')
-        assert(('metamaskNetworkId' in txMeta), 'should have a metamaskNetworkId')
-        assert(('txParams' in txMeta), 'should have a txParams')
-        assert(('history' in txMeta), 'should have a history')
+        .then((txMeta) => {
+          assert(('id' in txMeta), 'should have a id')
+          assert(('time' in txMeta), 'should have a time stamp')
+          assert(('metamaskNetworkId' in txMeta), 'should have a metamaskNetworkId')
+          assert(('txParams' in txMeta), 'should have a txParams')
+          assert(('history' in txMeta), 'should have a history')
 
-        const memTxMeta = txController.txStateManager.getTx(txMeta.id)
-        assert.deepEqual(txMeta, memTxMeta, `txMeta should be stored in txController after adding it\n  expected: ${txMeta} \n  got: ${memTxMeta}`)
-        done()
-      }).catch(done)
+          const memTxMeta = txController.txStateManager.getTx(txMeta.id)
+          assert.deepEqual(txMeta, memTxMeta, `txMeta should be stored in txController after adding it\n  expected: ${txMeta} \n  got: ${memTxMeta}`)
+          done()
+        }).catch(done)
     })
 
     it('should emit newUnapprovedTx event and pass txMeta as the first argument', function (done) {
@@ -194,25 +200,28 @@ describe('Transaction Controller', function () {
         done()
       })
       txController.addUnapprovedTransaction({ from: selectedAddress })
-      .catch(done)
+        .catch(done)
     })
 
     it('should fail if recipient is public', function (done) {
       txController.networkStore = new ObservableStore(1)
       txController.addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' })
-      .catch((err) => {
-        if (err.message === 'Recipient is a public account') done()
-        else done(err)
-      })
+        .catch((err) => {
+          if (err.message === 'Recipient is a public account') {
+            done()
+          } else {
+            done(err)
+          }
+        })
     })
 
     it('should fail if the from address isn\'t the selected address', function (done) {
-      txController.addUnapprovedTransaction({from: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2'})
-        .then(function () {
+      txController.addUnapprovedTransaction({ from: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' })
+        .then(() => {
           assert.fail('transaction should not have been added')
           done()
         })
-        .catch(function () {
+        .catch(() => {
           assert.ok('pass')
           done()
         })
@@ -224,7 +233,19 @@ describe('Transaction Controller', function () {
         done()
       })
       txController.addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' })
-      .catch(done)
+        .catch(done)
+    })
+
+    it('should fail if netId is loading', function (done) {
+      txController.networkStore = new ObservableStore('loading')
+      txController.addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' })
+        .catch((err) => {
+          if (err.message === 'MetaMask is having trouble connecting to the network') {
+            done()
+          } else {
+            done(err)
+          }
+        })
     })
   })
 

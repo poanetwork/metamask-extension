@@ -1,6 +1,6 @@
 const assert = require('assert')
 const sinon = require('sinon')
-const CachedBalancesController = require('../../../../app/scripts/controllers/cached-balances')
+import CachedBalancesController from '../../../../app/scripts/controllers/cached-balances'
 
 describe('CachedBalancesController', () => {
   describe('updateCachedBalances', () => {

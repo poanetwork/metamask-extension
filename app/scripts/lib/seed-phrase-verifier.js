@@ -1,5 +1,5 @@
-const KeyringController = require('eth-keychain-controller')
-const log = require('loglevel')
+import KeyringController from 'eth-keychain-controller'
+import log from 'loglevel'
 const { getDPath } = require('../../../old-ui/app/util')
 
 const seedPhraseVerifier = {
@@ -12,12 +12,13 @@ const seedPhraseVerifier = {
    * - The created accounts in the primary keyring are always the same.
    * - The keyring always creates the accounts in the same sequence.
    *
-   * @param {array} createdAccounts The accounts to restore
-   * @param {string} seedWords The seed words to verify
-   * @returns {Promise<void>} Promises undefined
+   * @param {array} createdAccounts - The accounts to restore
+   * @param {string} seedWords - The seed words to verify
+   * @returns {Promise<void>} - Promises undefined
    *
   */
   verifyAccounts (createdAccounts, seedWords, network) {
+
     return new Promise((resolve, reject) => {
 
       if (!createdAccounts || createdAccounts.length < 1) {
@@ -56,4 +57,4 @@ const seedPhraseVerifier = {
   },
 }
 
-module.exports = seedPhraseVerifier
+export default seedPhraseVerifier

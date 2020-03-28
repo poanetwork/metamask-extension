@@ -1,10 +1,10 @@
-const assert = require('assert')
-const nock = require('nock')
-const sinon = require('sinon')
-const ObservableStore = require('obs-store')
-const DetectTokensController = require('../../../../app/scripts/controllers/detect-tokens')
+import assert from 'assert'
+import nock from 'nock'
+import sinon from 'sinon'
+import ObservableStore from 'obs-store'
+import DetectTokensController from '../../../../app/scripts/controllers/detect-tokens'
 const NetworkController = require('../../../../app/scripts/controllers/network/network')
-const PreferencesController = require('../../../../app/scripts/controllers/preferences')
+import PreferencesController from '../../../../app/scripts/controllers/preferences'
 
 describe('DetectTokensController', () => {
   const sandbox = sinon.createSandbox()
@@ -89,8 +89,8 @@ describe('DetectTokensController', () => {
         .withArgs('0xBC86727E770de68B1060C91f6BB6945c73e10388')
         .returns(preferences.addToken('0xbc86727e770de68b1060c91f6bb6945c73e10388', 'XNK', 18, image, 1))
     await controller.detectNewTokens()
-    assert.deepEqual(preferences.store.getState().tokens, [{address: '0x0d262e5dc4a06a0f1c90ce79c7a60c09dfc884e4', decimals: 8, symbol: 'J8T', network: 1},
-        {address: '0xbc86727e770de68b1060c91f6bb6945c73e10388', decimals: 18, symbol: 'XNK', network: 1}])
+    assert.deepEqual(preferences.store.getState().tokens, [{address: '0x0d262e5dc4a06a0f1c90ce79c7a60c09dfc884e4', decimals: 8, symbol: 'J8T'},
+        {address: '0xbc86727e770de68b1060c91f6bb6945c73e10388', decimals: 18, symbol: 'XNK'}])
   })
 
   // todo: doesn't work

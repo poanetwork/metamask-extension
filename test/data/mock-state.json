@@ -1,5 +1,8 @@
 {
   "metamask": {
+    "featureFlags": {
+      "showIncomingTransactions": true
+    },
     "network": "4",
     "identities": {
       "0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc": {
@@ -11,6 +14,8 @@
         "name": "Test Account 2"
       }
     },
+    "cachedBalances": {},
+    "incomingTransactions": {},
     "unapprovedTxs": {
       "8393540981007587": {
         "id": 8393540981007587,
@@ -111,7 +116,9 @@
       "0x108cf70c7d384c552f42c07c41c0e1e46d77ea0d": 0.00039345803819379796,
       "0xd8f6a2ffb0fc5952d16c9768b71cfd35b6399aa5": 0.00008189274407698049
     },
+    "ticker": "ETH",
     "currentCurrency": "usd",
+    "nativeCurrency": "ETH",
     "conversionRate": 556.12,
     "addressBook": [
       {
@@ -124,6 +131,10 @@
     "unapprovedMsgCount": 0,
     "unapprovedPersonalMsgs": {},
     "unapprovedPersonalMsgCount": 0,
+    "unapprovedDecryptMsgs": {},
+    "unapprovedDecryptMsgCount": 0,
+    "unapprovedEncryptionPublicKeyMsgs": {},
+    "unapprovedEncryptionPublicKeyMsgCount": 0,
     "unapprovedTypedMessages": {},
     "unapprovedTypedMessagesCount": 0,
     "send": {

@@ -79,21 +79,7 @@ class ConnectHardwareForm extends Component {
   }
 
   onAccountChange = (account) => {
-    let selectedAcc = account.toString()
-    const selectedAccounts = this.state.selectedAccounts
-    if (!selectedAccounts.includes(selectedAcc)) {
-      selectedAccounts.push(selectedAcc)
-    } else {
-      const indToRemove = selectedAccounts.indexOf(selectedAcc)
-      selectedAccounts.splice(indToRemove, 1)
-      selectedAcc = selectedAccounts[selectedAccounts.length - 1]
-    }
-    const newState = {
-      selectedAccounts,
-      selectedAccount: selectedAcc,
-      error: null,
-    }
-    this.setState(newState)
+    this.setState({ selectedAccount: account.toString(), error: null })
   }
 
   onAccountRestriction = () => {
