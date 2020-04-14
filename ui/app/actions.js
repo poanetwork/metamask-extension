@@ -371,6 +371,7 @@ const actions = {
   getRequestAccountTabIds,
   setOpenMetamaskTabsIDs,
   getOpenMetamaskTabsIds,
+  isCreatedWithCorrectDPath,
   closeCurrentNotificationWindow,
   closeNotificationWindow,
 }
@@ -407,7 +408,12 @@ function tryUnlockMetamask (password, dPath) {
     })
       .then(() => {
         dispatch(actions.unlockSucceeded())
-        return forceUpdateMetamaskState(dispatch)
+        return updateMetamaskStateFromBackground()
+        .then(newState => {
+          newState = Object.assign(newState, {dPath: dPath})
+          dispatch(actions.updateMetamaskState(newState))
+          forceUpdateMetamaskState(dispatch)
+        })
       })
       .catch((err) => {
         log.error(err)
@@ -434,6 +440,21 @@ function tryUnlockMetamask (password, dPath) {
         dispatch(actions.hideLoadingIndication())
         return Promise.reject(err)
       })
+  }
+}
+
+function isCreatedWithCorrectDPath () {
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      background.isCreatedWithCorrectDPath((err, isCreatedWithCorrectDPath) => {
+        if (err) {
+          dispatch(actions.displayWarning(err.message))
+          return reject(err)
+        }
+
+        resolve(isCreatedWithCorrectDPath)
+      })
+    })
   }
 }
 
@@ -469,7 +490,7 @@ function confirmSeedWords () {
   }
 }
 
-function createNewVaultAndRestore (password, seed) {
+function createNewVaultAndRestore (password, seed, dPath) {
   return (dispatch) => {
     dispatch(actions.showLoadingIndication())
     log.debug(`background.createNewVaultAndRestore`)
@@ -480,7 +501,7 @@ function createNewVaultAndRestore (password, seed) {
           return reject(err)
         }
 
-        background.createNewVaultAndRestore(password, seed, (err) => {
+        background.createNewVaultAndRestore(password, seed, dPath, (err) => {
           if (err) {
             return reject(err)
           }
@@ -492,6 +513,11 @@ function createNewVaultAndRestore (password, seed) {
       .then(() => dispatch(actions.unMarkPasswordForgotten()))
       .then(() => {
         dispatch(actions.showAccountsPage())
+        updateMetamaskStateFromBackground()
+        .then(newState => {
+          newState = Object.assign(newState, {dPath: dPath})
+          dispatch(actions.updateMetamaskState(newState))
+        })
         dispatch(actions.hideLoadingIndication())
       })
       .catch(err => {
