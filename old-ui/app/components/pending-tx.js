@@ -165,7 +165,7 @@ class PendingTx extends Component {
         key: txMeta.id,
       }, [
         h(Toast.ToastComponent, {
-          isSuccess: false,
+          type: Toast.TOAST_TYPE_ERROR,
         }),
 
         h('form#pending-tx-form', {
