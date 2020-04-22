@@ -17,7 +17,7 @@ const addCustomToken = async (f, account1, account2) => {
         await f.waitUntilShowUp(screens.main.identicon)
         const tab = await f.waitUntilShowUp(screens.main.tokens.menu)
         await tab.click()
-        const addTokenButton = await f.waitUntilShowUp(screens.main.tokens.buttonAdd2)
+        const addTokenButton = await f.waitUntilShowUp(screens.main.tokens.buttonAdd)
         assert.equal(await addTokenButton.getText(), screens.main.tokens.buttonAddText)
         await f.click(addTokenButton)
         await f.delay(2000)
@@ -26,11 +26,13 @@ const addCustomToken = async (f, account1, account2) => {
       it('checks add token screen has correct title', async () => {
         const addTokenScreen = await f.waitUntilShowUp(screens.addToken.title)
         assert.equal(await addTokenScreen.getText(), screens.addToken.titleText)
+        await f.delay(2000)
       })
 
       it('adds token parameters', async () => {
         const tab = await f.waitUntilShowUp(screens.addToken.tab.custom, 30)
         if (!await f.waitUntilShowUp(screens.addToken.custom.fields.contractAddress)) await tab.click()
+        await f.delay(2000)
       })
 
       it('address input is displayed and has correct placeholder', async () => {
@@ -40,6 +42,7 @@ const addCustomToken = async (f, account1, account2) => {
 
       it('fill out address input', async () => {
         const tokenContractAddress = await f.waitUntilShowUp(screens.addToken.custom.fields.contractAddress)
+        await f.clearField(tokenContractAddress)
         await tokenContractAddress.sendKeys(tokenAddress)
         await f.delay(2000)
       })
@@ -76,7 +79,7 @@ const addCustomToken = async (f, account1, account2) => {
         await f.delay(2000)
         const title = await f.waitUntilCurrentUrl()
         console.log(title)
-        assert.equal(title.includes('https://blockscout.com/poa/sokol/tokens/'), true, 'blockscout wasn\'t opened')
+        assert.equal(title.includes('https://blockscout.com/poa/sokol/'), true, 'blockscout wasn\'t opened')
         await f.switchToFirstPage()
       })
     })
@@ -101,7 +104,7 @@ const addCustomToken = async (f, account1, account2) => {
       const title = await f.waitUntilCurrentUrl()
 
       console.log(title)
-      assert.equal(title.includes('https://blockscout.com/poa/sokol/tokens/'), true, 'blockscout wasn\'t opened')
+      assert.equal(title.includes('https://blockscout.com/poa/sokol/'), true, 'blockscout wasn\'t opened')
       await f.switchToFirstPage()
     })
 
@@ -166,15 +169,15 @@ const addCustomToken = async (f, account1, account2) => {
         assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
       })
 
-      it('token should not be displayed in RSK network', async () => {
-        await f.setProvider(NETWORKS.RSK)
-        assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
-      })
+      // it('token should not be displayed in RSK network', async () => {
+      //   await f.setProvider(NETWORKS.RSK)
+      //   assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
+      // })
 
-      it('token should not be displayed in RSK testnet', async () => {
-        await f.setProvider(NETWORKS.RSK_TESTNET)
-        assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
-      })
+      // it('token should not be displayed in RSK testnet', async () => {
+      //   await f.setProvider(NETWORKS.RSK_TESTNET)
+      //   assert.equal(await f.assertTokensNotDisplayed(), true, 'tokens are displayed')
+      // })
     })
 
     describe.skip('Custom tokens validation ', async () => {
@@ -210,15 +213,15 @@ const addCustomToken = async (f, account1, account2) => {
         assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in MAINNET')
       })
 
-      it('can not add inexistent token to RSK', async () => {
-        await f.setProvider(NETWORKS.RSK)
-        assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in RSK')
-      })
+      // it('can not add inexistent token to RSK', async () => {
+      //   await f.setProvider(NETWORKS.RSK)
+      //   assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in RSK')
+      // })
 
-      it('can not add inexistent token to RSK testnet', async () => {
-        await f.setProvider(NETWORKS.RSK_TESTNET)
-        assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in RSK testnet')
-      })
+      // it('can not add inexistent token to RSK testnet', async () => {
+      //   await f.setProvider(NETWORKS.RSK_TESTNET)
+      //   assert(await f.isDisabledAddInexistentToken(tokenAddress), true, 'can add inexistent token in RSK testnet')
+      // })
 
       it('can not add inexistent token to LOCALHOST network', async () => {
         await f.setProvider(NETWORKS.LOCALHOST)
