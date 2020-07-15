@@ -75,6 +75,7 @@ function reduceApp (state, action) {
     defaultHdPaths: {
       trezor: `m/44'/60'/0'/0`,
       ledger: `m/44'/60'/0'/0/0`,
+      dcent: `m/44'/60'/0'/0/0`,
     },
     customHdPaths: customHdPaths,
   }, state.appState)

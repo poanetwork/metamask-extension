@@ -57,10 +57,11 @@ import seedPhraseVerifier from './lib/seed-phrase-verifier'
 import log from 'loglevel'
 const TrezorKeyring = require('eth-trezor-keyring')
 const LedgerBridgeKeyring = require('eth-ledger-bridge-keyring')
+import DcentKeyring from 'eth-dcent-keyring'
 import EthQuery from 'eth-query'
 import nanoid from 'nanoid'
 const { importTypes } = require('../../old-ui/app/accounts/import/enums')
-const { LEDGER, TREZOR } = require('../../old-ui/app/components/connect-hardware/enum')
+const { LEDGER, TREZOR, DCENT } = require('../../old-ui/app/components/connect-hardware/enum')
 const { ifPOA, ifXDai, ifRSK, getNetworkID, getDPath, setDPath } = require('../../old-ui/app/util')
 const { GasPriceOracle } = require('gas-price-oracle')
 
@@ -204,7 +205,7 @@ module.exports = class MetamaskController extends EventEmitter {
     })
 
     // key mgmt
-    const additionalKeyrings = [TrezorKeyring, LedgerBridgeKeyring]
+    const additionalKeyrings = [TrezorKeyring, LedgerBridgeKeyring, DcentKeyring]
     this.keyringController = new KeyringController({
       keyringTypes: additionalKeyrings,
       initState: initState.KeyringController,
@@ -728,6 +729,9 @@ module.exports = class MetamaskController extends EventEmitter {
         break
       case LEDGER:
         keyringName = LedgerBridgeKeyring.type
+        break
+      case DCENT:
+        keyringName = DcentKeyring.type
         break
       default:
         throw new Error('MetamaskController:getKeyringForDevice - Unknown device')

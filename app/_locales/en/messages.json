@@ -749,7 +749,7 @@
     "description": "choice between creating or importing a new account"
   },
   "orderOneHere": {
-    "message": "Order a Trezor or Ledger and keep your funds in cold storage"
+    "message": "Order a Trezor, Ledger or D'CENT and keep your funds in cold storage"
   },
   "origin": {
     "message": "Origin"
