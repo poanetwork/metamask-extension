@@ -1,0 +1,93 @@
+name: Nifty Wallet CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  prep-deps-npm:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install npm 6 + deps via npm
+      run: |
+          sudo npm install -g npm@6.14.5 && npm install --no-save
+
+  test-lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install npm 6 + deps via npm
+      run: |
+          sudo npm install -g npm@6.14.5 && npm install --no-save
+    - name: lint
+      run: npm run lint
+
+  test-unit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install npm 6 + deps via npm
+      run: |
+          sudo npm install -g npm@6.14.5 && npm install --no-save
+    - name: test:coverage
+      run: npm run test:coverage
+
+  test-integration-flat-chrome:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install npm 6 + deps via npm
+      run: |
+          sudo npm install -g npm@6.14.5 && npm install --no-save
+    - name: test:integration:flat
+      run: npm run test:flat
+      env:
+        browsers: '["Chrome"]'
+
+  test-e2e-chrome:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install npm 6 + deps via npm
+      run: |
+          sudo npm install -g npm@6.14.5 && npm install --no-save
+    - name: build:dist
+      run: NODE_ENV='production' npm run dist
+    - name: build:debug
+      run: find dist/ -type f -exec md5sum {} \; | sort -k 2
+    - name: Install Chromedriver latest version
+      run: |
+          # sudo apt-get update
+          # sudo apt-get install lsb-release libappindicator3-1
+          curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome.deb
+          sudo sed -i 's|HERE/chrome"|HERE/chrome" --no-sandbox|g' /opt/google/chrome/google-chrome
+          rm google-chrome.deb
+    - name: test:e2e:chrome
+      run: npm run test:e2e:chrome
