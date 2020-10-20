@@ -2,6 +2,8 @@
 
 ## Current Master
 
+## 5.1.4 Tue Oct 20 2020
+
 - [#416](https://github.com/poanetwork/nifty-wallet/pull/416) - Change Copy token address text
 - [#415](https://github.com/poanetwork/nifty-wallet/pull/415) - Fix broken Blockscout's token transfers page link
 
