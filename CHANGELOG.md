@@ -2,6 +2,9 @@
 
 ## Current Master
 
+- [#416](https://github.com/poanetwork/nifty-wallet/pull/416) - Change Copy token address text
+- [#415](https://github.com/poanetwork/nifty-wallet/pull/415) - Fix broken Blockscout's token transfers page link
+
 ## 5.1.3 Tue Aug 04 2020
 
 - [#407](https://github.com/poanetwork/nifty-wallet/pull/407) - Remove excess extension permissions: webRequest

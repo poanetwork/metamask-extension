@@ -138,7 +138,7 @@ class TokenCell extends Component {
               copyToClipboard(checkSumAddress)
             }}
         >
-          Copy address to clipboard
+          Copy token address to clipboard
         </DropdownMenuItem>
         <DropdownMenuItem
             closeMenu={() => {}}
