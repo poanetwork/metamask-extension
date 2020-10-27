@@ -1961,8 +1961,12 @@ module.exports = class MetamaskController extends EventEmitter {
 
     const gasPrice = recentBlock && recentBlock.minimumGasPrice && recentBlock.minimumGasPrice.toString()
 
-    if (gasPrice !== '0x' && gasPrice !== '0x0' && gasPrice !== '') {
-      return gasPrice
+    const gasPriceInt = parseInt(gasPrice, 16)
+    // https://forum.poa.network/t/gasprice-lower-than-minimumgasprice-in-rsk/4034
+    const gasPriceMargin = '0x' + parseInt(gasPriceInt * 1.1).toString(16)
+
+    if (!isNaN(gasPriceInt)) {
+      return gasPriceMargin
     } else {
       return '0x' + GWEI_BN.toString(16)
     }
