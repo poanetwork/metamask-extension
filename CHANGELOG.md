@@ -2,6 +2,10 @@
 
 ## Current Master
 
+## 5.1.6 Tue Oct 27 2020
+
+- [#419](https://github.com/poanetwork/nifty-wallet/pull/419) - Add 10% margin for gas price in case of RSK chains
+
 ## 5.1.5 Tue Oct 20 2020
 
 - [#416](https://github.com/poanetwork/nifty-wallet/pull/416) - Change Copy token address text
