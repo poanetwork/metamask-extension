@@ -190,7 +190,7 @@ describe('MetaMaskController', function () {
       metamaskController.recentBlocksController = recentBlocksController1
 
       const gasPrice = await metamaskController.getGasPrice()
-      assert.equal(gasPrice, '0x387ee40', 'takes the min gas price from the latest block')
+      assert.equal(gasPrice, '0x3e252e0', 'takes the min gas price from the latest block')
 
       metamaskController.recentBlocksController = realRecentBlocksController
     })
