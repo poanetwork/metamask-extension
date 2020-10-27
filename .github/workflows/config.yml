@@ -61,6 +61,11 @@ jobs:
     - name: Install npm 6 + deps via npm
       run: |
           sudo npm install -g npm@6.14.5 && npm install --no-save
+    - name: Enable Chrome 
+      run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
+          xvfb-run --auto-servernum npm test
     - name: test:integration:flat
       run: npm run test:flat
       env:
@@ -77,6 +82,11 @@ jobs:
     - name: Install npm 6 + deps via npm
       run: |
           sudo npm install -g npm@6.14.5 && npm install --no-save
+    - name: Enable Chrome 
+      run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
+          xvfb-run --auto-servernum npm test
     - name: build:dist
       run: NODE_ENV='production' npm run dist
     - name: build:debug
