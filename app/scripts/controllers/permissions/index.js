@@ -6,7 +6,7 @@ import { CapabilitiesController as RpcCap } from 'rpc-cap'
 import { ethErrors } from 'eth-json-rpc-errors'
 import { cloneDeep } from 'lodash'
 
-import createMethodMiddleware from './methodMiddleware'
+import createMethodMiddleware from './permissionsMethodMiddleware'
 import PermissionsLogController from './permissionsLog'
 
 // Methods that do not require any permissions to use:
@@ -102,11 +102,14 @@ export class PermissionsController {
    */
   getAccounts (origin) {
     // return new Promise((resolve, _) => {
-
     //   const req = { method: 'eth_accounts' }
     //   const res = {}
     //   this.permissions.providerMiddlewareFunction(
-    //     { origin }, req, res, () => {}, _end
+    //     { origin },
+    //     req,
+    //     res,
+    //     () => undefined,
+    //     _end,
     //   )
 
     //   function _end () {

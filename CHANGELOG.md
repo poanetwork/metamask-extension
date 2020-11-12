@@ -2,6 +2,8 @@
 
 ## Current Master
 
+- [#426](https://github.com/poanetwork/nifty-wallet/pull/426) - Update inpage provider: add ethereum.request method support
+
 ## 5.1.6 Tue Oct 27 2020
 
 - [#419](https://github.com/poanetwork/nifty-wallet/pull/419) - Add 10% margin for gas price in case of RSK chains
