@@ -16,6 +16,9 @@ import ethNetProps from 'eth-net-props'
 import parse from 'url-parse'
 const networks = { networkList: {} }
 const { isKnownProvider } = require('../../../../old-ui/app/util')
+import {
+  NETWORK_TYPE_TO_ID_MAP,
+} from './enums'
 
 const {
   ROPSTEN,
@@ -153,6 +156,11 @@ module.exports = class NetworkController extends EventEmitter {
         this.setNetworkState(network, type)
       }
     })
+  }
+
+  getCurrentChainId () {
+    const { type, chainId: configChainId } = this.getProviderConfig()
+    return NETWORK_TYPE_TO_ID_MAP[type] ? NETWORK_TYPE_TO_ID_MAP[type].chainId : configChainId
   }
 
   setRpcTarget (rpcTarget, chainId, ticker = 'ETH', nickname = '', rpcPrefs) {
