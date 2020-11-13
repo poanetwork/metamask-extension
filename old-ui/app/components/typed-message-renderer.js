@@ -1,70 +1,98 @@
-const Component = require('react').Component
-const h = require('react-hyperscript')
-const inherits = require('util').inherits
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 const extend = require('xtend')
-const { ObjectInspector } = require('react-inspector')
+import classnames from 'classnames'
 
-module.exports = TypedMessageRenderer
-
-inherits(TypedMessageRenderer, Component)
-function TypedMessageRenderer () {
-  Component.call(this)
-}
-
-TypedMessageRenderer.prototype.render = function () {
-  const props = this.props
-  const { value, version, style } = props
-  let text
-  switch (version) {
-    case 'V1':
-      text = renderTypedData(value)
-      break
-    case 'V3':
-      text = renderTypedDataV3(value)
-      break
+class TypedMessageRenderer extends Component {
+  static propTypes = {
+    value: PropTypes.object,
+    version: PropTypes.string,
+    style: PropTypes.object,
   }
 
-  const defaultStyle = extend({
-    width: '100%',
-    maxHeight: '210px',
-    resize: 'none',
-    border: 'none',
-    background: '#542289',
-    color: 'white',
-    padding: '20px',
-    overflow: 'scroll',
-  }, style)
+  renderTypedData (values) {
+    return values.map(function (value, ind) {
+      let v = value.value
+      if (typeof v === 'boolean') {
+        v = v.toString()
+      }
+      return (
+        <div key={ind}>
+          <strong style={{display: 'block', fontWeight: 'bold'}}>{String(value.name) + ':'}</strong>
+          <div>{v}</div>
+        </div
+        >)
+    })
+  }
 
-  return (
-    h('div.font-small', {
-      style: defaultStyle,
-    }, text)
-  )
-}
+  renderTypedDataV3V4 (values) {
+    const { message } = JSON.parse(values)
+     return [
+      message ? <div>
+          <h1>Message</h1>
+          {this.renderNode(message)}
+        </div> : '',
+    ]
+  }
 
-function renderTypedData (values) {
-  return values.map(function (value) {
-    let v = value.value
-    if (typeof v === 'boolean') {
-      v = v.toString()
+  renderNode (data) {
+    return (
+      <div className="signature-request-message--node">
+        {Object.entries(data).map(([label, value], i) => (
+          <div
+            className={classnames('signature-request-message--node', {
+              'signature-request-message--node-leaf':
+                typeof value !== 'object' || value === null,
+            })}
+            key={i}
+          >
+            <span className="signature-request-message--node-label">
+              {label}:{' '}
+            </span>
+            {typeof value === 'object' && value !== null ? (
+              this.renderNode(value)
+            ) : (
+              <span className="signature-request-message--node-value">
+                {value}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  render () {
+    const props = this.props
+    const { value, version, style } = props
+    let text
+    switch (version) {
+      case 'V1':
+        text = this.renderTypedData(value)
+        break
+      case 'V3':
+      case 'V4':
+        text = this.renderTypedDataV3V4(value)
+        break
     }
-    return h('div', {}, [
-      h('strong', {style: {display: 'block', fontWeight: 'bold'}}, String(value.name) + ':'),
-      h('div', {}, v),
-    ])
-  })
+
+    const defaultStyle = extend({
+      width: '100%',
+      maxHeight: '210px',
+      resize: 'none',
+      border: 'none',
+      background: '#542289',
+      color: 'white',
+      padding: '20px',
+      overflow: 'auto',
+    }, style)
+
+    return (
+      <div className="font-small" style={defaultStyle}>
+        {text}
+      </div>
+    )
+  }
 }
 
-function renderTypedDataV3 (values) {
-  const { domain, message } = JSON.parse(values)
-   return [
-    domain ? h('div', [
-      h('h1', 'Domain'),
-      h(ObjectInspector, { data: domain, expandLevel: 1, name: 'domain' }),
-    ]) : '',
-    message ? h('div', [
-      h('h1', 'Message'),
-      h(ObjectInspector, { data: message, expandLevel: 1, name: 'message' }),
-    ]) : '',
-  ]
-}
+module.exports = TypedMessageRenderer

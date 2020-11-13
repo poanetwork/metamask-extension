@@ -2,10 +2,12 @@ import EventEmitter from 'events'
 import ObservableStore from 'obs-store'
 import ethUtil from 'ethereumjs-util'
 import { ethErrors } from 'eth-json-rpc-errors'
-import createId from './random-id'
-
-const hexRe = /^[0-9A-Fa-f]+$/g
 import log from 'loglevel'
+import { addHexPrefix } from './util'
+import createId from './random-id'
+import { MESSAGE_TYPE } from './enums'
+
+const hexRe = /^[0-9A-Fa-f]+$/gu
 
 /**
  * Represents, and contains data about, an 'eth_decrypt' type decryption request. These are created when a
@@ -29,10 +31,10 @@ export default class DecryptMessageManager extends EventEmitter {
    * Controller in charge of managing - storing, adding, removing, updating - DecryptMessage.
    *
    * @typedef {Object} DecryptMessageManager
-   * @property {Object} memStore The observable store where DecryptMessage are saved with persistance.
+   * @property {Object} memStore The observable store where DecryptMessage are saved.
    * @property {Object} memStore.unapprovedDecryptMsgs A collection of all DecryptMessages in the 'unapproved' state
-   * @property {number} memStore.unapprovedDecryptMsgCount The count of all DecryptMessages in this.memStore.unapprobedMsgs
-   * @property {array} messages Holds all messages that have been created by this DecryptMessageManager
+   * @property {number} memStore.unapprovedDecryptMsgCount The count of all DecryptMessages in this.memStore.unapprovedDecryptMsgs
+   * @property {Array} messages Holds all messages that have been created by this DecryptMessageManager
    *
    */
   constructor () {
@@ -62,9 +64,11 @@ export default class DecryptMessageManager extends EventEmitter {
    *
    */
   getUnapprovedMsgs () {
-    return this.messages.filter((msg) => msg.status === 'unapproved')
+    return this.messages
+      .filter((msg) => msg.status === 'unapproved')
       .reduce((result, msg) => {
-        result[msg.id] = msg; return result
+        result[msg.id] = msg
+        return result
       }, {})
   }
 
@@ -73,27 +77,41 @@ export default class DecryptMessageManager extends EventEmitter {
    * the new DecryptMessage to this.messages, and to save the unapproved DecryptMessages from that list to
    * this.memStore.
    *
-   * @param {Object} msgParams The params for the eth_decrypt call to be made after the message is approved.
-   * @param {Object} req (optional) The original request object possibly containing the origin
+   * @param {Object} msgParams - The params for the eth_decrypt call to be made after the message is approved.
+   * @param {Object} [req] - The original request object possibly containing the origin
    * @returns {Promise<Buffer>} The raw decrypted message contents
    *
    */
   addUnapprovedMessageAsync (msgParams, req) {
     return new Promise((resolve, reject) => {
       if (!msgParams.from) {
-        reject(new Error('MetaMask Message for Decryption: from field is required.'))
+        reject(new Error('MetaMask Decryption: from field is required.'))
+        return
       }
       const msgId = this.addUnapprovedMessage(msgParams, req)
       this.once(`${msgId}:finished`, (data) => {
         switch (data.status) {
           case 'decrypted':
-            return resolve(data.rawData)
+            resolve(data.rawData)
+            return
           case 'rejected':
-            return reject(ethErrors.provider.userRejectedRequest('MetaMask Message for Decryption: User denied message decryption.'))
+            reject(
+              ethErrors.provider.userRejectedRequest(
+                'MetaMask Decryption: User denied message decryption.',
+              ),
+            )
+            return
           case 'errored':
-            return reject(new Error('This message cannot be decrypted'))
+            reject(new Error('This message cannot be decrypted'))
+            return
           default:
-            return reject(new Error(`MetaMask Message for Decryption: Unknown problem: ${JSON.stringify(msgParams)}`))
+            reject(
+              new Error(
+                `MetaMask Decryption: Unknown problem: ${JSON.stringify(
+                  msgParams,
+                )}`,
+              ),
+            )
         }
       })
     })
@@ -104,27 +122,31 @@ export default class DecryptMessageManager extends EventEmitter {
    * the new DecryptMessage to this.messages, and to save the unapproved DecryptMessages from that list to
    * this.memStore.
    *
-   * @param {Object} msgParams The params for the eth_decryptMsg call to be made after the message is approved.
-   * @param {Object} req (optional) The original request object possibly containing the origin
+   * @param {Object} msgParams - The params for the eth_decryptMsg call to be made after the message is approved.
+   * @param {Object} [req] - The original request object possibly containing the origin
    * @returns {number} The id of the newly created DecryptMessage.
    *
    */
   addUnapprovedMessage (msgParams, req) {
-    log.debug(`DecryptMessageManager addUnapprovedMessage: ${JSON.stringify(msgParams)}`)
+    log.debug(
+      `DecryptMessageManager addUnapprovedMessage: ${JSON.stringify(
+        msgParams,
+      )}`,
+    )
     // add origin from request
     if (req) {
       msgParams.origin = req.origin
     }
     msgParams.data = this.normalizeMsgData(msgParams.data)
     // create txData obj with parameters and meta data
-    const time = (new Date()).getTime()
+    const time = new Date().getTime()
     const msgId = createId()
     const msgData = {
       id: msgId,
-      msgParams: msgParams,
-      time: time,
+      msgParams,
+      time,
       status: 'unapproved',
-      type: 'eth_decrypt',
+      type: MESSAGE_TYPE.ETH_DECRYPT,
     }
     this.addMsg(msgData)
 
@@ -247,12 +269,18 @@ export default class DecryptMessageManager extends EventEmitter {
   _setMsgStatus (msgId, status) {
     const msg = this.getMsg(msgId)
     if (!msg) {
-      throw new Error('DecryptMessageManager - Message not found for id: "${msgId}".')
+      throw new Error(
+        `DecryptMessageManager - Message not found for id: "${msgId}".`,
+      )
     }
     msg.status = status
     this._updateMsg(msg)
     this.emit(`${msgId}:${status}`, msg)
-    if (status === 'rejected' || status === 'decrypted' || status === 'errored') {
+    if (
+      status === 'rejected' ||
+      status === 'decrypted' ||
+      status === 'errored'
+    ) {
       this.emit(`${msgId}:finished`, msg)
     }
   }
@@ -262,7 +290,7 @@ export default class DecryptMessageManager extends EventEmitter {
    * unapprovedDecryptMsgs index to storage via this._saveMsgList
    *
    * @private
-   * @param {msg} DecryptMessage A DecryptMessage that will replace an existing DecryptMessage (with the same
+   * @param {DecryptMessage} msg - A DecryptMessage that will replace an existing DecryptMessage (with the same
    * id) in this.messages
    *
    */
@@ -284,7 +312,10 @@ export default class DecryptMessageManager extends EventEmitter {
   _saveMsgList () {
     const unapprovedDecryptMsgs = this.getUnapprovedMsgs()
     const unapprovedDecryptMsgCount = Object.keys(unapprovedDecryptMsgs).length
-    this.memStore.updateState({ unapprovedDecryptMsgs, unapprovedDecryptMsgCount })
+    this.memStore.updateState({
+      unapprovedDecryptMsgs,
+      unapprovedDecryptMsgCount,
+    })
     this.emit('updateBadge')
   }
 
@@ -299,7 +330,7 @@ export default class DecryptMessageManager extends EventEmitter {
     try {
       const stripped = ethUtil.stripHexPrefix(data)
       if (stripped.match(hexRe)) {
-        return ethUtil.addHexPrefix(stripped)
+        return addHexPrefix(stripped)
       }
     } catch (e) {
       log.debug(`Message was not hex encoded, interpreting as utf8.`)
@@ -307,5 +338,4 @@ export default class DecryptMessageManager extends EventEmitter {
 
     return ethUtil.bufferToHex(Buffer.from(data, 'utf8'))
   }
-
 }

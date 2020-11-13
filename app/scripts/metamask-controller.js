@@ -284,7 +284,11 @@ module.exports = class MetamaskController extends EventEmitter {
     this.personalMessageManager = new PersonalMessageManager()
     this.decryptMessageManager = new DecryptMessageManager()
     this.encryptionPublicKeyManager = new EncryptionPublicKeyManager()
-    this.typedMessageManager = new TypedMessageManager({ networkController: this.networkController })
+    this.typedMessageManager = new TypedMessageManager({
+      getCurrentChainId: this.networkController.getCurrentChainId.bind(
+        this.networkController,
+      ),
+    })
 
     // ensure isClientOpenAndUnlocked is updated when memState updates
     this.on('update', (memState) => {
@@ -1694,10 +1698,6 @@ module.exports = class MetamaskController extends EventEmitter {
     // engine.push(this.permissionsController.createMiddleware({ origin, extensionId }))
     // watch asset
     engine.push(this.preferencesController.requestWatchAsset.bind(this.preferencesController))
-    // sign typed data middleware
-    engine.push(this.createTypedDataMiddleware('eth_signTypedData', 'V1').bind(this))
-    engine.push(this.createTypedDataMiddleware('eth_signTypedData_v1', 'V1').bind(this))
-    engine.push(this.createTypedDataMiddleware('eth_signTypedData_v3', 'V3', true).bind(this))
     // forward to metamask primary provider
     engine.push(providerAsMiddleware(provider))
     return engine
@@ -2189,35 +2189,35 @@ module.exports = class MetamaskController extends EventEmitter {
     this.tokenRatesController.isActive = active
   }
 
- /**
-  * Creates RPC engine middleware for processing eth_signTypedData requests
-  *
-  * @param {Object} req - request object
-  * @param {Object} res - response object
-  * @param {Function} - next
-  * @param {Function} - end
-  */
-  createTypedDataMiddleware (methodName, version, reverse) {
-    return async (req, res, next, end) => {
-      const { method, params } = req
-      if (method === methodName) {
-        const promise = this.typedMessageManager.addUnapprovedMessageAsync({
-          data: reverse ? params[1] : params[0],
-          from: reverse ? params[0] : params[1],
-        }, req, version)
-        this.sendUpdate()
-        this.opts.showUnconfirmedMessage()
-        try {
-          res.result = await promise
-          end()
-        } catch (error) {
-          end(error)
-        }
-      } else {
-        next()
-      }
-    }
-  }
+//  /**
+//   * Creates RPC engine middleware for processing eth_signTypedData requests
+//   *
+//   * @param {Object} req - request object
+//   * @param {Object} res - response object
+//   * @param {Function} - next
+//   * @param {Function} - end
+//   */
+//   createTypedDataMiddleware (methodName, version, reverse) {
+//     return async (req, res, next, end) => {
+//       const { method, params } = req
+//       if (method === methodName) {
+//         const promise = this.typedMessageManager.addUnapprovedMessageAsync({
+//           data: reverse ? params[1] : params[0],
+//           from: reverse ? params[0] : params[1],
+//         }, req, version)
+//         this.sendUpdate()
+//         this.opts.showUnconfirmedMessage()
+//         try {
+//           res.result = await promise
+//           end()
+//         } catch (error) {
+//           end(error)
+//         }
+//       } else {
+//         next()
+//       }
+//     }
+//   }
 
     /**
    * Adds a domain to the PhishingController whitelist
