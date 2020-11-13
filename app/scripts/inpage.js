@@ -39,8 +39,6 @@ import MetamaskInpageProvider from 'nifty-wallet-inpage-provider'
 // TODO:deprecate:Q1-2020
 import 'web3/dist/web3.min.js'
 
-import setupDappAutoReload from './lib/auto-reload.js'
-
 restoreContextAfterImports()
 
 log.setDefaultLevel(process.env.METAMASK_DEBUG ? 'debug' : 'warn')
@@ -82,8 +80,6 @@ web3.setProvider = function () {
 log.debug('Nifty Wallet - injected web3')
 
 proxiedInpageProvider._web3Ref = web3.eth
-
-setupDappAutoReload(web3, inpageProvider.publicConfigStore)
 
 //
 // end deprecate:Q1-2020
