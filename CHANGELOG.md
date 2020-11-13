@@ -4,6 +4,7 @@
 
 - [#427](https://github.com/poanetwork/nifty-wallet/pull/427) - Fix support of eth_signTypedData_v4 (eip-712)
 - [#426](https://github.com/poanetwork/nifty-wallet/pull/426) - Update inpage provider: add ethereum.request method support
+- [#411](https://github.com/poanetwork/nifty-wallet/pull/411) - GitHub actions CI
 
 ## 5.1.6 Tue Oct 27 2020
 
