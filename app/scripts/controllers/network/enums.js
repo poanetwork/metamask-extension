@@ -40,6 +40,33 @@ const CLASSIC_CODE = 61
 const RSK_CODE = 30
 const RSK_TESTNET_CODE = 31
 
+
+const MAINNET_NETWORK_ID = '1'
+const ROPSTEN_NETWORK_ID = '3'
+const RINKEBY_NETWORK_ID = '4'
+const GOERLI_NETWORK_ID = '5'
+const KOVAN_NETWORK_ID = '42'
+const POA_NETWORK_ID = '99'
+const DAI_NETWORK_ID = '100'
+const POA_SOKOL_NETWORK_ID = '77'
+const CLASSIC_NETWORK_ID = '61'
+const RSK_NETWORK_ID = '30'
+const RSK_TESTNET_NETWORK_ID = '31'
+
+const NETWORK_TYPE_TO_ID_MAP = {
+  [ROPSTEN]: { networkId: ROPSTEN_NETWORK_ID, chainId: ROPSTEN_CHAINID },
+  [RINKEBY]: { networkId: RINKEBY_NETWORK_ID, chainId: RINKEBY_CHAINID },
+  [KOVAN]: { networkId: KOVAN_NETWORK_ID, chainId: KOVAN_CHAINID },
+  [GOERLI_TESTNET]: { networkId: GOERLI_NETWORK_ID, chainId: GOERLI_TESTNET_CHAINID },
+  [MAINNET]: { networkId: MAINNET_NETWORK_ID, chainId: MAINNET_CHAINID },
+  [POA]: { networkId: POA_NETWORK_ID, chainId: POA_CHAINID },
+  [DAI]: { networkId: DAI_NETWORK_ID, chainId: DAI_CHAINID },
+  [POA_SOKOL]: { networkId: POA_SOKOL_NETWORK_ID, chainId: POA_SOKOL_CHAINID },
+  [CLASSIC]: { networkId: CLASSIC_NETWORK_ID, chainId: CLASSIC_CHAINID },
+  [RSK]: { networkId: RSK_NETWORK_ID, chainId: RSK_CHAINID },
+  [RSK_TESTNET]: { networkId: RSK_TESTNET_NETWORK_ID, chainId: RSK_TESTNET_CHAINID },
+}
+
 const POA_DISPLAY_NAME = 'POA'
 const DAI_DISPLAY_NAME = 'xDai'
 const POA_SOKOL_DISPLAY_NAME = 'Sokol Testnet'
@@ -141,4 +168,5 @@ module.exports = {
   DROPDOWN_RSK_TESTNET_DISPLAY_NAME,
   chainTypes,
   customDPaths,
+  NETWORK_TYPE_TO_ID_MAP,
 }

@@ -3,6 +3,7 @@ import ObservableStore from 'obs-store'
 import ethUtil from 'ethereumjs-util'
 import { ethErrors } from 'eth-json-rpc-errors'
 import createId from './random-id'
+import { MESSAGE_TYPE } from './enums'
 
 /**
  * Represents, and contains data about, an 'eth_sign' type signature request. These are created when a signature for
@@ -23,16 +24,14 @@ import createId from './random-id'
  */
 
 export default class MessageManager extends EventEmitter {
-
   /**
    * Controller in charge of managing - storing, adding, removing, updating - Messages.
    *
    * @typedef {Object} MessageManager
-   * @param {Object} opts @deprecated
    * @property {Object} memStore The observable store where Messages are saved.
    * @property {Object} memStore.unapprovedMsgs A collection of all Messages in the 'unapproved' state
-   * @property {number} memStore.unapprovedMsgCount The count of all Messages in this.memStore.unapprobedMsgs
-   * @property {array} messages Holds all messages that have been created by this MessageManager
+   * @property {number} memStore.unapprovedMsgCount The count of all Messages in this.memStore.unapprovedMsgs
+   * @property {Array} messages Holds all messages that have been created by this MessageManager
    *
    */
   constructor () {
@@ -47,7 +46,7 @@ export default class MessageManager extends EventEmitter {
   /**
    * A getter for the number of 'unapproved' Messages in this.messages
    *
-   * @returns {number} - The number of 'unapproved' Messages in this.messages
+   * @returns {number} The number of 'unapproved' Messages in this.messages
    *
    */
   get unapprovedMsgCount () {
@@ -57,13 +56,15 @@ export default class MessageManager extends EventEmitter {
   /**
    * A getter for the 'unapproved' Messages in this.messages
    *
-   * @returns {Object} - An index of Message ids to Messages, for all 'unapproved' Messages in this.messages
+   * @returns {Object} An index of Message ids to Messages, for all 'unapproved' Messages in this.messages
    *
    */
   getUnapprovedMsgs () {
-    return this.messages.filter((msg) => msg.status === 'unapproved')
+    return this.messages
+      .filter((msg) => msg.status === 'unapproved')
       .reduce((result, msg) => {
-        result[msg.id] = msg; return result
+        result[msg.id] = msg
+        return result
       }, {})
   }
 
@@ -72,8 +73,8 @@ export default class MessageManager extends EventEmitter {
    * new Message to this.messages, and to save the unapproved Messages from that list to this.memStore.
    *
    * @param {Object} msgParams - The params for the eth_sign call to be made after the message is approved.
-   * @param {Object} req (optional) The original request object possibly containing the origin
-   * @returns {promise} - after signature has been
+   * @param {Object} [req] - The original request object possibly containing the origin
+   * @returns {promise} after signature has been
    *
    */
   addUnapprovedMessageAsync (msgParams, req) {
@@ -85,9 +86,19 @@ export default class MessageManager extends EventEmitter {
           case 'signed':
             return resolve(data.rawSig)
           case 'rejected':
-            return reject(ethErrors.provider.userRejectedRequest('Nifty Wallet Message Signature: User denied message signature.'))
+            return reject(
+              ethErrors.provider.userRejectedRequest(
+                'Nifty Wallet Message Signature: User denied message signature.',
+              ),
+            )
           default:
-            return reject(new Error(`Nifty Wallet Message Signature: Unknown problem: ${JSON.stringify(msgParams)}`))
+            return reject(
+              new Error(
+                `Nifty Wallet Message Signature: Unknown problem: ${JSON.stringify(
+                  msgParams,
+                )}`,
+              ),
+            )
         }
       })
     })
@@ -98,8 +109,8 @@ export default class MessageManager extends EventEmitter {
    * new Message to this.messages, and to save the unapproved Messages from that list to this.memStore.
    *
    * @param {Object} msgParams - The params for the eth_sign call to be made after the message is approved.
-   * @param {Object} req (optional) The original request object where the origin may be specificied
-   * @returns {number} - The id of the newly created message.
+   * @param {Object} [req] - The original request object where the origin may be specified
+   * @returns {number} The id of the newly created message.
    *
    */
   addUnapprovedMessage (msgParams, req) {
@@ -109,14 +120,14 @@ export default class MessageManager extends EventEmitter {
     }
     msgParams.data = normalizeMsgData(msgParams.data)
     // create txData obj with parameters and meta data
-    const time = (new Date()).getTime()
+    const time = new Date().getTime()
     const msgId = createId()
     const msgData = {
       id: msgId,
-      msgParams: msgParams,
-      time: time,
+      msgParams,
+      time,
       status: 'unapproved',
-      type: 'eth_sign',
+      type: MESSAGE_TYPE.ETH_SIGN,
     }
     this.addMsg(msgData)
 
@@ -141,7 +152,7 @@ export default class MessageManager extends EventEmitter {
    * Returns a specified Message.
    *
    * @param {number} msgId - The id of the Message to get
-   * @returns {Message|undefined} - The Message with the id that matches the passed msgId, or undefined if no Message has that id.
+   * @returns {Message|undefined} The Message with the id that matches the passed msgId, or undefined if no Message has that id.
    *
    */
   getMsg (msgId) {
@@ -154,7 +165,7 @@ export default class MessageManager extends EventEmitter {
    *
    * @param {Object} msgParams - The msgParams to be used when eth_sign is called, plus data added by MetaMask.
    * @param {Object} msgParams.metamaskId Added to msgParams for tracking and identification within MetaMask.
-   * @returns {Promise<object>} - Promises the msgParams object with metamaskId removed.
+   * @returns {Promise<object>} Promises the msgParams object with metamaskId removed.
    *
    */
   approveMessage (msgParams) {
@@ -191,7 +202,7 @@ export default class MessageManager extends EventEmitter {
    * Removes the metamaskId property from passed msgParams and returns a promise which resolves the updated msgParams
    *
    * @param {Object} msgParams - The msgParams to modify
-   * @returns {Promise<object>} - Promises the msgParams with the metamaskId property removed
+   * @returns {Promise<object>} Promises the msgParams with the metamaskId property removed
    *
    */
   prepMsgForSigning (msgParams) {
@@ -224,7 +235,7 @@ export default class MessageManager extends EventEmitter {
   _setMsgStatus (msgId, status) {
     const msg = this.getMsg(msgId)
     if (!msg) {
-      throw new Error('MessageManager - Message not found for id: "${msgId}".')
+      throw new Error(`MessageManager - Message not found for id: "${msgId}".`)
     }
     msg.status = status
     this._updateMsg(msg)
@@ -263,22 +274,20 @@ export default class MessageManager extends EventEmitter {
     this.memStore.updateState({ unapprovedMsgs, unapprovedMsgCount })
     this.emit('updateBadge')
   }
-
 }
 
 /**
  * A helper function that converts raw buffer data to a hex, or just returns the data if it is already formatted as a hex.
  *
  * @param {any} data - The buffer data to convert to a hex
- * @returns {string} - A hex string conversion of the buffer data
+ * @returns {string} A hex string conversion of the buffer data
  *
  */
 function normalizeMsgData (data) {
   if (data.slice(0, 2) === '0x') {
     // data is already hex
     return data
-  } else {
-    // data is unicode, convert to hex
-    return ethUtil.bufferToHex(Buffer.from(data, 'utf8'))
   }
+  // data is unicode, convert to hex
+  return ethUtil.bufferToHex(Buffer.from(data, 'utf8'))
 }
