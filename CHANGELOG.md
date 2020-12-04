@@ -1,5 +1,7 @@
 # Changelog
 
+- [#429](https://github.com/poanetwork/nifty-wallet/pull/429) - Allow Ledger signMessage method
+
 ## Current Master
 
 ## 5.2.0 Fri Nov 13 2020
