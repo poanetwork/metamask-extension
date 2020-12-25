@@ -10,9 +10,11 @@ import Select from 'react-select'
 import actions from '../../../../ui/app/actions'
 import abi from 'web3-eth-abi'
 import Web3 from 'web3'
+import Web3EthContract from 'web3-eth-contract'
 import copyToClipboard from 'copy-to-clipboard'
 import CopyButton from '../copy/copy-button'
 import { normalizeEthStringToWei } from '../../util'
+import ethNetProps from 'eth-net-props'
 
 class SendTransactionField extends Component {
 	constructor (props) {
@@ -135,6 +137,12 @@ class SendTransactionScreen extends PersistentForm {
 			outputValues: props.outputValues || {},
 			copyDisabled: true,
 		}
+
+		let rpcUrl = props.RPC_URL ? props.RPC_URL : props.provider.rpcTarget
+		if (rpcUrl === '') {
+			rpcUrl = ethNetProps.RPCEndpoints(props.network)[0]
+		}
+		Web3EthContract.setProvider(rpcUrl)
 
 		PersistentForm.call(this)
 	}
@@ -392,31 +400,44 @@ class SendTransactionScreen extends PersistentForm {
 
 	callData = () => {
 		this.props.showLoadingIndication()
-		const { abi, methodSelected, inputValues, methodOutputs, methodOutputsView, web3 } = this.state
+		const { abi, methodSelected, inputValues, methodOutputs, methodOutputsView } = this.state
 		const { address } = this.props
 
 		const inputValuesArray = Object.keys(inputValues).map(key => inputValues[key])
 		try {
-			web3.eth.contract(abi).at(address)[methodSelected].call(...inputValuesArray, (err, output) => {
+			const contract = new Web3EthContract(abi, address)
+			contract.methods[methodSelected](...inputValuesArray).call()
+			.then((result) => {
+				console.log('Gimme result')
+				console.log(result)
 				this.props.hideLoadingIndication()
-				if (err) {
-					this.props.hideToast()
-					return this.props.displayWarning(err)
-				}
+
 				const outputValues = {}
 				if (methodOutputsView.length > 1) {
-					output.forEach((val, ind) => {
-						const type = methodOutputs && methodOutputs[ind] && methodOutputs[ind].type
-						outputValues[ind] = this.setOutputValue(val, type)
-					})
+					if (typeof result === 'object') {
+						for (var key in result) {
+							const type = methodOutputs && methodOutputs[key] && methodOutputs[key].type
+							outputValues[key] = this.setOutputValue(result[key], type)
+						}
+					} else {
+						result.forEach((val, ind) => {
+							const type = methodOutputs && methodOutputs[ind] && methodOutputs[ind].type
+							outputValues[ind] = this.setOutputValue(val, type)
+						})
+					}
 				} else {
 					const type = methodOutputs && methodOutputs[0] && methodOutputs[0].type
-					outputValues[0] = this.setOutputValue(output, type)
+					outputValues[0] = this.setOutputValue(result, type)
 				}
 				this.setState({
 					outputValues,
 				})
 				this.updateOutputsView()
+			})
+			.catch((err) => {
+				this.props.hideLoadingIndication()
+				this.props.hideToast()
+				return this.props.displayWarning(err)
 			})
 		} catch (e) {
 			this.props.hideToast()
@@ -434,7 +455,10 @@ class SendTransactionScreen extends PersistentForm {
 			}
 			return ''
 		}
-		if ((type.startsWith('uint') || type.startsWith('int')) && !type.endsWith('[]')) {
+		if ((type.startsWith('uint') || type.startsWith('int')) && !type.includes('[')) {
+			if (val && typeof val === 'string') {
+				val = parseInt(val, 10)
+			}
 			return val.toFixed().toString()
 		}
 		return val
@@ -490,6 +514,9 @@ function mapStateToProps (state) {
 		methodSelected: contractAcc && contractAcc.methodSelected,
 		methodABI: contractAcc && contractAcc.methodABI,
 		inputValues: contractAcc && contractAcc.inputValues,
+		provider: state.metamask.provider,
+		RPC_URL: state.appState.RPC_URL,
+		network: state.metamask.network,
 	}
 
 	result.error = result.warning && result.warning.message

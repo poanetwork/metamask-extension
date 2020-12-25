@@ -1,10 +1,13 @@
 # Changelog
 
-- [#429](https://github.com/poanetwork/nifty-wallet/pull/429) - Allow Ledger signMessage method
-
 ## Current Master
 
+- [#434](https://github.com/poanetwork/nifty-wallet/pull/434) - Add support of tuple type at interaction with read-only contract methods
+- [#432](https://github.com/poanetwork/nifty-wallet/pull/432) - bump rsk-contract-metadata dependency
+
 ## 5.2.1 Fri Dec 04 2020
+
+- [#429](https://github.com/poanetwork/nifty-wallet/pull/429) - Allow Ledger signMessage method
 
 ## 5.2.0 Fri Nov 13 2020
 
