@@ -2,6 +2,7 @@
 
 ## Current Master
 
+- [#435](https://github.com/poanetwork/nifty-wallet/pull/435) - Allow array input type in contracts interactions
 - [#434](https://github.com/poanetwork/nifty-wallet/pull/434) - Add support of tuple type at interaction with read-only contract methods
 - [#432](https://github.com/poanetwork/nifty-wallet/pull/432) - bump rsk-contract-metadata dependency
 

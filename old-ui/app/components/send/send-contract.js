@@ -365,18 +365,18 @@ class SendTransactionScreen extends PersistentForm {
 	buttonsSection () {
 		const { isConstantMethod } = this.state
 		const callButton = (
-			<button disabled={this.buttonDisabled()} onClick={() => this.callData()}>Call data</button>
+			<button disabled={!this.buttonEnabled()} onClick={() => this.callData()}>Call data</button>
 		)
 		const nextButton = (
 			<div>
 				<button
-					disabled={this.buttonDisabled()}
+					disabled={!this.buttonEnabled()}
 					style={{ marginRight: '20px' }}
 					className="btn-violet"
 					onClick={() => this.copyAbiEncoded()}
 				>Copy ABI encoded
 				</button>
-				<button disabled={this.buttonDisabled()} onClick={() => this.onSubmit()}>Next</button>
+				<button disabled={!this.buttonEnabled()} onClick={() => this.onSubmit()}>Next</button>
 			</div>
 		)
 		const executeButton = isConstantMethod ? callButton : nextButton
@@ -393,9 +393,9 @@ class SendTransactionScreen extends PersistentForm {
 		return buttonContainer
 	}
 
-	buttonDisabled = () => {
+	buttonEnabled = () => {
 		const { methodSelected, methodInputs, inputValues } = this.state
-		return !methodSelected || (methodInputs.length !== Object.keys(inputValues).length)
+		return methodSelected && (methodInputs.length === Object.keys(inputValues).length)
 	}
 
 	callData = () => {
@@ -408,8 +408,6 @@ class SendTransactionScreen extends PersistentForm {
 			const contract = new Web3EthContract(abi, address)
 			contract.methods[methodSelected](...inputValuesArray).call()
 			.then((result) => {
-				console.log('Gimme result')
-				console.log(result)
 				this.props.hideLoadingIndication()
 
 				const outputValues = {}
@@ -466,7 +464,28 @@ class SendTransactionScreen extends PersistentForm {
 
 	encodeFunctionCall = () => {
 		const { inputValues, methodABI } = this.state
-		const inputValuesArray = Object.keys(inputValues).map(key => inputValues[key])
+		const { inputs } = methodABI
+		const inputValuesArray = Object.keys(inputValues).map(key => {
+			const input = inputs[key]
+			const {type: inputType} = input
+			let val = inputValues[key]
+			if (this._isNonSpaceType(inputType)) { val = val.replace(/\s/g, '') }
+			if (this._isAddressType(inputType)) {
+				val = val.replaceAll('"', '')
+			}
+			if (this._isArrayType(inputType)) {
+				if (val.startsWith('[') && val.endsWith(']')) {
+					val = val.substring(1, val.length - 1)
+				}
+				if (val === '') {
+					return []
+				} else {
+					return val.split(',')
+				}
+			} else {
+				return val
+			}
+		})
 		let txData
 		try {
 			txData = abi.encodeFunctionCall(methodABI, inputValuesArray)
@@ -477,6 +496,18 @@ class SendTransactionScreen extends PersistentForm {
 		}
 
 		return txData
+	}
+
+	_isArrayType = (type) => {
+		return type && type.includes('[') && type.includes(']')
+	}
+
+	_isNonSpaceType (type) {
+		return type && type.includes('address') || type.includes('int') || type.includes('bool')
+	}
+
+	_isAddressType (type) {
+		return type && type.includes('address')
 	}
 
 	copyAbiEncoded = () => {
