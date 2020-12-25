@@ -138,7 +138,7 @@ class SendTransactionScreen extends PersistentForm {
 			copyDisabled: true,
 		}
 
-		let rpcUrl = props.RPC_URL ? props.RPC_URL : props.provider.rpcTarget
+		let rpcUrl = props.RPC_URL || props.provider.rpcTarget
 		if (rpcUrl === '') {
 			rpcUrl = ethNetProps.RPCEndpoints(props.network)[0]
 		}
