@@ -239,7 +239,7 @@
     "browserify": "^16.2.3",
     "browserify-derequire": "^1.0.1",
     "chai": "^4.1.0",
-    "chromedriver": "^83.0.0",
+    "chromedriver": "^87.0.4",
     "clipboardy": "^1.2.3",
     "compression": "^1.7.1",
     "coveralls": "^3.0.0",

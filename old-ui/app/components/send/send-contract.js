@@ -400,10 +400,18 @@ class SendTransactionScreen extends PersistentForm {
 
 	callData = () => {
 		this.props.showLoadingIndication()
-		const { abi, methodSelected, inputValues, methodOutputs, methodOutputsView } = this.state
+		const { abi, methodSelected, inputValues, methodInputs, methodOutputs, methodOutputsView, web3 } = this.state
 		const { address } = this.props
 
-		const inputValuesArray = Object.keys(inputValues).map(key => inputValues[key])
+		const inputValuesArray = Object.keys(inputValues).map(key => {
+			let val
+			if (this.isUintIntType(methodInputs[key].type)) {
+				val = web3.toBigNumber(inputValues[key])
+			} else {
+				val = inputValues[key]
+			}
+			return val
+		})
 		try {
 			const contract = new Web3EthContract(abi, address)
 			contract.methods[methodSelected](...inputValuesArray).call()
@@ -444,6 +452,7 @@ class SendTransactionScreen extends PersistentForm {
 	}
 
 	setOutputValue = (val, type) => {
+		const { web3 } = this.state
 		if (!type) {
 			return val || ''
 		}
@@ -453,13 +462,17 @@ class SendTransactionScreen extends PersistentForm {
 			}
 			return ''
 		}
-		if ((type.startsWith('uint') || type.startsWith('int')) && !type.includes('[')) {
+		if (this.isUintIntType(type)) {
 			if (val && typeof val === 'string') {
-				val = parseInt(val, 10)
+				val = web3.toBigNumber(val)
 			}
 			return val.toFixed().toString()
 		}
 		return val
+	}
+
+	isUintIntType = (type) => {
+		return (type.startsWith('uint') || type.startsWith('int')) && !type.includes('[')
 	}
 
 	encodeFunctionCall = () => {

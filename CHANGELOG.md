@@ -2,6 +2,7 @@
 
 ## Current Master
 
+- [#437](https://github.com/poanetwork/nifty-wallet/pull/437) - Support getting proxy implementation address by following EIP-1967
 - [#436](https://github.com/poanetwork/nifty-wallet/pull/436) - Allow master copy pattern in importing of proxy contract
 - [#435](https://github.com/poanetwork/nifty-wallet/pull/435) - Allow array input type in contracts interactions
 - [#434](https://github.com/poanetwork/nifty-wallet/pull/434) - Add support of tuple type at interaction with read-only contract methods
