@@ -128,6 +128,18 @@ const getFullABI = (eth, contractAddr, network, type, RPC_URL, provider) => {
 						.catch(err => {
 							reject(err)
 						})
+					} else if (isEIP1967(targetABI)) {
+						let rpcUrl = RPC_URL || provider.rpcTarget
+						if (rpcUrl === '') {
+							rpcUrl = ethNetProps.RPCEndpoints(network)[0]
+						}
+						getImplAddrEIP1967(contractAddr, rpcUrl)
+						.then(implAddr => {
+							fetchImplementationAndCombine(implAddr, targetABI, network, resolve, reject)
+						})
+						.catch(err => {
+							reject(err)
+						})
 					} else {
 						eth.contract(targetABI).at(contractAddr).implementation.call((err, implAddr) => {
 							if (err) {
@@ -160,10 +172,33 @@ const isMasterCopyInput = (inputs) => {
 	})
 }
 
+const isEIP1967 = (abi) => {
+	return abi.some(method => {
+		return method.name === 'implementation' && method.stateMutability === 'nonpayable'
+	})
+}
+
 const getImplAddrFromMasterCopyPattern = (address, rpcUrl) => {
 	return new Promise((resolve, reject) => {
 		const web3 = new Web3(new Web3.providers.HttpProvider(rpcUrl))
 		web3.eth.getStorageAt(address, 0, 'latest', (err, result) => {
+			if (err) {
+				reject(err)
+			}
+			if (result) {
+				const implAddr = abi.decodeParameter('address', result)
+				resolve(implAddr)
+			}
+		})
+	})
+}
+
+const getImplAddrEIP1967 = (address, rpcUrl) => {
+	// https://eips.ethereum.org/EIPS/eip-1967
+	return new Promise((resolve, reject) => {
+		const web3 = new Web3(new Web3.providers.HttpProvider(rpcUrl))
+		const implementationStoragePointer = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc'
+		web3.eth.getStorageAt(address, implementationStoragePointer, 'latest', (err, result) => {
 			if (err) {
 				reject(err)
 			}
