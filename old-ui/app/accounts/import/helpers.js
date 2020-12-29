@@ -1,5 +1,8 @@
 import log from 'loglevel'
 import { importTypes } from './enums'
+import Web3 from 'web3'
+import ethNetProps from 'eth-net-props'
+import abi from 'web3-eth-abi'
 
 const nestedJsonObjToArray = (jsonObj) => {
 	return jsonObjToArray(jsonObj)
@@ -100,42 +103,121 @@ const fetchABI = (addr, network) => {
 	})
 }
 
-const getFullABI = (eth, contractAddr, network, type) => {
+const getFullABI = (eth, contractAddr, network, type, RPC_URL, provider) => {
 	return new Promise((resolve, reject) => {
 		fetchABI(contractAddr, network)
 		.then((targetABI) => {
 			targetABI = targetABI && JSON.parse(targetABI)
-			let finalABI = targetABI
 			if (type === importTypes.CONTRACT.PROXY) {
-				if (!eth.contract(targetABI).at(contractAddr).implementation) {
+				if (!eth.contract(targetABI).at(contractAddr).implementation && !isMasterCopyPattern(targetABI)) {
 					const e = {
 						message: 'This is not a valid Delegate Proxy contract',
 					}
 					reject(e)
 				}
 				try {
-					eth.contract(targetABI).at(contractAddr).implementation.call((err, implAddr) => {
-						if (err) {
-							reject(err)
-						} else {
-							fetchABI(implAddr, network)
-							.then((implABI) => {
-								implABI = implABI && JSON.parse(implABI)
-								finalABI = implABI ? targetABI.concat(implABI) : targetABI
-								resolve(finalABI)
-							})
-							.catch(e => reject(e))
+					if (isMasterCopyPattern(targetABI)) {
+						let rpcUrl = RPC_URL || provider.rpcTarget
+						if (rpcUrl === '') {
+							rpcUrl = ethNetProps.RPCEndpoints(network)[0]
 						}
-					})
+						getImplAddrFromMasterCopyPattern(contractAddr, rpcUrl)
+						.then(implAddr => {
+							fetchImplementationAndCombine(implAddr, targetABI, network, resolve, reject)
+						})
+						.catch(err => {
+							reject(err)
+						})
+					} else if (isEIP1967(targetABI)) {
+						let rpcUrl = RPC_URL || provider.rpcTarget
+						if (rpcUrl === '') {
+							rpcUrl = ethNetProps.RPCEndpoints(network)[0]
+						}
+						getImplAddrEIP1967(contractAddr, rpcUrl)
+						.then(implAddr => {
+							fetchImplementationAndCombine(implAddr, targetABI, network, resolve, reject)
+						})
+						.catch(err => {
+							reject(err)
+						})
+					} else {
+						eth.contract(targetABI).at(contractAddr).implementation.call((err, implAddr) => {
+							if (err) {
+								reject(err)
+							} else {
+								fetchImplementationAndCombine(implAddr, targetABI, network, resolve, reject)
+							}
+						})
+					}
 				} catch (e) {
 					reject(e)
 				}
 			} else {
-				resolve(finalABI)
+				resolve(targetABI)
 			}
 		})
 		.catch(e => { reject(e) })
 	})
+}
+
+const isMasterCopyPattern = (abi) => {
+	return abi.some(method => {
+		return isMasterCopyInput(method.inputs)
+	})
+}
+
+const isMasterCopyInput = (inputs) => {
+	return inputs && inputs.find(input => {
+		return input.name === '_masterCopy'
+	})
+}
+
+const isEIP1967 = (abi) => {
+	return abi.some(method => {
+		return method.name === 'implementation' && method.stateMutability === 'nonpayable'
+	})
+}
+
+const getImplAddrFromMasterCopyPattern = (address, rpcUrl) => {
+	return new Promise((resolve, reject) => {
+		const web3 = new Web3(new Web3.providers.HttpProvider(rpcUrl))
+		web3.eth.getStorageAt(address, 0, 'latest', (err, result) => {
+			if (err) {
+				reject(err)
+			}
+			if (result) {
+				const implAddr = abi.decodeParameter('address', result)
+				resolve(implAddr)
+			}
+		})
+	})
+}
+
+const getImplAddrEIP1967 = (address, rpcUrl) => {
+	// https://eips.ethereum.org/EIPS/eip-1967
+	return new Promise((resolve, reject) => {
+		const web3 = new Web3(new Web3.providers.HttpProvider(rpcUrl))
+		const implementationStoragePointer = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc'
+		web3.eth.getStorageAt(address, implementationStoragePointer, 'latest', (err, result) => {
+			if (err) {
+				reject(err)
+			}
+			if (result) {
+				const implAddr = abi.decodeParameter('address', result)
+				resolve(implAddr)
+			}
+		})
+	})
+}
+
+const fetchImplementationAndCombine = (implAddr, proxyABI, network, resolve, reject) => {
+	return fetchABI(implAddr, network)
+	.then((implABI) => {
+		implABI = implABI && JSON.parse(implABI)
+		const finalABI = implABI ? proxyABI.concat(implABI) : proxyABI
+		resolve(finalABI)
+	})
+	.catch(e => reject(e))
 }
 
 module.exports = {

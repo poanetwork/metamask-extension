@@ -10,9 +10,11 @@ import Select from 'react-select'
 import actions from '../../../../ui/app/actions'
 import abi from 'web3-eth-abi'
 import Web3 from 'web3'
+import Web3EthContract from 'web3-eth-contract'
 import copyToClipboard from 'copy-to-clipboard'
 import CopyButton from '../copy/copy-button'
 import { normalizeEthStringToWei } from '../../util'
+import ethNetProps from 'eth-net-props'
 
 class SendTransactionField extends Component {
 	constructor (props) {
@@ -135,6 +137,12 @@ class SendTransactionScreen extends PersistentForm {
 			outputValues: props.outputValues || {},
 			copyDisabled: true,
 		}
+
+		let rpcUrl = props.RPC_URL || props.provider.rpcTarget
+		if (rpcUrl === '') {
+			rpcUrl = ethNetProps.RPCEndpoints(props.network)[0]
+		}
+		Web3EthContract.setProvider(rpcUrl)
 
 		PersistentForm.call(this)
 	}
@@ -357,18 +365,18 @@ class SendTransactionScreen extends PersistentForm {
 	buttonsSection () {
 		const { isConstantMethod } = this.state
 		const callButton = (
-			<button disabled={this.buttonDisabled()} onClick={() => this.callData()}>Call data</button>
+			<button disabled={!this.buttonEnabled()} onClick={() => this.callData()}>Call data</button>
 		)
 		const nextButton = (
 			<div>
 				<button
-					disabled={this.buttonDisabled()}
+					disabled={!this.buttonEnabled()}
 					style={{ marginRight: '20px' }}
 					className="btn-violet"
 					onClick={() => this.copyAbiEncoded()}
 				>Copy ABI encoded
 				</button>
-				<button disabled={this.buttonDisabled()} onClick={() => this.onSubmit()}>Next</button>
+				<button disabled={!this.buttonEnabled()} onClick={() => this.onSubmit()}>Next</button>
 			</div>
 		)
 		const executeButton = isConstantMethod ? callButton : nextButton
@@ -385,38 +393,57 @@ class SendTransactionScreen extends PersistentForm {
 		return buttonContainer
 	}
 
-	buttonDisabled = () => {
+	buttonEnabled = () => {
 		const { methodSelected, methodInputs, inputValues } = this.state
-		return !methodSelected || (methodInputs.length !== Object.keys(inputValues).length)
+		return methodSelected && (methodInputs.length === Object.keys(inputValues).length)
 	}
 
 	callData = () => {
 		this.props.showLoadingIndication()
-		const { abi, methodSelected, inputValues, methodOutputs, methodOutputsView, web3 } = this.state
+		const { abi, methodSelected, inputValues, methodInputs, methodOutputs, methodOutputsView, web3 } = this.state
 		const { address } = this.props
 
-		const inputValuesArray = Object.keys(inputValues).map(key => inputValues[key])
+		const inputValuesArray = Object.keys(inputValues).map(key => {
+			let val
+			if (this.isUintIntType(methodInputs[key].type)) {
+				val = web3.toBigNumber(inputValues[key])
+			} else {
+				val = inputValues[key]
+			}
+			return val
+		})
 		try {
-			web3.eth.contract(abi).at(address)[methodSelected].call(...inputValuesArray, (err, output) => {
+			const contract = new Web3EthContract(abi, address)
+			contract.methods[methodSelected](...inputValuesArray).call()
+			.then((result) => {
 				this.props.hideLoadingIndication()
-				if (err) {
-					this.props.hideToast()
-					return this.props.displayWarning(err)
-				}
+
 				const outputValues = {}
 				if (methodOutputsView.length > 1) {
-					output.forEach((val, ind) => {
-						const type = methodOutputs && methodOutputs[ind] && methodOutputs[ind].type
-						outputValues[ind] = this.setOutputValue(val, type)
-					})
+					if (typeof result === 'object') {
+						for (var key in result) {
+							const type = methodOutputs && methodOutputs[key] && methodOutputs[key].type
+							outputValues[key] = this.setOutputValue(result[key], type)
+						}
+					} else {
+						result.forEach((val, ind) => {
+							const type = methodOutputs && methodOutputs[ind] && methodOutputs[ind].type
+							outputValues[ind] = this.setOutputValue(val, type)
+						})
+					}
 				} else {
 					const type = methodOutputs && methodOutputs[0] && methodOutputs[0].type
-					outputValues[0] = this.setOutputValue(output, type)
+					outputValues[0] = this.setOutputValue(result, type)
 				}
 				this.setState({
 					outputValues,
 				})
 				this.updateOutputsView()
+			})
+			.catch((err) => {
+				this.props.hideLoadingIndication()
+				this.props.hideToast()
+				return this.props.displayWarning(err)
 			})
 		} catch (e) {
 			this.props.hideToast()
@@ -425,6 +452,7 @@ class SendTransactionScreen extends PersistentForm {
 	}
 
 	setOutputValue = (val, type) => {
+		const { web3 } = this.state
 		if (!type) {
 			return val || ''
 		}
@@ -434,15 +462,43 @@ class SendTransactionScreen extends PersistentForm {
 			}
 			return ''
 		}
-		if ((type.startsWith('uint') || type.startsWith('int')) && !type.endsWith('[]')) {
+		if (this.isUintIntType(type)) {
+			if (val && typeof val === 'string') {
+				val = web3.toBigNumber(val)
+			}
 			return val.toFixed().toString()
 		}
 		return val
 	}
 
+	isUintIntType = (type) => {
+		return (type.startsWith('uint') || type.startsWith('int')) && !type.includes('[')
+	}
+
 	encodeFunctionCall = () => {
 		const { inputValues, methodABI } = this.state
-		const inputValuesArray = Object.keys(inputValues).map(key => inputValues[key])
+		const { inputs } = methodABI
+		const inputValuesArray = Object.keys(inputValues).map(key => {
+			const input = inputs[key]
+			const {type: inputType} = input
+			let val = inputValues[key]
+			if (this._isNonSpaceType(inputType)) { val = val.replace(/\s/g, '') }
+			if (this._isAddressType(inputType)) {
+				val = val.replaceAll('"', '')
+			}
+			if (this._isArrayType(inputType)) {
+				if (val.startsWith('[') && val.endsWith(']')) {
+					val = val.substring(1, val.length - 1)
+				}
+				if (val === '') {
+					return []
+				} else {
+					return val.split(',')
+				}
+			} else {
+				return val
+			}
+		})
 		let txData
 		try {
 			txData = abi.encodeFunctionCall(methodABI, inputValuesArray)
@@ -453,6 +509,18 @@ class SendTransactionScreen extends PersistentForm {
 		}
 
 		return txData
+	}
+
+	_isArrayType = (type) => {
+		return type && type.includes('[') && type.includes(']')
+	}
+
+	_isNonSpaceType (type) {
+		return type && type.includes('address') || type.includes('int') || type.includes('bool')
+	}
+
+	_isAddressType (type) {
+		return type && type.includes('address')
 	}
 
 	copyAbiEncoded = () => {
@@ -490,6 +558,9 @@ function mapStateToProps (state) {
 		methodSelected: contractAcc && contractAcc.methodSelected,
 		methodABI: contractAcc && contractAcc.methodABI,
 		inputValues: contractAcc && contractAcc.inputValues,
+		provider: state.metamask.provider,
+		RPC_URL: state.appState.RPC_URL,
+		network: state.metamask.network,
 	}
 
 	result.error = result.warning && result.warning.message

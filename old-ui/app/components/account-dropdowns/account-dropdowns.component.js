@@ -43,6 +43,8 @@ class AccountDropdowns extends Component {
     style: PropTypes.object,
     enableAccountOptions: PropTypes.bool,
     enableAccountsSelector: PropTypes.bool,
+    RPC_URL: PropTypes.string,
+    provider: PropTypes.object,
   }
 
   constructor (props) {
@@ -229,9 +231,9 @@ class AccountDropdowns extends Component {
   }
 
   updateABI = async () => {
-    const { actions, selected, network } = this.props
+    const { actions, selected, network, RPC_URL, provider } = this.props
     actions.showLoadingIndication()
-    getFullABI(this.web3.eth, selected, network, importTypes.CONTRACT.PROXY)
+    getFullABI(this.web3.eth, selected, network, importTypes.CONTRACT.PROXY, RPC_URL, provider)
       .then(finalABI => {
         actions.updateABI(selected, network, finalABI)
           .then()
@@ -331,6 +333,15 @@ class AccountDropdowns extends Component {
   }
 }
 
+function mapStateToProps (state) {
+  const result = {
+    provider: state.metamask.provider,
+		RPC_URL: state.appState.RPC_URL,
+  }
+
+  return result
+}
+
 const mapDispatchToProps = (dispatch) => {
   return {
     actions: {
@@ -349,5 +360,5 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 module.exports = {
-  AccountDropdowns: connect(null, mapDispatchToProps)(AccountDropdowns),
+  AccountDropdowns: connect(mapStateToProps, mapDispatchToProps)(AccountDropdowns),
 }
