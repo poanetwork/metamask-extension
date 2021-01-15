@@ -108,6 +108,7 @@ module.exports = class MetamaskController extends EventEmitter {
 
     // network store
     this.networkController = new NetworkController(initState.NetworkController)
+    this.networkController.setEthMainnetRPCEndpoint(opts.ethMainnetRpcEndpoint)
 
     // preferences controller
     this.preferencesController = new PreferencesController({
@@ -494,7 +495,7 @@ module.exports = class MetamaskController extends EventEmitter {
       setPreference: nodeify(preferencesController.setPreference, preferencesController),
 
       // BlacklistController
-      whitelistPhishingDomain: this.whitelistPhishingDomain.bind(this),
+      // whitelistPhishingDomain: this.whitelistPhishingDomain.bind(this),
 
       // AddressController
       setAddressBook: nodeify(addressBookController.setAddressBook, addressBookController),

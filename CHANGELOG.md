@@ -2,6 +2,8 @@
 
 ## Current Master
 
+- [#441](https://github.com/poanetwork/nifty-wallet/pull/441) - Replace Infura Mainnet endpoint with custom one
+
 ## 5.2.2 Tue Dec 29 2020
 
 - [#437](https://github.com/poanetwork/nifty-wallet/pull/437) - Support getting proxy implementation address by following EIP-1967

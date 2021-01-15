@@ -41,7 +41,7 @@ const {
   RSK_CODE,
   RSK_TESTNET_CODE,
 } = require('./enums')
-const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
+const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN]
 const POCKET_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET, POA, DAI, GOERLI_TESTNET, POA_SOKOL]
 
 const env = process.env.METAMASK_ENV
@@ -234,6 +234,8 @@ module.exports = class NetworkController extends EventEmitter {
     } else if (isInfura) {
         this._configureInfuraProvider(opts)
     // other type-based rpc endpoints
+    } else if (type === MAINNET) {
+      this._configureStandardProvider({ rpcUrl: this._ethMainnetRpcEndpoint, chainId, ticker, nickname })
     } else if (type === POA) {
       this._configureStandardProvider({ rpcUrl: ethNetProps.RPCEndpoints(POA_CODE)[0], chainId, ticker, nickname })
     } else if (type === DAI) {
@@ -256,6 +258,21 @@ module.exports = class NetworkController extends EventEmitter {
     } else {
       throw new Error(`NetworkController - _configureProvider - unknown type "${type}"`)
     }
+  }
+
+  /**
+   * Sets the Ethereum Mainnet RPC endpoint
+   *
+   * @param {string} endpoint - Ethereum Mainnet RPC endpoint
+   * @throws {Error} if the endpoint is not a valid string
+   * @return {void}
+   */
+  setEthMainnetRPCEndpoint (endpoint) {
+    if (!endpoint || typeof endpoint !== 'string') {
+      throw new Error('Invalid ETH Mainnet RPC Endpoint')
+    }
+
+    this._ethMainnetRpcEndpoint = endpoint
   }
 
   _configureInfuraProvider ({ type }) {

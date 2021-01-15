@@ -42,6 +42,8 @@ const {
   customDPaths,
 } = require('../../app/scripts/controllers/network/enums')
 
+const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN]
+
 const valueTable = {
   wei: '1000000000000000000',
   kwei: '1000000000000000',
@@ -491,14 +493,13 @@ function isValidChecksumAddress (network, address) {
 }
 
 function isInfuraProvider (type) {
-  const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
   return INFURA_PROVIDER_TYPES.includes(type)
 }
 
 function isKnownProvider (type) {
-  const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
   return INFURA_PROVIDER_TYPES.includes(type) ||
   type === LOCALHOST ||
+  type === MAINNET ||
   type === POA_SOKOL ||
   type === POA ||
   type === DAI ||

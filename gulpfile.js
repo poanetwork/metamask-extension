@@ -30,6 +30,10 @@ function gulpParallel (...args) {
   }
 }
 
+const conf = require('rc')('niftywallet', {
+  ETH_MAINNET_RPC_ENDPOINT: process.env.ETH_MAINNET_RPC_ENDPOINT,
+})
+
 const browserPlatforms = [
   'firefox',
   'chrome',
@@ -425,6 +429,7 @@ function generateBundler (opts, performBundle) {
   bundler.transform(envify({
     METAMASK_DEBUG: opts.devMode,
     NODE_ENV: opts.devMode ? 'development' : 'production',
+    ETH_MAINNET_RPC_ENDPOINT: conf.ETH_MAINNET_RPC_ENDPOINT,
   }))
 
   if (opts.watch) {

@@ -53,6 +53,7 @@ describe('Actions', () => {
         },
       },
       initState: clone(firstTimeState),
+      ethMainnetRpcEndpoint: 'foo',
     })
 
     await metamaskController.createNewVaultAndRestore(password, TEST_SEED)

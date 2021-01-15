@@ -20,6 +20,7 @@ describe('# Network Controller', function () {
       .reply(200)
 
     networkController = new NetworkController()
+    networkController.setEthMainnetRPCEndpoint('foo')
 
     networkController.initializeProvider(networkControllerProviderConfig)
   })
