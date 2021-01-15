@@ -2,6 +2,8 @@
 
 ## Current Master
 
+## 5.2.3 Fri Jan 15 2021
+
 - [#441](https://github.com/poanetwork/nifty-wallet/pull/441) - Replace Infura Mainnet endpoint with custom one
 
 ## 5.2.2 Tue Dec 29 2020
