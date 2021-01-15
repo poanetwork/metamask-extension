@@ -242,6 +242,7 @@ function setupController (initState, initLangCode) {
   //
 
   const controller = new MetamaskController({
+    ethMainnetRpcEndpoint: process.env.ETH_MAINNET_RPC_ENDPOINT,
     // User confirmation callbacks:
     showUnconfirmedMessage: triggerUi,
     unlockAccountMessage: triggerUi,

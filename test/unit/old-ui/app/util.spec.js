@@ -401,7 +401,7 @@ describe('normalizing values', function () {
       assert(isInfuraProvider('kovan'))
       assert(isInfuraProvider('ropsten'))
       assert(isInfuraProvider('rinkeby'))
-      assert(isInfuraProvider('mainnet'))
+      assert(!isInfuraProvider('mainnet'))
       assert(!isInfuraProvider('goerli_testnet'))
       assert(!isInfuraProvider('sokol'))
       assert(!isInfuraProvider('classic'))

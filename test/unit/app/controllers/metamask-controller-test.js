@@ -69,6 +69,7 @@ describe('MetaMaskController', function () {
       },
       initState: cloneDeep(firstTimeState),
       platform: { showTransactionNotification: () => {} },
+      ethMainnetRpcEndpoint: 'foo',
     })
     // disable diagnostics
     metamaskController.diagnostics = null
