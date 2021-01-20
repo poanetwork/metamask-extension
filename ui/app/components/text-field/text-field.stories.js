@@ -22,13 +22,6 @@ storiesOf('TextField', module)
       error="Invalid value"
     />,
   )
-  .add('Mascara text', () =>
-    <TextField
-      label="Text"
-      type="text"
-      largeLabel
-    />,
-  )
   .add('Material text', () =>
     <TextField
       label="Text"

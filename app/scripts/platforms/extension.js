@@ -1,10 +1,10 @@
 import extension from 'extensionizer'
 const explorerLinks = require('eth-net-props').explorerLinks
-const { capitalizeFirstLetter, getEnvironmentType, checkForError } = require('../lib/util')
-const { ENVIRONMENT_TYPE_BACKGROUND } = require('../lib/enums')
+import { getEnvironmentType, checkForError } from '../lib/util'
+import { ENVIRONMENT_TYPE_BACKGROUND } from '../lib/enums'
+import { TRANSACTION_STATUSES } from '../../../shared/constants/transaction'
 
-class ExtensionPlatform {
-
+export default class ExtensionPlatform {
   //
   // Public
   //
@@ -36,9 +36,9 @@ class ExtensionPlatform {
     })
   }
 
-  closeWindow (windowId) {
+  focusWindow (windowId) {
     return new Promise((resolve, reject) => {
-      extension.windows.remove(windowId, () => {
+      extension.windows.update(windowId, { focused: true }, () => {
         const error = checkForError()
         if (error) {
           return reject(error)
@@ -48,9 +48,9 @@ class ExtensionPlatform {
     })
   }
 
-  focusWindow (windowId) {
+  updateWindowPosition (windowId, left, top) {
     return new Promise((resolve, reject) => {
-      extension.windows.update(windowId, { focused: true }, () => {
+      extension.windows.update(windowId, { left, top }, () => {
         const error = checkForError()
         if (error) {
           return reject(error)
@@ -105,18 +105,22 @@ class ExtensionPlatform {
       })
     } catch (e) {
       cb(e)
+      return
     }
   }
 
   showTransactionNotification (txMeta) {
     const { status, txReceipt: { status: receiptStatus } = {} } = txMeta
 
-    if (status === 'confirmed') {
+    if (status === TRANSACTION_STATUSES.CONFIRMED) {
       // There was an on-chain failure
       receiptStatus === '0x0'
-        ? this._showFailedTransaction(txMeta, 'Transaction encountered an error.')
+        ? this._showFailedTransaction(
+            txMeta,
+            'Transaction encountered an error.',
+          )
         : this._showConfirmedTransaction(txMeta)
-    } else if (status === 'failed') {
+    } else if (status === TRANSACTION_STATUSES.FAILED) {
       this._showFailedTransaction(txMeta)
     }
   }
@@ -185,7 +189,6 @@ class ExtensionPlatform {
   }
 
   _showConfirmedTransaction (txMeta) {
-
     this._subscribeToNotificationClicked()
 
     const { url, explorerName } = this._getExplorer(txMeta.hash, parseInt(txMeta.metamaskNetworkId))
@@ -197,29 +200,27 @@ class ExtensionPlatform {
   }
 
   _showFailedTransaction (txMeta, errorMessage) {
-
     const nonce = parseInt(txMeta.txParams.nonce, 16)
     const title = 'Failed transaction'
-    const message = `Transaction ${nonce} failed! ${errorMessage || capitalizeFirstLetter(txMeta.err.message)}`
+    const message = `Transaction ${nonce} failed! ${
+      errorMessage || txMeta.err.message
+    }`
     this._showNotification(title, message)
   }
 
   _showNotification (title, message, url) {
-    extension.notifications.create(
-      url,
-      {
-        'type': 'basic',
-        'title': title,
-        'iconUrl': extension.extension.getURL('../../images/icon-64.png'),
-        'message': message,
-      })
+    extension.notifications.create(url, {
+      type: 'basic',
+      title,
+      iconUrl: extension.extension.getURL('../../images/icon-64.png'),
+      message,
+    })
   }
 
   _subscribeToNotificationClicked () {
     if (!extension.notifications.onClicked.hasListener(this._viewOnExplorer)) {
-      extension.notifications.onClicked.removeListener(this._viewOnExplorer)
+      extension.notifications.onClicked.addListener(this._viewOnExplorer)
     }
-    extension.notifications.onClicked.addListener(this._viewOnExplorer)
   }
 
   _viewOnExplorer (url) {
@@ -237,5 +238,3 @@ class ExtensionPlatform {
     }
   }
 }
-
-module.exports = ExtensionPlatform

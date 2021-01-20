@@ -1,4 +1,4 @@
-const ObservableStore = require('obs-store')
+import { ObservableStore } from '@metamask/obs-store'
 const extend = require('xtend')
 const PhishingDetector = require('eth-phishing-detect/src/detector')
 const log = require('loglevel')

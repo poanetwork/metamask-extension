@@ -1,123 +1,226 @@
+import querystring from 'querystring'
+import pump from 'pump'
+import LocalMessageDuplexStream from 'post-message-stream'
+import ObjectMultiplex from 'obj-multiplex'
+import extension from 'extensionizer'
+import PortStream from 'extension-port-stream'
+import { obj as createThoughStream } from 'through2'
+
+// These require calls need to use require to be statically recognized by browserify
 const fs = require('fs')
 const path = require('path')
-const pump = require('pump')
-const querystring = require('querystring')
-const LocalMessageDuplexStream = require('post-message-stream')
-const PongStream = require('ping-pong-stream/pong')
-const ObjectMultiplex = require('obj-multiplex')
-const extension = require('extensionizer')
-const PortStream = require('extension-port-stream')
 
-const inpageContent = fs.readFileSync(path.join(__dirname, '..', '..', 'dist', 'chrome', 'inpage.js'), 'utf8').toString()
-const inpageSuffix = '//# sourceURL=' + extension.extension.getURL('inpage.js') + '\n'
+const inpageContent = fs.readFileSync(
+  path.join(__dirname, '..', '..', 'dist', 'chrome', 'inpage.js'),
+  'utf8',
+)
+const inpageSuffix = `//# sourceURL=${extension.runtime.getURL('inpage.js')}\n`
 const inpageBundle = inpageContent + inpageSuffix
 
-// Eventually this streaming injection could be replaced with:
-// https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Language_Bindings/Components.utils.exportFunction
-//
-// But for now that is only Firefox
-// If we create a FireFox-only code path using that API,
-// MetaMask will be much faster loading and performant on Firefox.
+const CONTENT_SCRIPT = 'nifty-contentscript'
+const INPAGE = 'nifty-inpage'
+const PROVIDER = 'metamask-provider'
 
-if (shouldInjectWeb3()) {
-  setupInjection()
+// TODO:LegacyProvider: Delete
+const LEGACY_CONTENT_SCRIPT = 'contentscript'
+const LEGACY_INPAGE = 'inpage'
+const LEGACY_PROVIDER = 'provider'
+const LEGACY_PUBLIC_CONFIG = 'publicConfig'
+
+if (shouldInjectProvider()) {
+  injectScript(inpageBundle)
   setupStreams()
 }
 
 /**
- * Creates a script tag that injects inpage.js
+ * Injects a script tag into the current document
+ *
+ * @param {string} content - Code to be executed in the current document
  */
-function setupInjection () {
+function injectScript (content) {
   try {
-    // inject in-page script
-    const scriptTag = document.createElement('script')
-    scriptTag.textContent = inpageBundle
-    scriptTag.onload = function () { this.parentNode.removeChild(this) }
     const container = document.head || document.documentElement
-    // append as first child
+    const scriptTag = document.createElement('script')
+    scriptTag.setAttribute('async', 'false')
+    scriptTag.textContent = content
     container.insertBefore(scriptTag, container.children[0])
-  } catch (e) {
-    console.error('Nifty Wallet injection failed.', e)
+    container.removeChild(scriptTag)
+  } catch (error) {
+    console.error('Nifty Wallet injection failed.', error)
   }
 }
 
 /**
  * Sets up two-way communication streams between the
- * browser extension and local per-page browser context
+ * browser extension and local per-page browser context.
+ *
  */
-function setupStreams () {
-  // setup communication to page and plugin
+async function setupStreams () {
+  // the transport-specific streams for communication between inpage and background
   const pageStream = new LocalMessageDuplexStream({
-    name: 'nifty-contentscript',
-    target: 'nifty-inpage',
+    name: CONTENT_SCRIPT,
+    target: INPAGE,
   })
-  const pluginPort = extension.runtime.connect({ name: 'contentscript' })
-  const pluginStream = new PortStream(pluginPort)
+  const extensionPort = extension.runtime.connect({ name: CONTENT_SCRIPT })
+  const extensionStream = new PortStream(extensionPort)
+
+  // create and connect channel muxers
+  // so we can handle the channels individually
+  const pageMux = new ObjectMultiplex()
+  pageMux.setMaxListeners(25)
+  const extensionMux = new ObjectMultiplex()
+  extensionMux.setMaxListeners(25)
+  extensionMux.ignoreStream(LEGACY_PUBLIC_CONFIG) // TODO:LegacyProvider: Delete
+
+  pump(pageMux, pageStream, pageMux, (err) =>
+    logStreamDisconnectWarning('Nifty Wallet Inpage Multiplex', err),
+  )
+  pump(extensionMux, extensionStream, extensionMux, (err) => {
+    logStreamDisconnectWarning('Nifty Wallet Background Multiplex', err)
+    notifyInpageOfStreamFailure()
+  })
 
   // forward communication plugin->inpage
   pump(
     pageStream,
-    pluginStream,
+    extensionStream,
     pageStream,
     (err) => logStreamDisconnectWarning('Nifty Wallet Contentscript Forwarding', err),
   )
 
-  // setup local multistream channels
-  const mux = new ObjectMultiplex()
-  mux.setMaxListeners(25)
 
-  pump(
-    mux,
-    pageStream,
-    mux,
-    (err) => logStreamDisconnectWarning('Nifty Wallet Inpage', err),
-  )
-  pump(
-    mux,
-    pluginStream,
-    mux,
-    (err) => logStreamDisconnectWarning('Nifty Wallet Background', err),
-  )
-
-  // connect ping stream
-  const pongStream = new PongStream({ objectMode: true })
-  pump(
-    mux,
-    pongStream,
-    mux,
-    (err) => logStreamDisconnectWarning('Nifty Wallet PingPongStream', err),
-  )
-
-  // connect phishing warning stream
-  const phishingStream = mux.createStream('phishing')
+  // connect "phishing" channel to warning system
+  const phishingStream = extensionMux.createStream('phishing')
   phishingStream.once('data', redirectToPhishingWarning)
 
-  // ignore unused channels (handled by background, inpage)
-  mux.ignoreStream('provider')
-  mux.ignoreStream('publicConfig')
+  // TODO:LegacyProvider: Delete
+  // handle legacy provider
+  const legacyPageStream = new LocalMessageDuplexStream({
+    name: LEGACY_CONTENT_SCRIPT,
+    target: LEGACY_INPAGE,
+  })
+
+  const legacyPageMux = new ObjectMultiplex()
+  legacyPageMux.setMaxListeners(25)
+  const legacyExtensionMux = new ObjectMultiplex()
+  legacyExtensionMux.setMaxListeners(25)
+
+  pump(legacyPageMux, legacyPageStream, legacyPageMux, (err) =>
+    logStreamDisconnectWarning('Nifty Wallet Legacy Inpage Multiplex', err),
+  )
+  pump(
+    legacyExtensionMux,
+    extensionStream,
+    getNotificationTransformStream(),
+    legacyExtensionMux,
+    (err) => {
+      logStreamDisconnectWarning('Nifty Wallet Background Legacy Multiplex', err)
+      notifyInpageOfStreamFailure()
+    },
+  )
+
+  forwardNamedTrafficBetweenMuxes(
+    LEGACY_PROVIDER,
+    PROVIDER,
+    legacyPageMux,
+    legacyExtensionMux,
+  )
+  forwardTrafficBetweenMuxes(
+    LEGACY_PUBLIC_CONFIG,
+    legacyPageMux,
+    legacyExtensionMux,
+  )
 }
 
+function forwardTrafficBetweenMuxes (channelName, muxA, muxB) {
+  const channelA = muxA.createStream(channelName)
+  const channelB = muxB.createStream(channelName)
+  pump(channelA, channelB, channelA, (error) =>
+    console.debug(
+      `MetaMask: Muxed traffic for channel "${channelName}" failed.`,
+      error,
+    ),
+  )
+}
 
-/**
- * Error handler for page to plugin stream disconnections
- *
- * @param {string} remoteLabel Remote stream name
- * @param {Error} err Stream connection error
- */
-function logStreamDisconnectWarning (remoteLabel, err) {
-  let warningMsg = `MetamaskContentscript - lost connection to ${remoteLabel}`
-  if (err) warningMsg += '\n' + err.stack
-  console.warn(warningMsg)
+// TODO:LegacyProvider: Delete
+function forwardNamedTrafficBetweenMuxes (
+  channelAName,
+  channelBName,
+  muxA,
+  muxB,
+) {
+  const channelA = muxA.createStream(channelAName)
+  const channelB = muxB.createStream(channelBName)
+  pump(channelA, channelB, channelA, (error) =>
+    console.debug(
+      `MetaMask: Muxed traffic between channels "${channelAName}" and "${channelBName}" failed.`,
+      error,
+    ),
+  )
+}
+
+// TODO:LegacyProvider: Delete
+function getNotificationTransformStream () {
+  return createThoughStream((chunk, _, cb) => {
+    if (chunk?.name === PROVIDER) {
+      if (chunk.data?.method === 'metamask_accountsChanged') {
+        chunk.data.method = 'wallet_accountsChanged'
+        chunk.data.result = chunk.data.params
+        delete chunk.data.params
+      }
+    }
+    cb(null, chunk)
+  })
 }
 
 /**
- * Determines if Web3 should be injected
+ * Error handler for page to extension stream disconnections
  *
- * @returns {boolean} {@code true} if Web3 should be injected
+ * @param {string} remoteLabel - Remote stream name
+ * @param {Error} error - Stream connection error
  */
-function shouldInjectWeb3 () {
-  return doctypeCheck() && suffixCheck() &&
-    documentElementCheck() && !blacklistedDomainCheck()
+function logStreamDisconnectWarning (remoteLabel, error) {
+  console.debug(
+    `MetaMask: Content script lost connection to "${remoteLabel}".`,
+    error,
+  )
+}
+
+/**
+ * This function must ONLY be called in pump destruction/close callbacks.
+ * Notifies the inpage context that streams have failed, via window.postMessage.
+ * Relies on obj-multiplex and post-message-stream implementation details.
+ */
+function notifyInpageOfStreamFailure () {
+  window.postMessage(
+    {
+      target: INPAGE, // the post-message-stream "target"
+      data: {
+        // this object gets passed to obj-multiplex
+        name: PROVIDER, // the obj-multiplex channel name
+        data: {
+          jsonrpc: '2.0',
+          method: 'METAMASK_STREAM_FAILURE',
+        },
+      },
+    },
+    window.location.origin,
+  )
+}
+
+/**
+ * Determines if the provider should be injected
+ *
+ * @returns {boolean} {@code true} Whether the provider should be injected
+ */
+function shouldInjectProvider () {
+  return (
+    doctypeCheck() &&
+    suffixCheck() &&
+    documentElementCheck() &&
+    !blockedDomainCheck()
+  )
 }
 
 /**
@@ -126,28 +229,24 @@ function shouldInjectWeb3 () {
  * @returns {boolean} {@code true} if the doctype is html or if none exists
  */
 function doctypeCheck () {
-  const doctype = window.document.doctype
+  const { doctype } = window.document
   if (doctype) {
     return doctype.name === 'html'
-  } else {
-    return true
   }
+  return true
 }
 
 /**
  * Returns whether or not the extension (suffix) of the current document is prohibited
  *
  * This checks {@code window.location.pathname} against a set of file extensions
- * that should not have web3 injected into them. This check is indifferent of query parameters
- * in the location.
+ * that we should not inject the provider into. This check is indifferent of
+ * query parameters in the location.
  *
  * @returns {boolean} whether or not the extension of the current document is prohibited
  */
 function suffixCheck () {
-  const prohibitedTypes = [
-    /\.xml$/,
-    /\.pdf$/,
-  ]
+  const prohibitedTypes = [/\.xml$/u, /\.pdf$/u]
   const currentUrl = window.location.pathname
   for (let i = 0; i < prohibitedTypes.length; i++) {
     if (prohibitedTypes[i].test(currentUrl)) {
@@ -171,12 +270,12 @@ function documentElementCheck () {
 }
 
 /**
- * Checks if the current domain is blacklisted
+ * Checks if the current domain is blocked
  *
- * @returns {boolean} {@code true} if the current domain is blacklisted
+ * @returns {boolean} {@code true} if the current domain is blocked
  */
-function blacklistedDomainCheck () {
-  const blacklistedDomains = [
+function blockedDomainCheck () {
+  const blockedDomains = [
     'uscourts.gov',
     'dropbox.com',
     'webbyawards.com',
@@ -186,12 +285,16 @@ function blacklistedDomainCheck () {
     'harbourair.com',
     'ani.gamer.com.tw',
     'blueskybooking.com',
+    'sharefile.com',
   ]
   const currentUrl = window.location.href
   let currentRegex
-  for (let i = 0; i < blacklistedDomains.length; i++) {
-    const blacklistedDomain = blacklistedDomains[i].replace('.', '\\.')
-    currentRegex = new RegExp(`(?:https?:\\/\\/)(?:(?!${blacklistedDomain}).)*$`)
+  for (let i = 0; i < blockedDomains.length; i++) {
+    const blockedDomain = blockedDomains[i].replace('.', '\\.')
+    currentRegex = new RegExp(
+      `(?:https?:\\/\\/)(?:(?!${blockedDomain}).)*$`,
+      'u',
+    )
     if (!currentRegex.test(currentUrl)) {
       return true
     }

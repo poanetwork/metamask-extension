@@ -8,7 +8,7 @@
  */
 
 const EthQuery = require('eth-query')
-const ObservableStore = require('obs-store')
+import { ObservableStore } from '@metamask/obs-store'
 const log = require('loglevel')
 const pify = require('pify')
 

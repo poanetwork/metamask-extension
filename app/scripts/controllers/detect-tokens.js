@@ -1,5 +1,5 @@
 import Web3 from 'web3'
-import contractsETH from 'eth-contract-metadata'
+import contractsETH from '@metamask/contract-metadata'
 import contractsPOA from 'poa-contract-metadata'
 import contractsRSK from '@rsksmart/rsk-contract-metadata'
 import contractsRSKTest from '@rsksmart/rsk-testnet-contract-metadata'

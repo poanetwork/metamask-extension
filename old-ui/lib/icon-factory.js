@@ -1,5 +1,5 @@
 import { isValidAddress } from 'ethereumjs-util'
-import contractMapETH from 'eth-contract-metadata'
+import contractMapETH from '@metamask/contract-metadata'
 import contractMapPOA from 'poa-contract-metadata'
 import contractMapRSK from '@rsksmart/rsk-contract-metadata'
 import contractMapRSKTest from '@rsksmart/rsk-testnet-contract-metadata'

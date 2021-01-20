@@ -17,17 +17,24 @@ const provider = createTestProviderTools({ scaffold: {}}).provider
 
 const enLocale = require('../../../../app/_locales/en/messages.json')
 const actions = require('../../../../ui/app/actions')
-const MetaMaskController = require('../../../../app/scripts/metamask-controller')
+import MetaMaskController from '../../../../app/scripts/metamask-controller'
 
 const firstTimeState = require('../../../unit/localhostState')
 const devState = require('../../../data/2-state.json')
 
 const middleware = [thunk]
 const mockStore = configureStore(middleware)
+const extensionMock = {
+  runtime: {
+    onInstalled: {
+      addListener: () => undefined,
+    },
+  },
+}
 
 describe('Actions', () => {
 
-  const noop = () => {}
+  const noop = () => undefined
 
   let background, metamaskController
 
@@ -39,6 +46,8 @@ describe('Actions', () => {
 
 
     metamaskController = new MetaMaskController({
+      extension: extensionMock,
+      platform: { getVersion: () => 'foo' },
       provider,
       keyringController: new KeyringController({}),
       showUnapprovedTx: noop,
@@ -54,6 +63,7 @@ describe('Actions', () => {
       },
       initState: clone(firstTimeState),
       ethMainnetRpcEndpoint: 'foo',
+      infuraProjectId: 'foo',
     })
 
     await metamaskController.createNewVaultAndRestore(password, TEST_SEED)
@@ -1278,25 +1288,27 @@ describe('Actions', () => {
     })
   })
 
-  describe('#setFeatureFlag', () => {
+  describe('#setFeatureFlag', function () {
     let setFeatureFlagSpy
 
-    beforeEach(() => {
-      setFeatureFlagSpy = sinon.stub(background, 'setFeatureFlag')
-    })
-
-    afterEach(() => {
+    afterEach(function () {
       setFeatureFlagSpy.restore()
     })
 
-    it('calls setFeatureFlag in the background', () => {
+    it('calls setFeatureFlag in the background', async function () {
+      setFeatureFlagSpy = sinon
+        .stub(background, 'setFeatureFlag')
+        .callsArgWith(2, null)
       const store = mockStore()
 
-      store.dispatch(actions.setFeatureFlag())
+      await store.dispatch(actions.setFeatureFlag())
       assert(setFeatureFlagSpy.calledOnce)
     })
 
-    it('errors when setFeatureFlag in background throws', () => {
+    it('errors when setFeatureFlag in background throws', async function () {
+      setFeatureFlagSpy = sinon
+        .stub(background, 'setFeatureFlag')
+        .callsArgWith(2, new Error('error'))
       const store = mockStore()
       const expectedActions = [
         { type: 'SHOW_LOADING_INDICATION', value: undefined },
@@ -1304,14 +1316,12 @@ describe('Actions', () => {
         { type: 'DISPLAY_WARNING', value: 'error' },
       ]
 
-      setFeatureFlagSpy.callsFake((feature, activated, callback) => {
-        callback(new Error('error'))
-      })
-
-      store.dispatch(actions.setFeatureFlag())
-        .catch(() => {
-          assert.deepEqual(store.getActions(), expectedActions)
-        })
+      try {
+        await store.dispatch(actions.setFeatureFlag())
+        assert.fail('Should have thrown error')
+      } catch (_) {
+        assert.deepEqual(store.getActions(), expectedActions)
+      }
     })
   })
 

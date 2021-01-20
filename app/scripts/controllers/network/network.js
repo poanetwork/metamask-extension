@@ -1,9 +1,8 @@
 import assert from 'assert'
 import EventEmitter from 'events'
-import ObservableStore from 'obs-store'
-import ComposedStore from 'obs-store/lib/composed'
+import { ComposedStore, ObservableStore } from '@metamask/obs-store'
 import EthQuery from 'eth-query'
-import JsonRpcEngine from 'json-rpc-engine'
+import { JsonRpcEngine } from 'json-rpc-engine'
 import providerFromEngine from 'eth-json-rpc-middleware/providerFromEngine'
 import log from 'loglevel'
 import createMetamaskMiddleware from './createMetamaskMiddleware'
@@ -85,6 +84,21 @@ module.exports = class NetworkController extends EventEmitter {
     // provider and block tracker proxies - because the network changes
     this._providerProxy = null
     this._blockTrackerProxy = null
+  }
+
+  /**
+   * Sets the Infura project ID
+   *
+   * @param {string} projectId - The Infura project ID
+   * @throws {Error} if the project ID is not a valid string
+   * @return {void}
+   */
+  setInfuraProjectId (projectId) {
+    if (!projectId || typeof projectId !== 'string') {
+      throw new Error('Invalid Infura project ID')
+    }
+
+    this._infuraProjectId = projectId
   }
 
   initializeProvider (providerParams) {
@@ -232,7 +246,7 @@ module.exports = class NetworkController extends EventEmitter {
     if (isPocket && this.dProviderStore.getState().dProvider) {
       this._configurePocketProvider(opts)
     } else if (isInfura) {
-        this._configureInfuraProvider(opts)
+        this._configureInfuraProvider(type, this._infuraProjectId)
     // other type-based rpc endpoints
     } else if (type === MAINNET) {
       this._configureStandardProvider({ rpcUrl: this._ethMainnetRpcEndpoint, chainId, ticker, nickname })
@@ -275,17 +289,13 @@ module.exports = class NetworkController extends EventEmitter {
     this._ethMainnetRpcEndpoint = endpoint
   }
 
-  _configureInfuraProvider ({ type }) {
+  _configureInfuraProvider (type, projectId) {
     log.info('NetworkController - configureInfuraProvider', type)
     const networkClient = createInfuraClient({
       network: type,
+      projectId,
     })
     this._setNetworkClient(networkClient)
-    // setup networkConfig
-    const settings = {
-      ticker: 'ETH',
-    }
-    this.networkConfig.putState(settings)
   }
 
   _configurePocketProvider ({ type }) {
