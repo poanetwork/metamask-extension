@@ -2,6 +2,8 @@
 
 ## Current Master
 
+- [#443](https://github.com/poanetwork/nifty-wallet/pull/443) - Fire 'confirmation', 'receipt' events
+
 ## 5.2.3 Fri Jan 15 2021
 
 - [#441](https://github.com/poanetwork/nifty-wallet/pull/441) - Replace Infura Mainnet endpoint with custom one

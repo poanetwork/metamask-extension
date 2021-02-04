@@ -5,7 +5,7 @@
  * otherwise returns null.
  */
 
-const contractMap = require('eth-contract-metadata')
+const contractMap = require('@metamask/contract-metadata')
 const { toChecksumAddress } = require('../app/util')
 
 module.exports = function (addr, identities = {}, network) {

@@ -10,7 +10,6 @@ const I18nProvider = require('./i18n-provider')
 function mapStateToProps (state) {
   return {
     isUnlocked: state.metamask.isUnlocked,
-    isMascara: state.metamask.isMascara,
     firstTime: Object.keys(state.metamask.identities).length === 0,
   }
 }
@@ -32,29 +31,10 @@ function SelectedApp () {
   Component.call(this)
 }
 
-SelectedApp.prototype.componentWillReceiveProps = function (nextProps) {
-  // Code commented out until we begin auto adding users to NewUI
-  const {
-    // isUnlocked,
-    // setFeatureFlagWithModal,
-    setFeatureFlagWithoutModal,
-    isMascara,
-    // firstTime,
-  } = this.props
-
-  // if (isMascara || firstTime) {
-  if (isMascara) {
-    setFeatureFlagWithoutModal()
-  }
-  // } else if (!isUnlocked && nextProps.isUnlocked && (nextProps.autoAdd)) {
-  //   setFeatureFlagWithModal()
-  // }
-}
-
 SelectedApp.prototype.render = function () {
   // Code commented out until we begin auto adding users to NewUI
-  // const { betaUI, isMascara, firstTime } = this.props
-  // const Selected = betaUI || isMascara || firstTime ? App : OldApp
+  // const { betaUI, firstTime } = this.props
+  // const Selected = betaUI || firstTime ? App : OldApp
 
   return h(HashRouter, {
     hashType: 'noslash',

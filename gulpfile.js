@@ -31,6 +31,7 @@ function gulpParallel (...args) {
 }
 
 const conf = require('rc')('niftywallet', {
+  INFURA_PROJECT_ID: process.env.INFURA_PROJECT_ID,
   ETH_MAINNET_RPC_ENDPOINT: process.env.ETH_MAINNET_RPC_ENDPOINT,
 })
 
@@ -41,8 +42,6 @@ const browserPlatforms = [
   'opera',
 ]
 const commonPlatforms = [
-  // browser webapp
-  'mascara',
   // browser extensions
   ...browserPlatforms,
 ]
@@ -69,7 +68,7 @@ createCopyTasks('images', {
   destinations: commonPlatforms.map(platform => `./dist/${platform}/images`),
 })
 createCopyTasks('contractImages', {
-  source: './node_modules/eth-contract-metadata/images/',
+  source: './node_modules/@metamask/contract-metadata/images/',
   destinations: commonPlatforms.map(platform => `./dist/${platform}/images/contract`),
 })
 createCopyTasks('contractImagesPOA', {
@@ -110,14 +109,6 @@ createCopyTasks('manifest', {
   source: './app/',
   pattern: '/*.json',
   destinations: browserPlatforms.map(platform => `./dist/${platform}`),
-})
-
-// copy mascara
-
-createCopyTasks('html:mascara', {
-  source: './mascara/',
-  pattern: 'proxy/index.html',
-  destinations: [`./dist/mascara/`],
 })
 
 function createCopyTasks (label, opts) {
@@ -254,8 +245,6 @@ const buildJsFiles = [
 // bundle tasks
 createTasksForBuildJsExtension({ buildJsFiles, taskPrefix: 'dev:extension:js', devMode: true })
 createTasksForBuildJsExtension({ buildJsFiles, taskPrefix: 'build:extension:js' })
-createTasksForBuildJsMascara({ taskPrefix: 'build:mascara:js' })
-createTasksForBuildJsMascara({ taskPrefix: 'dev:mascara:js', devMode: true })
 
 function createTasksForBuildJsExtension ({ buildJsFiles, taskPrefix, devMode, bundleTaskOpts = {} }) {
   // inpage must be built before all other scripts:
@@ -273,22 +262,6 @@ function createTasksForBuildJsExtension ({ buildJsFiles, taskPrefix, devMode, bu
     devMode,
   }, bundleTaskOpts)
   createTasksForBuildJs({ rootDir, taskPrefix, bundleTaskOpts, destinations, buildPhase1, buildPhase2 })
-}
-
-function createTasksForBuildJsMascara ({ taskPrefix, devMode, bundleTaskOpts = {} }) {
-  // inpage must be built before all other scripts:
-  const rootDir = './mascara/src/'
-  const buildPhase1 = ['ui', 'proxy', 'background', 'metamascara']
-  const destinations = ['./dist/mascara']
-  bundleTaskOpts = Object.assign({
-    buildSourceMaps: true,
-    sourceMapDir: './',
-    minifyBuild: false,
-    buildWithFullPaths: devMode,
-    watch: devMode,
-    devMode,
-  }, bundleTaskOpts)
-  createTasksForBuildJs({ rootDir, taskPrefix, bundleTaskOpts, destinations, buildPhase1 })
 }
 
 function createTasksForBuildJs ({ rootDir, taskPrefix, bundleTaskOpts, destinations, buildPhase1 = [], buildPhase2 = [] }) {
@@ -338,7 +311,6 @@ gulp.task('dev',
     'clean',
     gulp.parallel(
       'dev:extension:js',
-      'dev:mascara:js',
       'dev:copy',
       'dev:reload',
     ),
@@ -356,23 +328,11 @@ gulp.task('dev:extension',
   ),
 )
 
-gulp.task('dev:mascara',
-  gulp.series(
-    'clean',
-    gulp.parallel(
-      'dev:mascara:js',
-      'dev:copy',
-      'dev:reload',
-    ),
-  ),
-)
-
 gulp.task('build',
   gulp.series(
     'clean',
     gulpParallel(
       'build:extension:js',
-      'build:mascara:js',
       'copy',
     ),
   ),
@@ -383,16 +343,6 @@ gulp.task('build:extension',
     'clean',
     gulp.parallel(
       'build:extension:js',
-      'copy',
-    ),
-  ),
-)
-
-gulp.task('build:mascara',
-  gulp.series(
-    'clean',
-    gulp.parallel(
-      'build:mascara:js',
       'copy',
     ),
   ),
@@ -430,6 +380,7 @@ function generateBundler (opts, performBundle) {
     METAMASK_DEBUG: opts.devMode,
     NODE_ENV: opts.devMode ? 'development' : 'production',
     ETH_MAINNET_RPC_ENDPOINT: conf.ETH_MAINNET_RPC_ENDPOINT,
+    INFURA_PROJECT_ID: conf.INFURA_PROJECT_ID,
   }))
 
   if (opts.watch) {
@@ -510,7 +461,7 @@ function bundleTask (opts) {
       buildStream = buildStream
       .pipe(uglify({
         mangle: {
-          reserved: [ 'MetamaskInpageProvider' ],
+          reserved: [ 'MetaMaskInpageProvider' ],
         },
       }))
     }

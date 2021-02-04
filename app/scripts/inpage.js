@@ -1,5 +1,3 @@
-/*global Web3*/
-
 // need to make sure we aren't affected by overlapping namespaces
 // and that we dont affect the app with our namespace
 // mostly a fix for web3's BigNumber if AMD's "define" is defined...
@@ -34,12 +32,10 @@ cleanContextForImports()
 
 import log from 'loglevel'
 import LocalMessageDuplexStream from 'post-message-stream'
-import MetamaskInpageProvider from 'nifty-wallet-inpage-provider'
+import { MetaMaskInpageProvider } from 'nifty-wallet-inpage-provider'
 
 // TODO:deprecate:Q1-2020
 import 'web3/dist/web3.min.js'
-
-import setupDappAutoReload from './lib/auto-reload.js'
 
 restoreContextAfterImports()
 
@@ -56,37 +52,10 @@ const metamaskStream = new LocalMessageDuplexStream({
 })
 
 // compose the inpage provider
-const inpageProvider = new MetamaskInpageProvider(metamaskStream)
-
-// set a high max listener count to avoid unnecesary warnings
-inpageProvider.setMaxListeners(100)
-
-// Work around for web3@1.0 deleting the bound `sendAsync` but not the unbound
-// `sendAsync` method on the prototype, causing `this` reference issues
-const proxiedInpageProvider = new Proxy(inpageProvider, {
-  // straight up lie that we deleted the property so that it doesnt
-  // throw an error in strict mode
-  deleteProperty: () => true,
-})
-
-//
-// TODO:deprecate:Q1-2020
-//
-
-// setup web3
-
-const web3 = new Web3(proxiedInpageProvider)
-web3.setProvider = function () {
-  log.debug('Nifty Wallet - overrode web3.setProvider')
-}
-log.debug('Nifty Wallet - injected web3')
-
-proxiedInpageProvider._web3Ref = web3.eth
-
-setupDappAutoReload(web3, inpageProvider.publicConfigStore)
+const inpageProvider = new MetaMaskInpageProvider(metamaskStream)
 
 //
 // end deprecate:Q1-2020
 //
 
-window.ethereum = proxiedInpageProvider
+window.ethereum = inpageProvider

@@ -6,9 +6,6 @@ const { compose } = require('recompose')
 const h = require('react-hyperscript')
 const actions = require('../../ui/app/actions')
 const log = require('loglevel')
-// mascara
-const MascaraFirstTime = require('../../mascara/src/app/first-time').default
-const MascaraBuyEtherScreen = require('../../mascara/src/app/first-time/buy-ether-screen').default
 // init
 const InitializeMenuScreen = require('./first-time/init-menu')
 const NewKeyChainScreen = require('./new-keychain')
@@ -81,7 +78,6 @@ function mapStateToProps (state) {
     currentView: state.appState.currentView,
     selectedAddress: state.metamask.selectedAddress,
     transForward: state.appState.transForward,
-    isMascara: state.metamask.isMascara,
     isOnboarding: Boolean(!noActiveNotices || seedWords || !isInitialized),
     seedWords: state.metamask.seedWords,
     unapprovedTxs: state.metamask.unapprovedTxs,
@@ -151,24 +147,15 @@ App.prototype.render = function () {
 }
 
 App.prototype.renderLoadingIndicator = function ({ isLoading, isLoadingNetwork, loadMessage }) {
-  const { isMascara } = this.props
-
-  return isMascara
-    ? null
-    : h(Loading, {
-      isLoading: isLoading || isLoadingNetwork,
-      loadingMessage: loadMessage,
-    })
+  return h(Loading, {
+    isLoading: isLoading || isLoadingNetwork,
+    loadingMessage: loadMessage,
+  })
 }
 
 App.prototype.renderPrimary = function () {
   log.debug('rendering primary')
   const props = this.props
-  const {isMascara, isOnboarding} = props
-
-  if (isMascara && isOnboarding) {
-    return h(MascaraFirstTime)
-  }
 
   // notices
   if (!props.noActiveNotices) {
@@ -306,10 +293,6 @@ App.prototype.renderPrimary = function () {
     case 'buyEth':
       log.debug('rendering buy ether screen')
       return h(BuyView, {key: 'buyEthView'})
-
-    case 'onboardingBuyEth':
-      log.debug('rendering onboarding buy ether screen')
-      return h(MascaraBuyEtherScreen, {key: 'buyEthView'})
 
     case 'qr':
       log.debug('rendering show qr screen')

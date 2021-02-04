@@ -8,11 +8,11 @@ window.onload = function () {
 const querystring = require('querystring')
 const dnode = require('dnode')
 const { EventEmitter } = require('events')
-const PortStream = require('extension-port-stream')
+import PortStream from 'extension-port-stream'
 const extension = require('extensionizer')
 const setupMultiplex = require('./lib/stream-utils.js').setupMultiplex
 const { getEnvironmentType } = require('./lib/util')
-const ExtensionPlatform = require('./platforms/extension')
+import ExtensionPlatform from './platforms/extension'
 
 document.addEventListener('DOMContentLoaded', start)
 

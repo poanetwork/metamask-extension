@@ -1,7 +1,7 @@
 const Component = require('react').Component
 const h = require('react-hyperscript')
 import PropTypes from 'prop-types'
-import TokenTracker from 'eth-token-watcher'
+import TokenTracker from '@metamask/eth-token-tracker'
 import { connect } from 'react-redux'
 const selectors = require('../../../ui/app/selectors')
 import log from 'loglevel'
