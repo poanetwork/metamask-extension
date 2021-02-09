@@ -16,7 +16,10 @@ const { POA,
   POA_SOKOL,
   RSK,
   RSK_TESTNET,
-  CLASSIC } = require('../../app/scripts/controllers/network/enums')
+  CLASSIC,
+  CELO,
+  CELO_ALFAJORES_TESTNET,
+  CELO_BAKLAVA_TESTNET} = require('../../app/scripts/controllers/network/enums')
 const { hasUnconfirmedTransactions } = require('./helpers/confirm-transaction/util')
 const WebcamUtils = require('../lib/webcam-utils')
 import { getEnvironmentType } from '../../app/scripts/lib/util'
@@ -2022,7 +2025,7 @@ function setProviderType (type) {
                     'poa' : type === DAI ?
                     'dai' : type === CLASSIC ?
                     'etc' : type === RSK || type === RSK_TESTNET ?
-                    'rbtc' : 'eth'
+                    'rbtc' : type === CELO || type === CELO_ALFAJORES_TESTNET || type === CELO_BAKLAVA_TESTNET ? 'celo' : 'eth'
     background.setCurrentCoin(newCoin, (err, data) => {
       if (err) {
         log.error(err.stack)

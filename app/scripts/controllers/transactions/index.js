@@ -25,6 +25,11 @@ const {
   TRANSACTION_TYPE_RETRY,
 } = require('./enums')
 
+const ContractKit = require('@celo/contractkit')
+import Web3 from 'web3-1-3'
+import { CELO_CODE, CELO_ALFAJORES_TESTNET_CODE, CELO_BAKLAVA_TESTNET_CODE } from '../network/enums'
+import ethNetProps from 'eth-net-props'
+
 const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../../lib/util')
 
 /**
@@ -62,6 +67,7 @@ class TransactionController extends EventEmitter {
     this.provider = opts.provider
     this.blockTracker = opts.blockTracker
     this.signEthTx = opts.signTransaction
+    this.getPrivateKeyFor = opts.getPrivateKeyFor
     this.getGasPrice = opts.getGasPrice
 
     this.memStore = new ObservableStore({})
@@ -350,9 +356,15 @@ class TransactionController extends EventEmitter {
       // add nonce debugging information to txMeta
       txMeta.nonceDetails = nonceLock.nonceDetails
       this.txStateManager.updateTx(txMeta, 'transactions#approveTransaction')
-      // sign transaction
-      const rawTx = await this.signTransaction(txId)
-      await this.publishTransaction(txId, rawTx)
+      const chainId = this.getChainId()
+      if (chainId === CELO_CODE || chainId === CELO_ALFAJORES_TESTNET_CODE || chainId === CELO_BAKLAVA_TESTNET_CODE) {
+        const fromAddressPK = await this.getPrivateKeyFor(fromAddress)
+        await this.sendCelo(txMeta.txParams, txId, fromAddress, fromAddressPK)
+      } else {
+        // sign transaction
+        const rawTx = await this.signTransaction(txId)
+        await this.publishTransaction(txId, rawTx)
+      }
       // must set transaction to submitted/failed before releasing lock
       nonceLock.releaseLock()
     } catch (err) {
@@ -401,6 +413,39 @@ class TransactionController extends EventEmitter {
     this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
     const txHash = await this.query.sendRawTransaction(rawTx)
     this.setTxHash(txId, txHash)
+    this.txStateManager.setTxStatusSubmitted(txId)
+  }
+
+  async sendCelo (txParams, txId, fromAddress, fromAddressPK) {
+    const txMeta = this.txStateManager.getTx(txId)
+
+    const network = this.getNetwork()
+    const rpcUrl = ethNetProps.RPCEndpoints(network)[0]
+    const web3 = new Web3(new Web3.providers.HttpProvider(rpcUrl))
+    const kit = ContractKit.newKitFromWeb3(web3)
+
+    const fromAddressPKstr = fromAddressPK.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '')
+
+    // Add account to ContractKit to sign transactions
+    kit.connection.addAccount(fromAddressPKstr)
+
+    // Set state to signed
+    this.txStateManager.setTxStatusSigned(txMeta.id)
+
+    // Specify recipient Address
+    const anAddress = txParams.to
+
+    // Specify an amount to send
+    const amount = parseInt(Number(txParams.value), 10)
+
+    // Get the token contract wrappers
+    const goldtoken = await kit.contracts.getGoldToken()
+
+    // Transfer CELO
+    const celotx = await goldtoken.transfer(anAddress, amount).send({from: fromAddress})
+    const celoReceipt = await celotx.waitReceipt()
+
+    this.setTxHash(txId, celoReceipt.transactionHash)
     this.txStateManager.setTxStatusSubmitted(txId)
   }
 

@@ -4,7 +4,7 @@ const Component = require('react').Component
 const h = require('react-hyperscript')
 const connect = require('react-redux').connect
 const actions = require('../../ui/app/actions')
-const { getCurrentKeyring, ifContractAcc, valuesFor, toChecksumAddress, ifLooseAcc, ifRSK, ifETC } = require('./util')
+const { getCurrentKeyring, ifContractAcc, valuesFor, toChecksumAddress, ifLooseAcc, ifRSK, ifETC, ifCELO } = require('./util')
 const Identicon = require('./components/identicon')
 const EthBalance = require('./components/eth-balance')
 const TransactionList = require('./components/transaction-list')
@@ -72,7 +72,7 @@ AccountDetailScreen.prototype.componentDidMount = function () {
   .then(isCreatedWithCorrectDPath => {
     if (!isCreatedWithCorrectDPath) {
       const currentKeyring = getCurrentKeyring(address, network, keyrings, identities)
-      if (!ifLooseAcc(currentKeyring) && !ifContractAcc(currentKeyring) && (ifRSK(network) || ifETC(network))) {
+      if (!ifLooseAcc(currentKeyring) && !ifContractAcc(currentKeyring) && (ifRSK(network) || ifETC(network) || ifCELO(network))) {
         props.actions.displayToast(Toast.ERROR_ON_INCORRECT_DPATH)
       }
     }
@@ -94,7 +94,7 @@ AccountDetailScreen.prototype.componentWillUpdate = function (nextProps) {
     .then(isCreatedWithCorrectDPath => {
       if (!isCreatedWithCorrectDPath) {
         const currentKeyring = getCurrentKeyring(address, newNet, keyrings, identities)
-        if (!ifLooseAcc(currentKeyring) && !ifContractAcc(currentKeyring) && (ifRSK(newNet) || ifETC(newNet))) {
+        if (!ifLooseAcc(currentKeyring) && !ifContractAcc(currentKeyring) && (ifRSK(newNet) || ifETC(newNet) || ifCELO(newNet))) {
           props.actions.displayToast(Toast.ERROR_ON_INCORRECT_DPATH)
         }
       }
