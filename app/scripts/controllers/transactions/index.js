@@ -11,7 +11,7 @@ abiDecoder.addABI(abi)
 
 import TransactionStateManager from './tx-state-manager'
 import TxGasUtil from './tx-gas-utils'
-const PendingTransactionTracker = require('./pending-tx-tracker')
+import PendingTransactionTracker from './pending-tx-tracker'
 import NonceTracker from 'nonce-tracker'
 import * as txUtils from './lib/util'
 import {
@@ -20,17 +20,17 @@ import {
 } from '../../../../shared/constants/transaction'
 import cleanErrorStack from '../../lib/cleanErrorStack'
 import log from 'loglevel'
-const recipientBlacklistChecker = require('./lib/recipient-blacklist-checker')
-const {
+import recipientBlacklistChecker from './lib/recipient-blacklist-checker'
+import {
   TRANSACTION_TYPE_RETRY,
-} = require('./enums')
+} from './enums'
 
-const ContractKit = require('@celo/contractkit')
+import { newKitFromWeb3 } from '@celo/contractkit'
 import Web3 from 'web3-1-3'
 import { CELO_CODE, CELO_ALFAJORES_TESTNET_CODE, CELO_BAKLAVA_TESTNET_CODE } from '../network/enums'
 import ethNetProps from 'eth-net-props'
 
-const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../../lib/util')
+import { hexToBn, bnToHex, BnMultiplyByFraction } from '../../lib/util'
 
 /**
   Transaction Controller is an aggregate of sub-controllers and trackers
@@ -422,7 +422,7 @@ class TransactionController extends EventEmitter {
     const network = this.getNetwork()
     const rpcUrl = ethNetProps.RPCEndpoints(network)[0]
     const web3 = new Web3(new Web3.providers.HttpProvider(rpcUrl))
-    const kit = ContractKit.newKitFromWeb3(web3)
+    const kit = newKitFromWeb3(web3)
 
     const fromAddressPKstr = fromAddressPK.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '')
 
