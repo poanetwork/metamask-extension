@@ -3,42 +3,52 @@ const ethNetProps = require('eth-net-props')
 const {
   ROPSTEN,
   ROPSTEN_CODE,
-  ROPSTEN_CHAINID,
+  ROPSTEN_CHAIN_ID,
   RINKEBY_CODE,
-  RINKEBY_CHAINID,
+  RINKEBY_CHAIN_ID,
   RINKEBY,
   KOVAN,
   KOVAN_CODE,
-  KOVAN_CHAINID,
+  KOVAN_CHAIN_ID,
   MAINNET,
   MAINNET_CODE,
-  MAINNET_CHAINID,
+  MAINNET_CHAIN_ID,
   ETH_TICK,
   POA_SOKOL,
   POA_CODE,
-  POA_CHAINID,
+  POA_CHAIN_ID,
   POA_TICK,
   POA,
   DAI,
   DAI_CODE,
-  DAI_CHAINID,
+  DAI_CHAIN_ID,
   GOERLI_TESTNET,
   GOERLI_TESTNET_CODE,
-  GOERLI_TESTNET_CHAINID,
+  GOERLI_TESTNET_CHAIN_ID,
   POA_SOKOL_CODE,
-  POA_SOKOL_CHAINID,
+  POA_SOKOL_CHAIN_ID,
   RSK_CODE,
-  RSK_CHAINID,
+  RSK_CHAIN_ID,
   RSK_TESTNET_CODE,
-  RSK_TESTNET_CHAINID,
+  RSK_TESTNET_CHAIN_ID,
   LOCALHOST,
   CLASSIC,
   CLASSIC_CODE,
-  CLASSIC_CHAINID,
+  CLASSIC_CHAIN_ID,
   CLASSIC_TICK,
   RSK,
   RSK_TESTNET,
   RSK_TICK,
+  CELO,
+  CELO_ALFAJORES_TESTNET,
+  CELO_BAKLAVA_TESTNET,
+  CELO_TICK,
+  CELO_CODE,
+  CELO_ALFAJORES_TESTNET_CODE,
+  CELO_BAKLAVA_TESTNET_CODE,
+  CELO_CHAIN_ID,
+  CELO_ALFAJORES_TESTNET_CHAIN_ID,
+  CELO_BAKLAVA_TESTNET_CHAIN_ID,
   customDPaths,
 } = require('../../app/scripts/controllers/network/enums')
 
@@ -92,6 +102,7 @@ module.exports = {
   getAllKeyRingsAccounts,
   ifRSK,
   ifETC,
+  ifCELO,
   ifRSKByProviderType,
   ifPOA,
   ifXDai,
@@ -447,6 +458,12 @@ function ifETC (network) {
   return numericNet === CLASSIC_CODE
 }
 
+function ifCELO (network) {
+  if (!network) return false
+  const numericNet = isNaN(network) ? network : parseInt(network)
+  return numericNet === CELO_CODE || numericNet === CELO_ALFAJORES_TESTNET_CODE || numericNet === CELO_BAKLAVA_TESTNET_CODE
+}
+
 function ifRSKByProviderType (type) {
   if (!type) return false
   return type === RSK || type === RSK_TESTNET
@@ -506,7 +523,10 @@ function isKnownProvider (type) {
   type === GOERLI_TESTNET ||
   type === CLASSIC ||
   type === RSK ||
-  type === RSK_TESTNET
+  type === RSK_TESTNET ||
+  type === CELO ||
+  type === CELO_ALFAJORES_TESTNET ||
+  type === CELO_BAKLAVA_TESTNET
 }
 
 function getNetworkID ({ network }) {
@@ -516,58 +536,73 @@ function getNetworkID ({ network }) {
   switch (network) {
     case MAINNET:
       netId = MAINNET_CODE.toString()
-      chainId = MAINNET_CHAINID
+      chainId = MAINNET_CHAIN_ID
       ticker = ETH_TICK
       break
     case ROPSTEN:
       netId = ROPSTEN_CODE.toString()
-      chainId = ROPSTEN_CHAINID
+      chainId = ROPSTEN_CHAIN_ID
       ticker = ETH_TICK
       break
     case RINKEBY:
       netId = RINKEBY_CODE.toString()
-      chainId = RINKEBY_CHAINID
+      chainId = RINKEBY_CHAIN_ID
       ticker = ETH_TICK
       break
     case KOVAN:
       netId = KOVAN_CODE.toString()
-      chainId = KOVAN_CHAINID
+      chainId = KOVAN_CHAIN_ID
       ticker = ETH_TICK
       break
     case GOERLI_TESTNET:
       netId = GOERLI_TESTNET_CODE.toString()
-      chainId = GOERLI_TESTNET_CHAINID
+      chainId = GOERLI_TESTNET_CHAIN_ID
       ticker = ETH_TICK
       break
     case POA:
       netId = POA_CODE.toString()
-      chainId = POA_CHAINID
+      chainId = POA_CHAIN_ID
       ticker = POA_TICK
       break
     case DAI:
       netId = DAI_CODE.toString()
-      chainId = DAI_CHAINID
+      chainId = DAI_CHAIN_ID
       ticker = POA_TICK
       break
     case POA_SOKOL:
       netId = POA_SOKOL_CODE.toString()
-      chainId = POA_SOKOL_CHAINID
+      chainId = POA_SOKOL_CHAIN_ID
       ticker = POA_TICK
       break
     case RSK:
       netId = RSK_CODE.toString()
-      chainId = RSK_CHAINID
+      chainId = RSK_CHAIN_ID
       ticker = RSK_TICK
       break
     case RSK_TESTNET:
       netId = RSK_TESTNET_CODE.toString()
-      chainId = RSK_TESTNET_CHAINID
+      chainId = RSK_TESTNET_CHAIN_ID
       ticker = RSK_TICK
       break
     case CLASSIC:
       netId = CLASSIC_CODE.toString()
-      chainId = CLASSIC_CHAINID
+      chainId = CLASSIC_CHAIN_ID
       ticker = CLASSIC_TICK
+      break
+    case CELO:
+      netId = CELO_CODE.toString()
+      chainId = CELO_CHAIN_ID
+      ticker = CELO_TICK
+      break
+    case CELO_ALFAJORES_TESTNET:
+      netId = CELO_ALFAJORES_TESTNET_CODE.toString()
+      chainId = CELO_ALFAJORES_TESTNET_CHAIN_ID
+      ticker = CELO_TICK
+      break
+    case CELO_BAKLAVA_TESTNET:
+      netId = CELO_BAKLAVA_TESTNET_CODE.toString()
+      chainId = CELO_BAKLAVA_TESTNET_CHAIN_ID
+      ticker = CELO_TICK
       break
     default:
       console.error(`getNetworkID - unknown network "${network}"`)

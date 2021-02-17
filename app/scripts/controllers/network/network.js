@@ -32,6 +32,9 @@ const {
   CLASSIC,
   RSK,
   RSK_TESTNET,
+  CELO,
+  CELO_ALFAJORES_TESTNET,
+  CELO_BAKLAVA_TESTNET,
   POA_CODE,
   DAI_CODE,
   POA_SOKOL_CODE,
@@ -39,6 +42,9 @@ const {
   CLASSIC_CODE,
   RSK_CODE,
   RSK_TESTNET_CODE,
+  CELO_CODE,
+  CELO_ALFAJORES_TESTNET_CODE,
+  CELO_BAKLAVA_TESTNET_CODE,
 } = require('./enums')
 const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN]
 const POCKET_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET, POA, DAI, GOERLI_TESTNET, POA_SOKOL]
@@ -264,6 +270,12 @@ module.exports = class NetworkController extends EventEmitter {
       this._configureStandardProvider({ rpcUrl: ethNetProps.RPCEndpoints(RSK_CODE)[0], chainId, ticker, nickname })
     } else if (type === RSK_TESTNET) {
       this._configureStandardProvider({ rpcUrl: ethNetProps.RPCEndpoints(RSK_TESTNET_CODE)[0], chainId, ticker, nickname })
+    } else if (type === CELO) {
+      this._configureStandardProvider({ rpcUrl: ethNetProps.RPCEndpoints(CELO_CODE)[0], chainId, ticker, nickname })
+    } else if (type === CELO_ALFAJORES_TESTNET) {
+      this._configureStandardProvider({ rpcUrl: ethNetProps.RPCEndpoints(CELO_ALFAJORES_TESTNET_CODE)[0], chainId, ticker, nickname })
+    } else if (type === CELO_BAKLAVA_TESTNET) {
+      this._configureStandardProvider({ rpcUrl: ethNetProps.RPCEndpoints(CELO_BAKLAVA_TESTNET_CODE)[0], chainId, ticker, nickname })
     } else if (type === LOCALHOST) {
       this._configureLocalhostProvider()
     // url-based rpc endpoints

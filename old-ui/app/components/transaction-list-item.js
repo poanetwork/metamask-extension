@@ -27,6 +27,9 @@ const { POA_CODE,
   CLASSIC_CODE,
   RSK_CODE,
   RSK_TESTNET_CODE,
+  CELO_CODE,
+  CELO_ALFAJORES_TESTNET_CODE,
+  CELO_BAKLAVA_TESTNET_CODE,
 } = require('../../../app/scripts/controllers/network/enums')
 
 const mapDispatchToProps = dispatch => {
@@ -89,7 +92,10 @@ TransactionListItem.prototype.render = function () {
     numericNet === GOERLI_TESTNET_CODE ||
     numericNet === CLASSIC_CODE ||
     numericNet === RSK_CODE ||
-    numericNet === RSK_TESTNET_CODE
+    numericNet === RSK_TESTNET_CODE ||
+    numericNet === CELO_CODE ||
+    numericNet === CELO_ALFAJORES_TESTNET_CODE ||
+    numericNet === CELO_BAKLAVA_TESTNET_CODE
 
   const isMsg = ('msgParams' in transaction)
   const isTx = ('txParams' in transaction)

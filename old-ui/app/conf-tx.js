@@ -13,7 +13,7 @@ import PendingMsg from './components/pending-msg'
 import PendingPersonalMsg from './components/pending-personal-msg'
 import PendingTypedMsg from './components/pending-typed-msg'
 const Loading = require('./components/loading')
-const { DAI_CODE, POA_SOKOL_CODE, RSK_TESTNET_CODE, GOERLI_TESTNET_CODE } = require('../../app/scripts/controllers/network/enums')
+const { DAI_CODE, POA_SOKOL_CODE, RSK_TESTNET_CODE, GOERLI_TESTNET_CODE, CELO_ALFAJORES_TESTNET_CODE, CELO_BAKLAVA_TESTNET_CODE } = require('../../app/scripts/controllers/network/enums')
 const { getMetaMaskAccounts } = require('../../ui/app/selectors')
 import BigNumber from 'bignumber.js'
 
@@ -49,7 +49,12 @@ class ConfirmTxScreen extends Component {
       unapprovedMsgs, unapprovedPersonalMsgs, unapprovedTypedMessages, blockGasLimit } = props
     let { conversionRate } = props
 
-    const isTestnet = parseInt(network) === POA_SOKOL_CODE || parseInt(network) === RSK_TESTNET_CODE || parseInt(network) === GOERLI_TESTNET_CODE
+    const isTestnet =
+      parseInt(network) === POA_SOKOL_CODE ||
+      parseInt(network) === RSK_TESTNET_CODE ||
+      parseInt(network) === GOERLI_TESTNET_CODE ||
+      parseInt(network) === CELO_ALFAJORES_TESTNET_CODE ||
+      parseInt(network) === CELO_BAKLAVA_TESTNET_CODE
     const isDai = parseInt(network) === DAI_CODE
     if (isTestnet) {
       conversionRate = 0
