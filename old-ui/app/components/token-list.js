@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import h from 'react-hyperscript'
 import { inherits } from 'util'
-import TokenTracker from 'eth-token-watcher'
+import TokenTracker from '@metamask/eth-token-tracker'
 import log from 'loglevel'
 import { connect } from 'react-redux'
 const TokenCell = require('./token-cell.js')
@@ -17,7 +17,7 @@ function mapStateToProps (state) {
 
 const defaultTokens = []
 
-const contractsETH = require('eth-contract-metadata')
+const contractsETH = require('@metamask/contract-metadata')
 const contractsPOA = require('poa-contract-metadata')
 const contractsRSK = require('@rsksmart/rsk-contract-metadata')
 const contractsRSKTest = require('@rsksmart/rsk-testnet-contract-metadata')

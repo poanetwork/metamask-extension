@@ -26,6 +26,7 @@ describe('DetectTokensController', () => {
     keyringMemStore = new ObservableStore({ isUnlocked: false})
     network = new NetworkController()
     network.setEthMainnetRPCEndpoint('foo')
+    network.setInfuraProjectId('foo')
     preferences = new PreferencesController({ network })
     controller = new DetectTokensController({ preferences: preferences, network: network, keyringMemStore: keyringMemStore })
 

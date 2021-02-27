@@ -1,4 +1,4 @@
-import mergeMiddleware from 'json-rpc-engine/src/mergeMiddleware'
+import { mergeMiddleware } from 'json-rpc-engine'
 import createFetchMiddleware from 'eth-json-rpc-middleware/fetch'
 import createBlockRefRewriteMiddleware from 'eth-json-rpc-middleware/block-ref-rewrite'
 import createBlockCacheMiddleware from 'eth-json-rpc-middleware/block-cache'

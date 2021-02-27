@@ -1,7 +1,7 @@
 const EventEmitter = require('events').EventEmitter
 const semver = require('semver')
 const extend = require('xtend')
-const ObservableStore = require('obs-store')
+import { ObservableStore } from '@metamask/obs-store'
 const hardCodedNotices = require('../../notices/notices.js')
 const uniqBy = require('lodash.uniqby')
 

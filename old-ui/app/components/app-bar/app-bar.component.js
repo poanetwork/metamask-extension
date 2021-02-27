@@ -16,7 +16,6 @@ module.exports = class AppBar extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
     frequentRpcList: PropTypes.array.isRequired,
-    isMascara: PropTypes.bool.isRequired,
     isOnboarding: PropTypes.bool.isRequired,
     identities: PropTypes.any.isRequired,
     selectedAddress: PropTypes.string,
@@ -56,26 +55,13 @@ module.exports = class AppBar extends Component {
     const state = this.state || {}
     const isNetworkMenuOpen = state.isNetworkMenuOpen || false
     const {
-      isMascara,
-      isOnboarding,
       isUnlocked,
-      currentView,
       network,
       provider,
       identities,
       selectedAddress,
       keyrings,
     } = this.props
-
-    // Do not render header if user is in mascara onboarding
-    if (isMascara && isOnboarding) {
-      return null
-    }
-
-    // Do not render header if user is in mascara buy ether
-    if (isMascara && currentView.name === 'buyEth') {
-      return null
-    }
 
     return (
 

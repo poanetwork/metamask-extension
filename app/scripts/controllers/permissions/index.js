@@ -1,6 +1,5 @@
-import JsonRpcEngine from 'json-rpc-engine'
-import asMiddleware from 'json-rpc-engine/src/asMiddleware'
-import ObservableStore from 'obs-store'
+import { JsonRpcEngine } from 'json-rpc-engine'
+import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 import { CapabilitiesController as RpcCap } from 'rpc-cap'
 import { ethErrors } from 'eth-json-rpc-errors'
@@ -90,7 +89,7 @@ export class PermissionsController {
       this.permissions, { origin },
     ))
 
-    return asMiddleware(engine)
+    return engine.asMiddleware(engine)
   }
 
   /**

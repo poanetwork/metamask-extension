@@ -1,10 +1,10 @@
 const injectCss = require('inject-css')
 const OldMetaMaskUiCss = require('../../old-ui/css')
 const startPopup = require('./popup-core')
-const PortStream = require('extension-port-stream')
+import PortStream from 'extension-port-stream'
 const { getEnvironmentType } = require('./lib/util')
 import extension from 'extensionizer'
-const ExtensionPlatform = require('./platforms/extension')
+import ExtensionPlatform from './platforms/extension'
 const setupRaven = require('./lib/setupRaven')
 const log = require('loglevel')
 
@@ -37,7 +37,7 @@ async function start () {
     if (err) return displayCriticalError(err)
 
     // Code commented out until we begin auto adding users to NewUI
-    // const { isMascara, identities = {}, featureFlags = {} } = store.getState().metamask
+    // const { identities = {}, featureFlags = {} } = store.getState().metamask
     // const firstTime = Object.keys(identities).length === 0
 
     // Code commented out until we begin auto adding users to NewUI
