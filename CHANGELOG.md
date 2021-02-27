@@ -2,6 +2,8 @@
 
 ## Current Master
 
+## 5.2.4 Sat Feb 27 2021
+
 - [#451](https://github.com/poanetwork/nifty-wallet/pull/451) - (Fix) Fix export private key when switching between chains
 - [#450](https://github.com/poanetwork/nifty-wallet/pull/450) - (Chore) Remove deprecated Infura network status check
 - [#443](https://github.com/poanetwork/nifty-wallet/pull/443) - (Fix) Fire 'confirmation', 'receipt' events
