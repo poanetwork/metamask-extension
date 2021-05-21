@@ -79,6 +79,7 @@
     "@babel/runtime": "^7.5.5",
     "@material-ui/core": "^4.1.1",
     "@metamask/contract-metadata": "^1.21.0",
+    "@metamask/controllers": "^9.0.0",
     "@metamask/eth-token-tracker": "^3.1.0",
     "@metamask/obs-store": "^5.0.0",
     "@rsksmart/rns-registry": "^1.0.4",
