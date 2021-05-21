@@ -2,6 +2,10 @@
 
 ## Current Master
 
+## 5.2.5 Fri May 21 2021
+
+- [#459](https://github.com/poanetwork/nifty-wallet/pull/459) - (Fix) Phishing detection
+
 ## 5.2.4 Sat Feb 27 2021
 
 - [#451](https://github.com/poanetwork/nifty-wallet/pull/451) - (Fix) Fix export private key when switching between chains
