@@ -22,6 +22,10 @@ function getHdPaths (network) {
         label: `Legacy (MEW / MyCrypto)`,
         value: customHdPaths[networkInteger]['ledger'],
       },
+      {
+        label: `BTC (BTC-RBTC Bridge)`,
+        value: customHdPaths[networkInteger]['ledgerBTC'],
+      },
     ]
   } else {
     hdPaths = [
@@ -41,6 +45,7 @@ function getHdPaths (network) {
 const hdRSKMainnetTrezorPath = `m/44'/137'/0'/0`
 const hdRSKMainnetLedgerPath = `m/44'/137'/0'/0`
 const hdRSKMainnetLedgerLivePath = `m/44'/137'/0'/0`
+const hdRSKMainnetLedgerBTCPath = `m/44'/0'/0'/0`
 
 const hdRSKTestnetTrezorPath = `m/44'/37310'/0'/0`
 const hdRSKTestnetLedgerPath = `m/44'/37310'/0'/0`
@@ -54,6 +59,7 @@ const customHdPaths = {}
 customHdPaths[RSK_CODE] = {
   trezor: hdRSKMainnetTrezorPath,
   ledger: hdRSKMainnetLedgerPath,
+  ledgerBTC: hdRSKMainnetLedgerBTCPath,
   ledgeLive: hdRSKMainnetLedgerLivePath,
 }
 
