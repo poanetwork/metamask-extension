@@ -731,7 +731,7 @@
     "description": "새 계정을 만들거나 가져오기 중에 선택하기"
   },
   "orderOneHere": {
-    "message": "Trezor 혹은 Ledger를 구입하고 자금을 콜드 스토리지에 저장합니다"
+    "message": "Trezor, Ledger 혹은 D'CENT를 구입하고 자금을 콜드 스토리지에 저장합니다"
   },
   "origin": {
     "message": "Origin"

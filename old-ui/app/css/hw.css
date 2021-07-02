@@ -26,6 +26,9 @@
   flex-direction: row;
   display: flex;
 }
+.hw-connect__btn-wrapper:not(:first-of-type) {
+  margin-top: 15px;
+}
 .hw-connect__connect-btn {
   color: #fff;
   border: none;
@@ -64,8 +67,11 @@
   border: 2px solid #60DB97;
   width: 149px;
 }
-.hw-connect__btn:first-child {
+.hw-connect__btn:not(:last-of-type) {
   margin-right: 15px;
+}
+.hw-connect__btn:first-child {
+
 }
 .hw-connect__btn:last-child {
 

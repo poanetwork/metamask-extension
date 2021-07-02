@@ -8,7 +8,7 @@ import { formatBalance } from '../../util'
 import { getPlatform } from '../../../../app/scripts/lib/util'
 import { PLATFORM_FIREFOX } from '../../../../app/scripts/lib/enums'
 import { getMetaMaskAccounts } from '../../../../ui/app/selectors'
-import { LEDGER, TREZOR } from './enum'
+import { LEDGER, TREZOR, DCENT } from './enum'
 
 class ConnectHardwareForm extends Component {
   constructor (props, context) {
@@ -45,7 +45,7 @@ class ConnectHardwareForm extends Component {
   }
 
   async checkIfUnlocked () {
-    [TREZOR, LEDGER].forEach(async device => {
+    [TREZOR, LEDGER, DCENT].forEach(async device => {
       const hdPath = this._setHdPath(device)
       const unlocked = await this.props.checkHardwareStatus(device, hdPath)
       if (unlocked) {

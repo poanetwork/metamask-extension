@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Button from '../../../../ui/app/components/button'
-import { LEDGER, TREZOR } from './enum'
+import { LEDGER, TREZOR, DCENT } from './enum'
 import { capitalizeFirstLetter } from '../../../../app/scripts/lib/util'
 
 const trezorCap = capitalizeFirstLetter(TREZOR)
@@ -49,12 +49,26 @@ class ConnectScreen extends Component {
         )
     }
 
+    renderConnectToDcentButton () {
+        return (
+            <button
+                className={`hw-connect__btn${this.state.selectedDevice === DCENT ? ' selected' : ''}`}
+                onClick={(_) => this.setState({ selectedDevice: DCENT })}
+            >
+                <img className="hw-connect__btn__img" src="images/dcent-logo.svg"/>
+            </button>
+        )
+      }
+
     renderButtons () {
         return (
             <div>
                 <div className="hw-connect__btn-wrapper">
                     {this.renderConnectToLedgerButton()}
                     {this.renderConnectToTrezorButton()}
+                </div>
+                <div className="hw-connect__btn-wrapper">
+                    {this.renderConnectToDcentButton()}
                 </div>
                 <button
                     className={`hw-connect__connect-btn${!this.state.selectedDevice ? ' disabled' : ''}`}
@@ -94,10 +108,11 @@ class ConnectScreen extends Component {
         const links = {
             trezor: `<a class='hw-connect__get-hw__link' href='https://shop.trezor.io/?a=niftywallet' target='_blank'>${trezorCap}</a>`,
             ledger: `<a class='hw-connect__get-hw__link' href='https://www.ledger.com/products/ledger-nano-s' target='_blank'>${ledgerCap}</a>`,
+            dcent: `<a class='hw-connect__get-hw__link' href='https://dcentwallet.com/Shop?utm_source=metamask&utm_medium=affiliate&utm_campaign=202005-metamask-promotion' target='_blank'>D'CENT</a>`,
         }
 
-        const text = `Order a ${trezorCap} or ${ledgerCap} and keep your funds in cold storage`
-        const response = text.replace(trezorCap, links.trezor).replace(ledgerCap, links.ledger)
+        const text = `Order a ${trezorCap}, ${ledgerCap} or D'CENT and keep your funds in cold storage`
+        const response = text.replace(trezorCap, links.trezor).replace(ledgerCap, links.ledger).replace(`D'CENT`, links.dcent)
 
         return (
             <div className="hw-connect__get-hw__msg" dangerouslySetInnerHTML={{ __html: response }} />
