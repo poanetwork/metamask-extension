@@ -1,9 +1,8 @@
 import assert from 'assert'
 import EventEmitter from 'events'
-import ObservableStore from 'obs-store'
-import ComposedStore from 'obs-store/lib/composed'
+import { ComposedStore, ObservableStore } from '@metamask/obs-store'
 import EthQuery from 'eth-query'
-import JsonRpcEngine from 'json-rpc-engine'
+import { JsonRpcEngine } from 'json-rpc-engine'
 import providerFromEngine from 'eth-json-rpc-middleware/providerFromEngine'
 import log from 'loglevel'
 import createMetamaskMiddleware from './createMetamaskMiddleware'
@@ -16,6 +15,9 @@ import ethNetProps from 'eth-net-props'
 import parse from 'url-parse'
 const networks = { networkList: {} }
 const { isKnownProvider } = require('../../../../old-ui/app/util')
+import {
+  NETWORK_TYPE_TO_ID_MAP,
+} from './enums'
 
 const {
   ROPSTEN,
@@ -38,7 +40,7 @@ const {
   RSK_CODE,
   RSK_TESTNET_CODE,
 } = require('./enums')
-const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
+const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN]
 const POCKET_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET, POA, DAI, GOERLI_TESTNET, POA_SOKOL]
 
 const env = process.env.METAMASK_ENV
@@ -82,6 +84,21 @@ module.exports = class NetworkController extends EventEmitter {
     // provider and block tracker proxies - because the network changes
     this._providerProxy = null
     this._blockTrackerProxy = null
+  }
+
+  /**
+   * Sets the Infura project ID
+   *
+   * @param {string} projectId - The Infura project ID
+   * @throws {Error} if the project ID is not a valid string
+   * @return {void}
+   */
+  setInfuraProjectId (projectId) {
+    if (!projectId || typeof projectId !== 'string') {
+      throw new Error('Invalid Infura project ID')
+    }
+
+    this._infuraProjectId = projectId
   }
 
   initializeProvider (providerParams) {
@@ -155,6 +172,11 @@ module.exports = class NetworkController extends EventEmitter {
     })
   }
 
+  getCurrentChainId () {
+    const { type, chainId: configChainId } = this.getProviderConfig()
+    return NETWORK_TYPE_TO_ID_MAP[type] ? NETWORK_TYPE_TO_ID_MAP[type].chainId : configChainId
+  }
+
   setRpcTarget (rpcTarget, chainId, ticker = 'ETH', nickname = '', rpcPrefs) {
     const providerConfig = {
       type: 'rpc',
@@ -224,8 +246,10 @@ module.exports = class NetworkController extends EventEmitter {
     if (isPocket && this.dProviderStore.getState().dProvider) {
       this._configurePocketProvider(opts)
     } else if (isInfura) {
-        this._configureInfuraProvider(opts)
+        this._configureInfuraProvider(type, this._infuraProjectId)
     // other type-based rpc endpoints
+    } else if (type === MAINNET) {
+      this._configureStandardProvider({ rpcUrl: this._ethMainnetRpcEndpoint, chainId, ticker, nickname })
     } else if (type === POA) {
       this._configureStandardProvider({ rpcUrl: ethNetProps.RPCEndpoints(POA_CODE)[0], chainId, ticker, nickname })
     } else if (type === DAI) {
@@ -250,17 +274,28 @@ module.exports = class NetworkController extends EventEmitter {
     }
   }
 
-  _configureInfuraProvider ({ type }) {
+  /**
+   * Sets the Ethereum Mainnet RPC endpoint
+   *
+   * @param {string} endpoint - Ethereum Mainnet RPC endpoint
+   * @throws {Error} if the endpoint is not a valid string
+   * @return {void}
+   */
+  setEthMainnetRPCEndpoint (endpoint) {
+    if (!endpoint || typeof endpoint !== 'string') {
+      throw new Error('Invalid ETH Mainnet RPC Endpoint')
+    }
+
+    this._ethMainnetRpcEndpoint = endpoint
+  }
+
+  _configureInfuraProvider (type, projectId) {
     log.info('NetworkController - configureInfuraProvider', type)
     const networkClient = createInfuraClient({
       network: type,
+      projectId,
     })
     this._setNetworkClient(networkClient)
-    // setup networkConfig
-    const settings = {
-      ticker: 'ETH',
-    }
-    this.networkConfig.putState(settings)
   }
 
   _configurePocketProvider ({ type }) {

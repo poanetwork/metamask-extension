@@ -1,4 +1,4 @@
-const ObservableStore = require('obs-store')
+import { ObservableStore } from '@metamask/obs-store'
 const extend = require('xtend')
 const log = require('loglevel')
 
@@ -129,19 +129,11 @@ class CurrencyController {
     try {
       currentCurrency = this.getCurrentCurrency()
       currentCoin = this.getCurrentCoin()
-      let conversionRate, conversionDate
-      if (currentCoin === 'poa' || currentCoin === 'etc' || currentCoin === 'rbtc') {
-        const apiLink = `https://min-api.cryptocompare.com/data/price?fsym=${currentCoin.toUpperCase()}&tsyms=${currentCurrency.toUpperCase()}`
-        const response = await fetch(apiLink)
-        const parsedResponse = await response.json()
-        conversionRate = Number(parsedResponse[currentCurrency.toUpperCase()])
-        conversionDate = parseInt((new Date()).getTime() / 1000)
-      } else {
-        const response = await fetch(`https://api.infura.io/v1/ticker/eth${currentCurrency.toLowerCase()}`)
-        const parsedResponse = await response.json()
-        conversionRate = Number(parsedResponse.bid)
-        conversionDate = Number(parsedResponse.timestamp)
-      }
+      const apiLink = `https://min-api.cryptocompare.com/data/price?fsym=${currentCoin.toUpperCase()}&tsyms=${currentCurrency.toUpperCase()}`
+      const response = await fetch(apiLink)
+      const parsedResponse = await response.json()
+      const conversionRate = Number(parsedResponse[currentCurrency.toUpperCase()])
+      const conversionDate = parseInt((new Date()).getTime() / 1000)
       this.setConversionRate(conversionRate)
       this.setConversionDate(conversionDate)
     } catch (err) {

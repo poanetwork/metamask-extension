@@ -1,5 +1,4 @@
-const mergeMiddleware = require('json-rpc-engine/src/mergeMiddleware')
-const createScaffoldMiddleware = require('json-rpc-engine/src/createScaffoldMiddleware')
+const { createScaffoldMiddleware, mergeMiddleware } = require('json-rpc-engine')
 const createBlockReRefMiddleware = require('eth-json-rpc-middleware/block-ref')
 const createRetryOnEmptyMiddleware = require('eth-json-rpc-middleware/retryOnEmpty')
 const createBlockCacheMiddleware = require('eth-json-rpc-middleware/block-cache')

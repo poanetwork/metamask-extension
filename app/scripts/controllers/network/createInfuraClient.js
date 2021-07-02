@@ -1,5 +1,4 @@
-import mergeMiddleware from 'json-rpc-engine/src/mergeMiddleware'
-import createScaffoldMiddleware from 'json-rpc-engine/src/createScaffoldMiddleware'
+import { createScaffoldMiddleware, mergeMiddleware} from 'json-rpc-engine'
 import createBlockReRefMiddleware from 'eth-json-rpc-middleware/block-ref'
 import createRetryOnEmptyMiddleware from 'eth-json-rpc-middleware/retryOnEmpty'
 import createBlockCacheMiddleware from 'eth-json-rpc-middleware/block-cache'
@@ -11,8 +10,13 @@ import BlockTracker from 'eth-block-tracker'
 
 export default createInfuraClient
 
-function createInfuraClient ({ network }) {
-  const infuraMiddleware = createInfuraMiddleware({ network, maxAttempts: 5, source: 'metamask' })
+function createInfuraClient ({ network, projectId }) {
+  const infuraMiddleware = createInfuraMiddleware({
+    network,
+    projectId,
+    maxAttempts: 5,
+    source: 'metamask',
+  })
   const infuraProvider = providerFromMiddleware(infuraMiddleware)
   const blockTracker = new BlockTracker({ provider: infuraProvider })
 

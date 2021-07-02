@@ -2,6 +2,55 @@
 
 ## Current Master
 
+## 5.2.5 Fri May 21 2021
+
+- [#459](https://github.com/poanetwork/nifty-wallet/pull/459) - (Fix) Phishing detection
+
+## 5.2.4 Sat Feb 27 2021
+
+- [#451](https://github.com/poanetwork/nifty-wallet/pull/451) - (Fix) Fix export private key when switching between chains
+- [#450](https://github.com/poanetwork/nifty-wallet/pull/450) - (Chore) Remove deprecated Infura network status check
+- [#443](https://github.com/poanetwork/nifty-wallet/pull/443) - (Fix) Fire 'confirmation', 'receipt' events
+
+## 5.2.3 Fri Jan 15 2021
+
+- [#441](https://github.com/poanetwork/nifty-wallet/pull/441) - Replace Infura Mainnet endpoint with custom one
+
+## 5.2.2 Tue Dec 29 2020
+
+- [#437](https://github.com/poanetwork/nifty-wallet/pull/437) - Support getting proxy implementation address by following EIP-1967
+- [#436](https://github.com/poanetwork/nifty-wallet/pull/436) - Allow master copy pattern in importing of proxy contract
+- [#435](https://github.com/poanetwork/nifty-wallet/pull/435) - Allow array input type in contracts interactions
+- [#434](https://github.com/poanetwork/nifty-wallet/pull/434) - Add support of tuple type at interaction with read-only contract methods
+- [#432](https://github.com/poanetwork/nifty-wallet/pull/432) - bump rsk-contract-metadata dependency
+
+## 5.2.1 Fri Dec 04 2020
+
+- [#429](https://github.com/poanetwork/nifty-wallet/pull/429) - Allow Ledger signMessage method
+
+## 5.2.0 Fri Nov 13 2020
+
+- [#427](https://github.com/poanetwork/nifty-wallet/pull/427) - Fix support of eth_signTypedData_v4 (eip-712)
+- [#426](https://github.com/poanetwork/nifty-wallet/pull/426) - Update inpage provider: add ethereum.request method support
+- [#411](https://github.com/poanetwork/nifty-wallet/pull/411) - GitHub actions CI
+
+## 5.1.6 Tue Oct 27 2020
+
+- [#419](https://github.com/poanetwork/nifty-wallet/pull/419) - Add 10% margin for gas price in case of RSK chains
+
+## 5.1.5 Tue Oct 20 2020
+
+- [#416](https://github.com/poanetwork/nifty-wallet/pull/416) - Change Copy token address text
+- [#415](https://github.com/poanetwork/nifty-wallet/pull/415) - Fix broken Blockscout's token transfers page link
+
+## 5.1.4 Tue Aug 04 2020
+
+Removal of webRequest permission was not applied in the previous version. Applying it here.
+
+## 5.1.3 Tue Aug 04 2020
+
+- [#407](https://github.com/poanetwork/nifty-wallet/pull/407) - Remove excess extension permissions: webRequest
+
 ## 5.1.2 Fri Jul 10 2020
 
 - [#400](https://github.com/poanetwork/nifty-wallet/pull/400) - (Fix) Fix RNS resolving

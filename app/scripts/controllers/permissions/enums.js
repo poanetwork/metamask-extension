@@ -1,3 +1,4 @@
+export const APPROVAL_TYPE = 'wallet_requestPermissions'
 
 export const WALLET_PREFIX = 'wallet_'
 
@@ -7,16 +8,27 @@ export const LOG_STORE_KEY = 'permissionsLog'
 
 export const METADATA_STORE_KEY = 'domainMetadata'
 
+export const METADATA_CACHE_MAX_SIZE = 100
+
 export const CAVEAT_NAMES = {
   exposedAccounts: 'exposedAccounts',
+  primaryAccountOnly: 'primaryAccountOnly',
+}
+
+export const CAVEAT_TYPES = {
+  limitResponseLength: 'limitResponseLength',
+  filterResponse: 'filterResponse',
 }
 
 export const NOTIFICATION_NAMES = {
-  accountsChanged: 'wallet_accountsChanged',
+  accountsChanged: 'metamask_accountsChanged',
+  unlockStateChanged: 'metamask_unlockStateChanged',
+  chainChanged: 'metamask_chainChanged',
 }
 
 export const LOG_IGNORE_METHODS = [
-  'wallet_sendDomainMetadata',
+  'wallet_registerOnboarding',
+  'wallet_watchAsset',
 ]
 
 export const LOG_METHOD_TYPES = {
@@ -27,14 +39,11 @@ export const LOG_METHOD_TYPES = {
 export const LOG_LIMIT = 100
 
 export const SAFE_METHODS = [
-  'web3_sha3',
-  'net_listening',
-  'net_peerCount',
-  'net_version',
   'eth_blockNumber',
   'eth_call',
   'eth_chainId',
   'eth_coinbase',
+  'eth_decrypt',
   'eth_estimateGas',
   'eth_gasPrice',
   'eth_getBalance',
@@ -43,9 +52,11 @@ export const SAFE_METHODS = [
   'eth_getBlockTransactionCountByHash',
   'eth_getBlockTransactionCountByNumber',
   'eth_getCode',
+  'eth_getEncryptionPublicKey',
   'eth_getFilterChanges',
   'eth_getFilterLogs',
   'eth_getLogs',
+  'eth_getProof',
   'eth_getStorageAt',
   'eth_getTransactionByBlockHashAndIndex',
   'eth_getTransactionByBlockNumberAndIndex',
@@ -66,7 +77,6 @@ export const SAFE_METHODS = [
   'eth_sendRawTransaction',
   'eth_sendTransaction',
   'eth_sign',
-  'personal_sign',
   'eth_signTypedData',
   'eth_signTypedData_v1',
   'eth_signTypedData_v3',
@@ -75,9 +85,14 @@ export const SAFE_METHODS = [
   'eth_submitWork',
   'eth_syncing',
   'eth_uninstallFilter',
+  'metamask_getProviderState',
   'metamask_watchAsset',
+  'net_listening',
+  'net_peerCount',
+  'net_version',
+  'personal_ecRecover',
+  'personal_sign',
   'wallet_watchAsset',
-  'eth_getEncryptionPublicKey',
-  'eth_decrypt',
-  'eth_accounts',
+  'web3_clientVersion',
+  'web3_sha3',
 ]

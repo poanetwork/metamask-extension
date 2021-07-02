@@ -1,4 +1,4 @@
-const ObservableStore = require('obs-store')
+import { ObservableStore } from '@metamask/obs-store'
 const extend = require('xtend')
 
 class AddressBookController {

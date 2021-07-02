@@ -22,7 +22,7 @@ const backGroundConnectionModifiers = require('./backGroundConnectionModifiers')
 const Selector = require('./selector')
 const MetamaskController = require('../app/scripts/metamask-controller')
 const firstTimeState = require('../app/scripts/first-time-state')
-const ExtensionPlatform = require('../app/scripts/platforms/extension')
+import ExtensionPlatform from '../app/scripts/platforms/extension'
 const noop = function () {}
 
 const log = require('loglevel')
