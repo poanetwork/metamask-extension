@@ -25,6 +25,8 @@ class ContractImportView extends Component {
   static propTypes = {
     error: PropTypes.string,
     network: PropTypes.string,
+    RPC_URL: PropTypes.string,
+    provider: PropTypes.object,
     type: PropTypes.string,
     displayWarning: PropTypes.func,
     importNewAccount: PropTypes.func,
@@ -118,12 +120,12 @@ class ContractImportView extends Component {
 
   autodetectContractABI = () => {
     const { contractAddr, web3 } = this.state
-    const { type, network } = this.props
+    const { type, network, provider, RPC_URL } = this.props
     if (!contractAddr || !web3.isAddress(contractAddr)) {
       this.clearABI()
       return
     }
-    getFullABI(web3.eth, contractAddr, network, type)
+    getFullABI(web3.eth, contractAddr, network, type, RPC_URL, provider)
       .then(finalABI => {
         if (finalABI) {
           finalABI = JSON.stringify(finalABI)
@@ -218,6 +220,8 @@ function mapStateToProps (state) {
   const result = {
     error: warning && (warning || warning.message),
     network: state.metamask.network,
+    provider: state.metamask.provider,
+		RPC_URL: state.appState.RPC_URL,
   }
 
   return result

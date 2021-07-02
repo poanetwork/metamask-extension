@@ -1,4 +1,4 @@
-import ObservableStore from 'obs-store'
+import { ObservableStore } from '@metamask/obs-store'
 import PendingBalanceCalculator from '../lib/pending-balance-calculator'
 import { BN } from 'ethereumjs-util'
 

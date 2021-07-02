@@ -7,7 +7,7 @@ This migration updates "transaction state history" to diffs style
 */
 
 const clone = require('clone')
-import txStateHistoryHelper from '../controllers/transactions/lib/tx-state-history-helper'
+import { migrateFromSnapshotsToDiffs, snapshotFromTxMeta } from '../controllers/transactions/lib/tx-state-history-helpers'
 
 
 module.exports = {
@@ -35,13 +35,13 @@ function transformState (state) {
     newState.TransactionController.transactions = transactions.map((txMeta) => {
       // no history: initialize
       if (!txMeta.history || txMeta.history.length === 0) {
-        const snapshot = txStateHistoryHelper.snapshotFromTxMeta(txMeta)
+        const snapshot = snapshotFromTxMeta(txMeta)
         txMeta.history = [snapshot]
         return txMeta
       }
       // has history: migrate
       const newHistory = (
-        txStateHistoryHelper.migrateFromSnapshotsToDiffs(txMeta.history)
+        migrateFromSnapshotsToDiffs(txMeta.history)
         // remove empty diffs
         .filter((entry) => {
           return !Array.isArray(entry) || entry.length > 0

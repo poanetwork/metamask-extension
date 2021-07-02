@@ -1,4 +1,4 @@
-const ObservableStore = require('obs-store')
+import { ObservableStore } from '@metamask/obs-store'
 
 import log from 'loglevel'
 import { normalize as normalizeAddress } from 'eth-sig-util'

@@ -1,4 +1,4 @@
-const ObservableStore = require('obs-store')
+import { ObservableStore } from '@metamask/obs-store'
 const normalizeAddress = require('eth-sig-util').normalize
 const { isValidAddress } = require('ethereumjs-util')
 const extend = require('xtend')

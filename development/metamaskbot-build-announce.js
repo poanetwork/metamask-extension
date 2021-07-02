@@ -24,7 +24,6 @@ async function start () {
   const SHORT_SHA1 = CIRCLE_SHA1.slice(0, 7)
   const BUILD_LINK_BASE = `https://${CIRCLE_BUILD_NUM}-42009758-gh.circle-artifacts.com/0`
 
-  const MASCARA = `${BUILD_LINK_BASE}/builds/mascara/home.html`
   const CHROME = `${BUILD_LINK_BASE}/builds/niftywallet-chrome-${VERSION}.zip`
   const FIREFOX = `${BUILD_LINK_BASE}/builds/niftywallet-firefox-${VERSION}.zip`
   const EDGE = `${BUILD_LINK_BASE}/builds/niftywallet-edge-${VERSION}.zip`
@@ -35,7 +34,6 @@ async function start () {
   <details>
     <summary>
       Builds ready [${SHORT_SHA1}]:
-      <a href="${MASCARA}">mascara</a>,
       <a href="${CHROME}">chrome</a>,
       <a href="${FIREFOX}">firefox</a>,
       <a href="${EDGE}">edge</a>,
